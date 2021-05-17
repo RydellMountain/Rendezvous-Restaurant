@@ -8,6 +8,7 @@ namespace AppDevProjectGroup27.Models
 {
     public class Category
     {
+        //Test
         [Key]
         public int Id { get; set; }
 
