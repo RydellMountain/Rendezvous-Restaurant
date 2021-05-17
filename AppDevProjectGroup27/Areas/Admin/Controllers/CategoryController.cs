@@ -1,4 +1,5 @@
 ﻿using AppDevProjectGroup27.Data;
+using AppDevProjectGroup27.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -28,6 +29,22 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
         public IActionResult Create()
         {
             return View();
+        }
+
+        //POST - Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Category category)
+        {
+            if(ModelState.IsValid)
+            {
+                //if valid
+                _db.Category.Add(category);
+                await _db.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+            }
+            return View(category);
         }
     }
 }
