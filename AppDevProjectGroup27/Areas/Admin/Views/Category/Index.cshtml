@@ -5,7 +5,7 @@
 }
 
 <h1>Index</h1>
-<div class="border backgroundWhiteBorder" >
+<div class="border backgroundWhite" >
     <div class="row">
         <div class="col-6">
             <h2 class="text-info">Category List</h2>
@@ -33,7 +33,7 @@
                             @Html.DisplayFor(m => item.Name)
                         </td>
                         <td>
-                            EDIT | DELETE | DETAILS
+                            <partial name="_TableButtonPartial" model="item.Id" />
                         </td>
                     </tr>
                 }
