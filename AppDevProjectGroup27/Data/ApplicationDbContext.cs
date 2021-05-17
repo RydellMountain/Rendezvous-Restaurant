@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using AppDevProjectGroup27.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -12,5 +13,7 @@ namespace AppDevProjectGroup27.Data
             : base(options)
         {
         }
+
+        public DbSet<Category> Category { get; set; }
     }
 }
