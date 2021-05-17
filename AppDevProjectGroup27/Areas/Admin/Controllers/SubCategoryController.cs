@@ -1,5 +1,6 @@
 ﻿using AppDevProjectGroup27.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,11 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             _db = db;
         }
        
-
+        // Get INDEX
+        public async Task<IActionResult> Index()
+        {
+            var subCategories = await _db.SubCategory.Include(s=>s.Category).ToListAsync();
+            return View(subCategories);
+        }
     }
 }
