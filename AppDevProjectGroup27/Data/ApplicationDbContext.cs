@@ -15,5 +15,7 @@ namespace AppDevProjectGroup27.Data
         }
 
         public DbSet<Category> Category { get; set; }
+
+        public DbSet<SubCategory> SubCategory { get; set; }
     }
 }
