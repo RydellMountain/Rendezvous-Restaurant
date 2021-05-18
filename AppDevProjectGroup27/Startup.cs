@@ -60,6 +60,7 @@ namespace AppDevProjectGroup27
             app.UseAuthentication();
             app.UseAuthorization();
 
+            // For routing
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
