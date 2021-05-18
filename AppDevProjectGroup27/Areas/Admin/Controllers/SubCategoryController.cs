@@ -14,6 +14,10 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
     {
         private readonly ApplicationDbContext _db;
 
+        [TempData]
+        public string StatusMessage { get; set; }
+
+
         public SubCategoryController(ApplicationDbContext db)
         {
             _db = db;
@@ -51,7 +55,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                 if (doesSubcatExists.Count() > 0)
                 {
                     //Error
-                    //status = "Error : Subcategory already esxists under " + doesSubcatExists.First().Category.Name + " category Please use another name ";
+                    StatusMessage = "Error : Subcategory already esxists under " + doesSubcatExists.First().Category.Name + " category Please use another name ";
                 }
                 else
                 {
@@ -65,7 +69,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                 CategoryList = await _db.Category.ToListAsync(),
                 SubCategory = model.SubCategory,
                 SubCategoryList = await _db.SubCategory.OrderBy(p => p.Name).Select(p => p.Name).ToListAsync(),
-                //StatusMessage = StatusMessage
+                StatusMessage = StatusMessage
 
             };
             return View(modelVM);
