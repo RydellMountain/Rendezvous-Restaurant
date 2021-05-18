@@ -1,4 +1,5 @@
 ﻿using AppDevProjectGroup27.Data;
+using AppDevProjectGroup27.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -23,5 +24,19 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             var subCategories = await _db.SubCategory.Include(s=>s.Category).ToListAsync();
             return View(subCategories);
         }
+
+        // GET - Create
+        public async Task<IActionResult> Create()
+        {
+            SubCatgoryAndCategoryViewModel model = new SubCatgoryAndCategoryViewModel()
+            {
+                CategoryList = await _db.Category.ToListAsync(),
+                SubCategory = new Models.SubCategory(),
+                SubCategoryList = await _db.SubCategory.OrderBy(p=>p.Name).Select(p=>p.Name).Distinct().ToListAsync()
+            };
+
+            return View(model);
+        }
+
     }
 }
