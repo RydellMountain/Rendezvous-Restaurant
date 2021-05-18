@@ -124,6 +124,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var doesSubcatExists = _db.SubCategory.Include(s => s.Category).Where(s => s.Name == model.SubCategory.Name && s.Category.Id == model.SubCategory.CategoryId);
+
                 if (doesSubcatExists.Count() > 0)
                 {
                     //Error
@@ -131,7 +132,10 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                 }
                 else
                 {
-                    _db.SubCategory.Add(model.SubCategory);
+                    var subCatFromDb = await _db.SubCategory.FindAsync(id);
+                    subCatFromDb.Name = model.SubCategory.Name;
+
+                    
                     await _db.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
@@ -144,6 +148,11 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                 StatusMessage = StatusMessage
 
             };
+
+            //To parse the category Id even after the error message of redundant
+            //Sub-category name is hit and
+            // a different value is entered before a page refresh
+            modelVM.SubCategory.Id = id;
             return View(modelVM);
         }
 
