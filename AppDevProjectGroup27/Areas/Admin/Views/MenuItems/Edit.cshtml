@@ -111,7 +111,7 @@
     </script>
 
     @*This sctipt is for the subCategory DropDown*@
-    <script type="text/javascript">
+<script type="text/javascript">
         $(document).ready(function () {
             getSubCategory();
             $('#CategoryId').change(function () {
@@ -128,9 +128,10 @@
                     items += "<option value='" + subcategory.value + "'>" + subcategory.text + "</option>";
                 });
                 $('#SubCategoryId').html(items);
+                $('#SubCategoryId').val(@Model.MenuItems.SubCategoryId);
             })
         }
-    </script>
+</script>
 
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");};
 }
