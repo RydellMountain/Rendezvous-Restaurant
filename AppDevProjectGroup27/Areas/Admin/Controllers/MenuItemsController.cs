@@ -13,12 +13,11 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
     {
         private readonly ApplicationDbContext _db;
 
-        private readonly IHostingEnvironment hostingEnvironment;
-        public MenuItemsController(ApplicationDbContext db, IHostingEnvironment hostingEnvironment)
+        private readonly IWebHostEnvironment _hostingEnvironment;
+        public MenuItemsController(ApplicationDbContext db, IWebHostEnvironment hostingEnvironment)
         {
             _db = db;
-            //shit Idk why tf this line is underlined
-            _hostingEnvironment = hostingEnvironment;
+           _hostingEnvironment = hostingEnvironment;
         }
         public IActionResult Index()
         {
