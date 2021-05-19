@@ -119,7 +119,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, SubCatgoryAndCategoryViewModel model)
+        public async Task<IActionResult> Edit(SubCatgoryAndCategoryViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -132,7 +132,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                 }
                 else
                 {
-                    var subCatFromDb = await _db.SubCategory.FindAsync(id);
+                    var subCatFromDb = await _db.SubCategory.FindAsync(model.SubCategory.Id);
                     subCatFromDb.Name = model.SubCategory.Name;
 
                     
@@ -152,12 +152,27 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             //To parse the category Id even after the error message of redundant
             //Sub-category name is hit and
             // a different value is entered before a page refresh
-            modelVM.SubCategory.Id = id;
+            //modelVM.SubCategory.Id = id;
             return View(modelVM);
         }
 
         //GET Details
         public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var subCategory = await _db.SubCategory.Include(s => s.Category).SingleOrDefaultAsync(m => m.Id == id);
+            if (subCategory == null)
+            {
+                return NotFound();
+            }
+
+            return View(subCategory);
+        }
+        //GET Delete
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
