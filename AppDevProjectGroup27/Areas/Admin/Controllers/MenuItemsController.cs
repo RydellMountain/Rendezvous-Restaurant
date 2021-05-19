@@ -154,16 +154,13 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
 
             if (!ModelState.IsValid)
             {
+                MenuItemVM.SubCategory = await _db.SubCategory.Where(s => s.CategoryId == MenuItemVM.MenuItems.CategoryId).ToListAsync();
                 return View(MenuItemVM);
             }
 
-            _db.MenuItems.Add(MenuItemVM.MenuItems);
-            await _db.SaveChangesAsync();
-
-
+            
             //Image saving Section
             //Name of image will be the ID of the menuItem number
-
 
             //Extracting the root path for where images will be saved
             string webRootPath = _hostingEnvironment.WebRootPath;
@@ -174,31 +171,39 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
 
             if (files.Count > 0)
             {
-                //File was upload
+                //New Image File was upload
 
                 //Combining the webroot path with images
                 var uploads = Path.Combine(webRootPath, "images");
-                var extension = Path.GetExtension(files[0].FileName);
+                var extension_new = Path.GetExtension(files[0].FileName);
 
-                using (var filesStream = new FileStream(Path.Combine(uploads, MenuItemVM.MenuItems.Id + extension), FileMode.Create))
+                // Delete Image File that was in Database
+                var imagePath = Path.Combine(webRootPath,menuItemFromDb.Image.TrimStart('\\'));
+
+                if(System.IO.File.Exists(imagePath))
+                {
+                    System.IO.File.Delete(imagePath);
+                }
+
+                // New Image File will be uploaded
+                using (var filesStream = new FileStream(Path.Combine(uploads, MenuItemVM.MenuItems.Id + extension_new), FileMode.Create))
                 {
                     //will copy the image to the file location on the sever and rename it
                     files[0].CopyTo(filesStream);
                 }
 
                 //In database the name will be changed to te loctaion where the image is saved
-                menuItemFromDb.Image = @"\images\" + MenuItemVM.MenuItems.Id + extension;
+                menuItemFromDb.Image = @"\images\" + MenuItemVM.MenuItems.Id + extension_new;
 
             }
-            else
-            {
-                //No file uploaded so default will be used
-                var uploads = Path.Combine(webRootPath, @"images\" + SD.DefaultFoodImage);
-                System.IO.File.Copy(uploads, webRootPath + @"\images\" + MenuItemVM.MenuItems.Id + ".png");
 
-                menuItemFromDb.Image = @"\images\" + MenuItemVM.MenuItems.Id + ".png";
+            menuItemFromDb.Name = MenuItemVM.MenuItems.Name;
+            menuItemFromDb.Descriptions = MenuItemVM.MenuItems.Descriptions;
+            menuItemFromDb.Price = MenuItemVM.MenuItems.Price;
+            menuItemFromDb.Spicyness = MenuItemVM.MenuItems.Spicyness;
+            menuItemFromDb.CategoryId = MenuItemVM.MenuItems.CategoryId;
+            menuItemFromDb.SubCategoryId = MenuItemVM.MenuItems.SubCategoryId;
 
-            }
 
             await _db.SaveChangesAsync();
 
