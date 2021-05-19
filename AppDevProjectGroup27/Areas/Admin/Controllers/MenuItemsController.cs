@@ -54,7 +54,6 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
 
         //POST-Create
         [HttpPost, ActionName("Create")]
-        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreatePost()
         {
@@ -90,6 +89,98 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                 var extension = Path.GetExtension(files[0].FileName);
 
                 using (var filesStream = new FileStream(Path.Combine(uploads,MenuItemVM.MenuItems.Id + extension),FileMode.Create))
+                {
+                    //will copy the image to the file location on the sever and rename it
+                    files[0].CopyTo(filesStream);
+                }
+
+                //In database the name will be changed to te loctaion where the image is saved
+                menuItemFromDb.Image = @"\images\" + MenuItemVM.MenuItems.Id + extension;
+
+            }
+            else
+            {
+                //No file uploaded so default will be used
+                var uploads = Path.Combine(webRootPath, @"images\" + SD.DefaultFoodImage);
+                System.IO.File.Copy(uploads, webRootPath + @"\images\" + MenuItemVM.MenuItems.Id + ".png");
+
+                menuItemFromDb.Image = @"\images\" + MenuItemVM.MenuItems.Id + ".png";
+
+            }
+
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+
+
+
+
+        }
+
+        //GET-Edit
+        public async Task<IActionResult> Edit(int? id)
+        {
+
+            if(id==null)
+            {
+                return NotFound();
+            }
+
+            MenuItemVM.MenuItems = await _db.MenuItems.Include(m => m.Category).Include(m => m.SubCategory).SingleOrDefaultAsync(m => m.Id == id);
+            MenuItemVM.SubCategory = await _db.SubCategory.Where(s => s.CategoryId == MenuItemVM.MenuItems.CategoryId).ToListAsync();
+
+            if(MenuItemVM.MenuItems==null)
+            {
+                return NotFound();
+            }
+
+            return View(MenuItemVM);
+        }
+
+        //POST-Edit
+        [HttpPost, ActionName("Edit")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditPOST(int? id)
+        {
+
+            if(id==null)
+            {
+                return NotFound();
+            }
+
+
+            //Converting the java code from the view for the SubCategory and assigning it to the Binded MenuItemVM SubCatId
+            MenuItemVM.MenuItems.SubCategoryId = Convert.ToInt32(Request.Form["SubCategoryId"].ToString());
+
+            if (!ModelState.IsValid)
+            {
+                return View(MenuItemVM);
+            }
+
+            _db.MenuItems.Add(MenuItemVM.MenuItems);
+            await _db.SaveChangesAsync();
+
+
+            //Image saving Section
+            //Name of image will be the ID of the menuItem number
+
+
+            //Extracting the root path for where images will be saved
+            string webRootPath = _hostingEnvironment.WebRootPath;
+            var files = HttpContext.Request.Form.Files;
+
+            //Recieving MenuItem From DB
+            var menuItemFromDb = await _db.MenuItems.FindAsync(MenuItemVM.MenuItems.Id);
+
+            if (files.Count > 0)
+            {
+                //File was upload
+
+                //Combining the webroot path with images
+                var uploads = Path.Combine(webRootPath, "images");
+                var extension = Path.GetExtension(files[0].FileName);
+
+                using (var filesStream = new FileStream(Path.Combine(uploads, MenuItemVM.MenuItems.Id + extension), FileMode.Create))
                 {
                     //will copy the image to the file location on the sever and rename it
                     files[0].CopyTo(filesStream);
