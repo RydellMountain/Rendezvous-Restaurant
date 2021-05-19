@@ -20,27 +20,27 @@
             <table class="table table-striped border">
                 <tr class="table-primary">
                     <th>
-                        @Html.DisplayNameFor(m => m.Name)
+                        <label>SubCategory Name </label>
                     </th>
                     <th>
-                        @Html.DisplayNameFor(m => m.Category.Name)
+                        <label>Category Name </label>
                     </th>
                     <th></th>
                     <th></th>
                 </tr>
                 @foreach (var item in Model)
                 {
-            <tr>
-                <td>
-                    @Html.DisplayFor(m => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(m => item.Category.Name)
-                </td>
-                <td>
-                    <partial name="_TableButtonPartial" model="item.Id" />
-                </td>
-            </tr>
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(m => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => item.Category.Name)
+                        </td>
+                        <td>
+                            <partial name="_TableButtonPartial" model="item.Id" />
+                        </td>
+                    </tr>
                 }
             </table>
         }
