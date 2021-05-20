@@ -3,6 +3,7 @@ using AppDevProjectGroup27.Models.ViewModels;
 using AppDevProjectGroup27.Utility;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using AppDevProjectGroup27.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -230,6 +231,48 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             }
 
             return View(MenuItemVM);
+        }
+
+        //GET : Delete MenuItem
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            MenuItemVM.MenuItems = await _db.MenuItems.Include(m => m.Category).Include(m => m.SubCategory).SingleOrDefaultAsync(m => m.Id == id);
+
+            if (MenuItemVM.MenuItems == null)
+            {
+                return NotFound();
+            }
+
+            return View(MenuItemVM);
+        }
+
+        //POST Delete MenuItem
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            string webRootPath = _hostingEnvironment.WebRootPath;
+            MenuItems menuItem = await _db.MenuItems.FindAsync(id);
+
+            if (menuItem != null)
+            {
+                var imagePath = Path.Combine(webRootPath, menuItem.Image.TrimStart('\\'));
+
+                if (System.IO.File.Exists(imagePath))
+                {
+                    System.IO.File.Delete(imagePath);
+                }
+                _db.MenuItems.Remove(menuItem);
+                await _db.SaveChangesAsync();
+
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
 
