@@ -213,5 +213,25 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
 
 
         }
+
+        //GET : Details MenuItem
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            MenuItemVM.MenuItems = await _db.MenuItems.Include(m => m.Category).Include(m => m.SubCategory).SingleOrDefaultAsync(m => m.Id == id);
+
+            if (MenuItemVM.MenuItems == null)
+            {
+                return NotFound();
+            }
+
+            return View(MenuItemVM);
+        }
+
+
     }
 }
