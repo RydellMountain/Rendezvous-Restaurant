@@ -14,6 +14,5 @@ namespace AppDevProjectGroup27.Models
         [Required]
         public string Name { get; set; }
 
-        // This is not working
     }
 }
