@@ -13,5 +13,7 @@ namespace AppDevProjectGroup27.Models
 
         [Required]
         public string Name { get; set; }
+
+        public int TestProp { get; set; }
     }
 }
