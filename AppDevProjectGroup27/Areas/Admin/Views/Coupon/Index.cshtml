@@ -23,15 +23,12 @@
                 <th>
                     @Html.DisplayNameFor(m => m.Name)
                 </th>
-            <tr class="table-primary">
                 <th>
                     @Html.DisplayNameFor(m => m.Discount)
                 </th>
-            <tr class="table-primary">
                 <th>
                     @Html.DisplayNameFor(m => m.MinimumAmount)
                 </th>
-            <tr class="table-primary">
                 <th>
                     @Html.DisplayNameFor(m => m.IsActive)
                 </th>
@@ -40,23 +37,23 @@
             </tr>
             @foreach (var item in Model)
             {
-        <tr>
-            <td>
+            <tr>
+                <td>
                 @Html.DisplayFor(m => item.Name)
-            </td>
-            <td>
+                </td>
+                 <td>
                 @Html.DisplayFor(m => item.Discount)
-            </td>
-            <td>
+                </td>
+                <td>
                 @Html.DisplayFor(m => item.MinimumAmount)
-            </td>
-            <td>
+                </td>
+                <td>
                 @Html.DisplayFor(m => item.IsActive)
-            </td>
-            <td>
+                </td>
+                <td>
                 <partial name="_TableButtonPartial" model="item.Id" />
-            </td>
-        </tr>
+                </td>
+            </tr>
             }
         </table>
         }
