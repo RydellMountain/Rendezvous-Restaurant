@@ -27,10 +27,14 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             return View(await _db.Coupon.ToListAsync());
         }
 
+
+        //Get - Create
         public IActionResult Create()
         {
             return View();
         }
+
+        //Post - create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Coupon coupons)
