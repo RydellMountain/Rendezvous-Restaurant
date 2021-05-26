@@ -67,6 +67,7 @@ namespace AppDevProjectGroup27.Areas.Identity.Pages.Account
             public string ConfirmPassword { get; set; }
 
             [Required]
+            [Display(Name = "Full Name")]
             public string Name { get; set; }
 
         }
