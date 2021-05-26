@@ -69,15 +69,6 @@ namespace AppDevProjectGroup27.Areas.Identity.Pages.Account
             [Required]
             public string Name { get; set; }
 
-            public string StreetAddress { get; set; }
-
-            public string PhoneNumber { get; set; }
-
-            public string City { get; set; }
-
-            public string Province { get; set; }
-
-            public string PostalCode { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -96,12 +87,7 @@ namespace AppDevProjectGroup27.Areas.Identity.Pages.Account
                 { 
                     UserName = Input.Email, 
                     Email = Input.Email,
-                    Name = Input.Name,
-                    City = Input.City,
-                    StreetAddress = Input.StreetAddress,
-                    Province = Input.Province,
-                    PostalCode = Input.PostalCode,
-                    PhoneNumber = Input.PhoneNumber
+                    Name = Input.Name
                 };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
