@@ -80,6 +80,7 @@ namespace AppDevProjectGroup27.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
+            string role = Request.Form["rdUserRole"].ToString();
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
@@ -93,27 +94,32 @@ namespace AppDevProjectGroup27.Areas.Identity.Pages.Account
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
-                    // Assign Roles to new user
-                    if(!await _roleManager.RoleExistsAsync(SD.CustomerEndUser))
+                    if (role == SD.KitchenUser)
                     {
-                        await _roleManager.CreateAsync(new IdentityRole(SD.CustomerEndUser));
-                    }
-                    if (!await _roleManager.RoleExistsAsync(SD.ManagerUser))
-                    {
-                        await _roleManager.CreateAsync(new IdentityRole(SD.ManagerUser));
-                    }
-                    if (!await _roleManager.RoleExistsAsync(SD.FrontDeskUser))
-                    {
-                        await _roleManager.CreateAsync(new IdentityRole(SD.FrontDeskUser));
-                    }
-                    if (!await _roleManager.RoleExistsAsync(SD.KitchenUser))
-                    {
-                        await _roleManager.CreateAsync(new IdentityRole(SD.KitchenUser));
-                    }
+                        await _userManager.AddToRoleAsync(user, SD.KitchenUser);
 
-                    // All Users Created will be manager users
-                    await _userManager.AddToRoleAsync(user,SD.ManagerUser);
+                    }
+                    else
+                    {
+                        if (role == SD.FrontDeskUser)
+                        {
+                            await _userManager.AddToRoleAsync(user, SD.FrontDeskUser);
+                        }
+                        else
+                        {
+                            if (role == SD.ManagerUser)
+                            {
+                                await _userManager.AddToRoleAsync(user, SD.ManagerUser);
+                            }
+                            else
+                            {
+                                await _userManager.AddToRoleAsync(user, SD.CustomerEndUser);
+                                await _signInManager.SignInAsync(user, isPersistent: false);
+                                return LocalRedirect(returnUrl);
 
+                            }
+                        }
+                    }
 
                     //_logger.LogInformation("User created a new account with password.");
 
@@ -134,8 +140,9 @@ namespace AppDevProjectGroup27.Areas.Identity.Pages.Account
                     //}
                     //else
                     //{
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
+
+                    return RedirectToAction("Index", "User", new { area = "Admin" });
+
                     //}
                 }
                 foreach (var error in result.Errors)

@@ -30,5 +30,46 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             //                          logged in user Id should not be = to logged in user ID    
             return View(await _db.ApplicationUser.Where(m => m.Id !=claim.Value).ToListAsync());
         }
+
+        public async Task<IActionResult> Lock(string id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var applicationUser = await _db.ApplicationUser.FirstOrDefaultAsync(m => m.Id == id);
+
+            if (applicationUser == null)
+            {
+                return NotFound();
+            }
+            applicationUser.LockoutEnd = DateTime.Now.AddYears(1000);
+
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+
+        }
+
+
+        public async Task<IActionResult> Unlock(string id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var applicationUser = await _db.ApplicationUser.FirstOrDefaultAsync(m => m.Id == id);
+
+            if (applicationUser == null)
+            {
+                return NotFound();
+            }
+            applicationUser.LockoutEnd = DateTime.Now;
+
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+
+        }
     }
 }
