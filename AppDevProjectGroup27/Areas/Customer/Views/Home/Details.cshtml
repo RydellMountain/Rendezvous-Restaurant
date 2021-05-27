@@ -1,0 +1,109 @@
+﻿@model AppDevProjectGroup27.Models.ShoppingCart
+@using AppDevProjectGroup27.Extensions
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<br />
+<h2 class="text-info">Item Details</h2>
+<br />
+
+<form method="post">
+    <div class="border backgroundWhite row">
+
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+        <div class="col-8">
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItems.Name" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="MenuItems.Name" readonly class="form-control" />
+                </div>
+            </div>
+            <br />
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItems.Descriptions" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    @Html.Raw(Model.MenuItems.Descriptions)
+                </div>
+            </div>
+            <br />
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItems.Price" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="MenuItems.Price" readonly class="form-control" />
+                </div>
+            </div>
+            <br />
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItems.CategoryId" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="MenuItems.Category.Name" readonly class="form-control" />
+                </div>
+            </div>
+            <br />
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItems.SubCategoryId" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="MenuItems.SubCategory.Name" readonly class="form-control" />
+                </div>
+            </div>
+            <br />
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItems.Spicyness" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <select asp-for="MenuItems.Spicyness" disabled asp-items="Html.GetEnumSelectList<MenuItems.ESpicy>()" class="form-control"></select>
+                </div>
+            </div>
+            <br />
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="Count" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="Count" readonly class="form-control" />
+                    <span asp-validation-for="Count" class="text-danger"></span>
+                </div>
+            </div>
+            <br />
+            <div class="form-group row">
+                <div class="col-4">
+                </div>
+                <div class="col-4">
+                    <a asp-action="Index" class="btn btn-success form-control">Go Back to List</a>
+                </div>
+                <div class="col-4">
+                    <button type="submit" value="Add to Cart" class="btn btn-primary form-control">Add to Cart</button>
+                </div>
+            </div>
+            <br />
+        </div>
+        <div class="col-3 offset-1">
+            <img src="@Model.MenuItems.Image" width="100%" style="border-radius:5px;border: 1px solid #bbb9b9;" />
+        </div>
+
+
+
+    </div>
+    <input asp-for="MenuItemId" hidden />
+</form>
+
+
+@section Scripts{
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");};
+}
