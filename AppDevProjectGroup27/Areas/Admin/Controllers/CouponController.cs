@@ -1,5 +1,7 @@
 ﻿using AppDevProjectGroup27.Data;
 using AppDevProjectGroup27.Models;
+using AppDevProjectGroup27.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -10,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace AppDevProjectGroup27.Areas.Admin.Controllers
 {
-
+    [Authorize(Roles = SD.ManagerUser)]
     [Area("Admin")]
     public class CouponController : Controller
     {
