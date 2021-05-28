@@ -15,6 +15,7 @@ using AppDevProjectGroup27.Data;
 using Microsoft.EntityFrameworkCore;
 using AppDevProjectGroup27.Models;
 using Microsoft.AspNetCore.Http;
+using AppDevProjectGroup27.Utility;
 
 namespace AppDevProjectGroup27.Areas.Identity.Pages.Account
 {
@@ -95,7 +96,7 @@ namespace AppDevProjectGroup27.Areas.Identity.Pages.Account
 
                     List<ShoppingCart> lstShoppingCart = await _db.ShoppingCart.Where(u => u.ApplicationUserId == user.Id).ToListAsync();
 
-                    HttpContext.Session.SetInt32("ssCartCount", lstShoppingCart.Count);
+                    HttpContext.Session.SetInt32(SD.ssShoppingCartCount, lstShoppingCart.Count);
 
                     _logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);

@@ -1,6 +1,7 @@
 ﻿using AppDevProjectGroup27.Data;
 using AppDevProjectGroup27.Models;
 using AppDevProjectGroup27.Models.ViewModels;
+using AppDevProjectGroup27.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -47,7 +48,7 @@ namespace AppDevProjectGroup27.Controllers
             if(claim!=null)
             {
                 var cnt = _db.ShoppingCart.Where(u => u.ApplicationUserId == claim.Value).ToList().Count;
-                HttpContext.Session.SetInt32("ssCartCount", cnt);
+                HttpContext.Session.SetInt32(SD.ssShoppingCartCount, cnt);
             }
 
             return View(IndexVM);
@@ -96,7 +97,7 @@ namespace AppDevProjectGroup27.Controllers
 
                 var count = _db.ShoppingCart.Where(c => c.ApplicationUserId == CartObject.ApplicationUserId).ToList().Count();
 
-                HttpContext.Session.SetInt32("ssCartCount",count);
+                HttpContext.Session.SetInt32(SD.ssShoppingCartCount,count);
 
                 return RedirectToAction("Index");
             }

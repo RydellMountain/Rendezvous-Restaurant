@@ -49,14 +49,14 @@
                             </li>
                         }
 
-                        @if (HttpContextAccessor.HttpContext.Session.GetInt32("ssCartCount") != null)
+                        @if (HttpContextAccessor.HttpContext.Session.GetInt32(@SD.ssShoppingCartCount) != null)
                         {
                             <li style="color:white">
                                 <a href="#" class="nav-link">
                                     @{
-                                        var count = HttpContextAccessor.HttpContext.Session.GetInt32("ssCartCount");
+                                        var count = HttpContextAccessor.HttpContext.Session.GetInt32(@SD.ssShoppingCartCount);
                                     }
-                                    <i class="fas fa-shopping-cart"></i>[@count]
+                                    <i class="fas fa-shopping-cart"></i>&nbsp;[@count]
                                 </a>
                             </li>
                         }
@@ -64,7 +64,7 @@
                         {
                             <li style="color:white">
                                 <a href="#" class="nav-link">
-                                    <i class="fas fa-shopping-cart"></i>[Cart Empty]
+                                    <i class="fas fa-shopping-cart"></i>&nbsp;[0]
                                 </a>
                             </li>
                         }
