@@ -30,7 +30,9 @@
                     <label asp-for="MenuItems.Descriptions" class="col-form-label"></label>
                 </div>
                 <div class="col-8">
-                    @Html.Raw(Model.MenuItems.Descriptions)
+                    <div class="border p-2">
+                        @Html.Raw(Model.MenuItems.Descriptions)
+                    </div>
                 </div>
             </div>
             <br />
