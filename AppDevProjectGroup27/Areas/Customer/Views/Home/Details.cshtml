@@ -14,7 +14,9 @@
     <div class="border backgroundWhite row">
 
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
+        <div class="col-12 pb-4 d-md-none">
+            <img src="@Model.MenuItems.Image" width="100%" style="border-radius:5px;border: 1px solid #bbb9b9;" />
+        </div>
         <div class="col-8">
             <div class="form-group row">
                 <div class="col-4">
@@ -94,7 +96,7 @@
             </div>
             <br />
         </div>
-        <div class="col-3 offset-1">
+        <div class="col-3 offset-1 d-none d-md-block">
             <img src="@Model.MenuItems.Image" width="100%" style="border-radius:5px;border: 1px solid #bbb9b9;" />
         </div>
 
