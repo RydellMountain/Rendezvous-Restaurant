@@ -2,6 +2,7 @@
 using AppDevProjectGroup27.Models;
 using AppDevProjectGroup27.Models.ViewModels;
 using AppDevProjectGroup27.Utility;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -65,8 +66,34 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             //Comparing the oderTotal and the orderTotalOriginal
             detailsCart.OrderHeader.OrderTotal = detailsCart.OrderHeader.OrderTotal;
 
+            if (HttpContext.Session.GetString(SD.ssCouponCode) != null)
+            {
+                detailsCart.OrderHeader.CouponCode = HttpContext.Session.GetString(SD.ssCouponCode);
+                var couponFromDb = await _db.Coupon.Where(c => c.Name.ToLower() == detailsCart.OrderHeader.CouponCode.ToLower()).FirstOrDefaultAsync();
+                detailsCart.OrderHeader.OrderTotal = SD.DiscountedPrice(couponFromDb, detailsCart.OrderHeader.OrderTotalOriginal);
+            }
+
             return View(detailsCart);
 
         }
+
+        public IActionResult AddCoupon()
+        {
+            if (detailsCart.OrderHeader.CouponCode == null)
+            {
+                detailsCart.OrderHeader.CouponCode = "";
+            }
+            HttpContext.Session.SetString(SD.ssCouponCode, detailsCart.OrderHeader.CouponCode);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult RemoveCoupon()
+        {
+            
+            HttpContext.Session.SetString(SD.ssCouponCode,string.Empty);
+
+            return RedirectToAction(nameof(Index));
+        } 
     }
 }

@@ -25,8 +25,6 @@ namespace AppDevProjectGroup27.Models
         [Required]
         public double MinimumAmount { get; set; }
 
-        [Required]
-
         public byte[] Picture { get; set; }
 
         public bool IsActive { get; set; }
