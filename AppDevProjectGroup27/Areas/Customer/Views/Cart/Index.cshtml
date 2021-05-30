@@ -17,10 +17,48 @@
                             <i class="fa fa-shopping-cart"></i> &nbsp;
                             Shopping Cart
                         </div>
-                        
-                        <div class="col-6 text-right"> @*How TF do you move this shit to the right*@
+                        <div class="col-6 text-right">
+                            @*How TF do you move this shit to the right*@
                             <a asp-area="Customer" asp-controller="Home" asp-action="Index" class="btn btn-outline-info btn-sm">Continue Shopping</a>
                         </div>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var item in Model.listCart)
+                        {
+                            <div class="row">
+                                <div class="d-none d-lg-block col-lg-2 text-center py-2">
+                                    <img src="@item.MenuItems.Image" class="rounded" width="120" height="80"/>
+                                </div> 
+                                <div class="col-12 text-sm-center col-lg-5 text-lg-left"->
+                                    <h4><small>@item.MenuItems.Name</small></h4>
+                                    <h4><small>@item.MenuItems.Descriptions</small></h4>
+                                </div>
+                                <div class="col-12 text-sm-center col-lg-5 text-lg-right row">
+                                    <div class="col-4 text-md-right " style="padding-top:50px">
+                                        <h6><strong>@item.MenuItems.Price<span class="text-muted">x</span>@item.Count</strong></h6>
+                                    </div>
+                                    <div class="col-6 col-sm-4 col-lg-6">
+                                        <div class="float-right mx-1">
+                                            <button type="submit" class="btn btn-primary" asp-action="plus" asp-route-cardId="@item.Id">
+                                                <i class="fa fa-plus"></i>
+                                            </button>
+                                        </div>
+                                        <div class="float-right mx-1">
+                                            <button type="submit" class="btn btn-danger" asp-action="minus" asp-route-cardId="@item.Id">
+                                                <i class="fa fa-minus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="col-2 col-sm-4 col-lg-2 text-black-50 right">
+                                        <button type="submit" class="btn btn-outline-danger" asp-action="remove" asp-route-cardId="@item.Id">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </div> 
+                                </div>
+                            </div>
+                            <hr />
+                        }
+
                     </div>
                 </div>
             </div>
