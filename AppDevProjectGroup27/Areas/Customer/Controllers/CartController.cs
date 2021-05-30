@@ -34,8 +34,11 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
             detailsCart.OrderHeader.OrderTotal = 0;
 
+            //Retrivr the user Id of the logged-in user
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claims = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            //Retrive all the items the uder has added to the cart
             var cart = _db.ShoppingCart.Where(m => m.ApplicationUserId == claims.Value);
 
             if(cart != null)
@@ -52,11 +55,13 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
                 if (list.MenuItems.Descriptions.Length>100)
                 {
+                    //Modiffied the description
                     list.MenuItems.Descriptions = list.MenuItems.Descriptions.Substring(0, 99) + "...";
 
                 }
 
             }
+            //Comparing the oderTotal and the orderTotalOriginal
             detailsCart.OrderHeader.OrderTotal = detailsCart.OrderHeader.OrderTotal;
 
             return View(detailsCart);
