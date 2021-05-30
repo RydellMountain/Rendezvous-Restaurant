@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace AppDevProjectGroup27.Areas.Customer.Controllers
 {
+    [Area("Customer")]
     public class CartController : Controller
     {
         private readonly ApplicationDbContext _db;
