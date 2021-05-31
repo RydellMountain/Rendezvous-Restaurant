@@ -67,9 +67,7 @@
     <script>
         function updateSubCategoryList() {
             var categorySelected = document.getElementById("ddlCategorylist").value;
-
             $list = $('#SubCategoryList');
-
             $.ajax({
                 url: '/Admin/SubCategory/GetSubCategory/' + categorySelected,
                 type: 'GET',
@@ -84,13 +82,9 @@
                     $list.append('</ul>');
                 }
             });
-
         }
-
         $(document).ready(function () {
             updateSubCategoryList();
         });
-
-
     </script>
 }
