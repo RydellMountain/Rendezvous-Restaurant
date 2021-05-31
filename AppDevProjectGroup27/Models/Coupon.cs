@@ -15,6 +15,7 @@ namespace AppDevProjectGroup27.Models
         public string Name { get; set; }
 
         [Required]
+        [Display(Name="Coupon Type")]
         public string CouponType { get; set; }
 
         public enum ECouponType { Percent = 0, Rand = 1 }
@@ -23,10 +24,12 @@ namespace AppDevProjectGroup27.Models
         public double Discount { get; set; }
 
         [Required]
+        [Display(Name = "Minimum Amount")]
         public double MinimumAmount { get; set; }
 
         public byte[] Picture { get; set; }
 
+        [Display(Name = "Active")]
         public bool IsActive { get; set; }
     }
 }

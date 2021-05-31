@@ -32,7 +32,7 @@ namespace AppDevProjectGroup27.Models
         [ForeignKey("CategoryId")]// Referencing the table with the key field
         public virtual Category Category { get; set; }
 
-        [Display(Name="SubCategory")]
+        [Display(Name="Sub-Category Name")]
         public int SubCategoryId { get; set; }
         [ForeignKey("SubCategoryId")] // Referencing the table with the key field
         public virtual SubCategory SubCategory { get; set; }
