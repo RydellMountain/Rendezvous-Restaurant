@@ -76,6 +76,53 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
         }
 
+        public async Task<IActionResult> Summary()
+        {
+
+            detailsCart = new OrderDetailsCart()
+            {
+                OrderHeader = new Models.OrderHeader()
+            };
+
+            detailsCart.OrderHeader.OrderTotal = 0;
+
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            ApplicationUser applicationUser = await _db.ApplicationUser.Where(c => c.Id == claim.Value).FirstOrDefaultAsync();
+            var cart = _db.ShoppingCart.Where(c => c.ApplicationUserId == claim.Value);
+            if (cart != null)
+            {
+                detailsCart.listCart = cart.ToList();
+            }
+
+            foreach (var list in detailsCart.listCart)
+            {
+                list.MenuItems = await _db.MenuItems.FirstOrDefaultAsync(m => m.Id == list.MenuItemId);
+                detailsCart.OrderHeader.OrderTotal = Math.Round(detailsCart.OrderHeader.OrderTotal + (list.MenuItems.Price * list.Count), 2);
+
+            }
+            detailsCart.OrderHeader.OrderTotalOriginal = detailsCart.OrderHeader.OrderTotal;
+            detailsCart.OrderHeader.PickUpName = applicationUser.Name;
+            detailsCart.OrderHeader.PhoneNumber = applicationUser.PhoneNumber;
+            detailsCart.OrderHeader.PickUpTime = DateTime.Now;
+
+
+            if (HttpContext.Session.GetString(SD.ssCouponCode) != null)
+            {
+                detailsCart.OrderHeader.CouponCode = HttpContext.Session.GetString(SD.ssCouponCode);
+                var couponFromDb = await _db.Coupon.Where(c => c.Name.ToLower() == detailsCart.OrderHeader.CouponCode.ToLower()).FirstOrDefaultAsync();
+                detailsCart.OrderHeader.OrderTotal = SD.DiscountedPrice(couponFromDb, detailsCart.OrderHeader.OrderTotalOriginal);
+            }
+
+
+            return View(detailsCart);
+
+        }
+
+
+
+
+
         public IActionResult AddCoupon()
         {
             if (detailsCart.OrderHeader.CouponCode == null)
