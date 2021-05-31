@@ -124,5 +124,19 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> remove(int cartId)
+        {
+            var cart = await _db.ShoppingCart.FirstOrDefaultAsync(c => c.Id == cartId);
+
+            _db.ShoppingCart.Remove(cart);
+            await _db.SaveChangesAsync();
+
+            var cnt = _db.ShoppingCart.Where(u => u.ApplicationUserId == cart.ApplicationUserId).ToList().Count;
+            HttpContext.Session.SetInt32(SD.ssShoppingCartCount, cnt);
+
+
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }
