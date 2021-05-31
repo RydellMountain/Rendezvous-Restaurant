@@ -127,6 +127,14 @@
                         </div>
                     </div>
                 </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-12 col-md-4 offset-md-8">
+
+                            <button type="submit" id="btnPlaceOrder" onclick="return validateInput()" value="Place Order" class="btn btn-success form-control">Place order</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     }
@@ -137,3 +145,78 @@
         </div>
     }
 </form>
+
+@section Scripts{
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.13.18/jquery.timepicker.js"></script>
+    <script>
+        $(function () {
+            var minDt = 0;
+            if (getTimeFromCurrentDate >= 20) {
+                minDt = 1;
+            }
+            $("#datepicker").datepicker({ minDate: minDt, maxDate: "+1W" });
+            $("#timepicker").timepicker({ 'minTime': '11:00 AM', 'maxTime': '9:00 PM', step: '30' })
+        });
+        function setPickUpTime() {
+            var dateSelected = document.getElementById("datepicker").value;
+            var dt = new Date(dateSelected);
+            var today = new Date();
+            dt.setHours(0, 0, 0, 0)
+            if (dt > today) {
+                selectedTime = '11:00am'
+            }
+            else {
+                selectedTime = getTimeFromCurrentDate();
+            }
+            $('#timepicker').timepicker('option', 'minTime', selectedTime);
+        }
+        function getTimeFromCurrentDate() {
+            var curDt = new Date();
+            var minTime = "";
+            if (curDt.getHours() < 11) {
+                minTime = '12:00pm';
+            }
+            else {
+                if (curDt.getMinutes < 30) {
+                    minTime = (curDt.getHours() + 1).toString() + ':30pm'
+                }
+                else {
+                    minTime = (curDt.getHours() + 2).toString() + ':00pm'
+                }
+            }
+            return minTime;
+        }
+        $('#datepicker').change(function () {
+            setPickUpTime();
+        });
+        function validateInput() {
+            var time = document.getElementById("timepicker").value;
+            var dt = document.getElementById("datepicker").value;
+            var name = document.getElementById("txtName").value;
+            var phone = document.getElementById("txtPhone").value;
+            if (dt.toString().length == 0) {
+                alert("Please select pickup date")
+                return false;
+            }
+            else if (time.toString().length == 0) {
+                alert("Please select pickup time")
+                return false;
+            }
+            else if (name.toString().length == 0) {
+                alert("Please enter pickup name")
+                return false;
+            }
+            else if (phone.toString().length == 0) {
+                alert("Please enter a phone number")
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+    </script>
+
+
+}
