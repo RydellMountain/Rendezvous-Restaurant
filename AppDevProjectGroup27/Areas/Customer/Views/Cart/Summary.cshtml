@@ -1,7 +1,102 @@
-﻿
+﻿@model AppDevProjectGroup27.Models.ViewModels.OrderDetailsCart
+@using Microsoft.Extensions.Options
+
+@*@inject IOptions<AppDevProjectGroup27.Utilites.StripeSettings> Stripe*@
 @{
-    ViewData["Title"] = "Summary";
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Summary</h1>
+<form method="post">
+    @if (Model.listCart.Count > 0)
+    {
+        <br />
+        <input id="userId" asp-for="@Model.listCart[0].ApplicationUserId" hidden />
 
+        <div class="backgroundWhiteBorder">
+            <div class="container">
+                <div class="card-header bg-dark text-light ml-0 row container">
+                    <div class="col-6">
+                        <i class="fa fa-shopping-cart"></i> &nbsp;
+                        Order Summary
+                    </div>
+                    <div class="col-6 text-right">
+                        <a asp-area="Customer" asp-controller="Cart" asp-action="Index" class="btn btn-info btn-sm">Back to cart</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="container rounded p-2">
+                        <div class="row">
+                            <div class="col-12 col-lg-6 pb-4">
+                                <div class="row">
+                                    <h4 class="d-flex justify-content-between align-items-center mb-3">
+                                        <span class="text-info">Pick Up Details</span>
+                                    </h4>
+                                </div>
+                                <div class="row my-1">
+                                    <div class="col-3">
+                                        <label>Name</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input asp-for="@Model.OrderHeader.PickUpName" id="txtName" type="text" class="form-control" />
+                                    </div>
+                                </div>
+
+                                <div class="row my-1">
+                                    <div class="col-3">
+                                        <label>Phone</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input asp-for="@Model.OrderHeader.PhoneNumber" id="txtPhone" type="text" class="form-control" />
+                                    </div>
+                                </div>
+
+
+                                <div class="row my-1">
+                                    <div class="col-3">
+                                        <label>Date</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input asp-for="@Model.OrderHeader.PickUpDate" id="datepicker" value="" type="text" class="form-control" />
+                                    </div>
+                                </div>
+
+
+                                <div class="row my-1">
+                                    <div class="col-3">
+                                        <label>Time</label>
+                                    </div>
+                                    <div class="col-9">
+                                        <input asp-for="@Model.OrderHeader.PickUpTime" id="timepicker" value="" type="text" class="form-control" />
+                                    </div>
+                                </div>
+
+
+                                <div class="row my-1">
+                                    <div class="col-3">
+                                        <label>Additional Instrutions: </label>
+                                    </div>
+                                    <div class="col-9">
+                                        <textarea asp-for="@Model.OrderHeader.Comments" style="height:100px;" class="form-control"></textarea>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+
+               
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="backgroundWhiteBorder">
+            No items added to the shopping cart...
+        </div>
+    }
+</form>
