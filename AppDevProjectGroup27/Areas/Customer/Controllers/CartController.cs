@@ -11,18 +11,31 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
+
+using PayFast;
+using PayFast.AspNetCore;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
 namespace AppDevProjectGroup27.Areas.Customer.Controllers
 {
     [Area("Customer")]
     public class CartController : Controller
     {
         private readonly ApplicationDbContext _db;
+        private readonly PayFastSettings payFastSettings;
+        private readonly ILogger logger;
+
+
         [BindProperty]
         public OrderDetailsCart detailsCart { get; set; }
 
-        public CartController(ApplicationDbContext db)
+        public CartController(ApplicationDbContext db, IOptions<PayFastSettings> payFastSettings, ILogger<CartController> logger)
         {
             _db = db;
+            this.payFastSettings = payFastSettings.Value;
+            this.logger = logger;
+
         }
 
 
@@ -123,7 +136,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [ActionName("Summary")]
-        public async Task<IActionResult> SummaryPost(string stripeToken)
+        public async Task<IActionResult> SummaryPost()
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
@@ -177,14 +190,48 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             HttpContext.Session.SetInt32(SD.ssShoppingCartCount, 0);
             await _db.SaveChangesAsync();
 
-            return RedirectToAction("Confirm","Order", new {id = detailsCart.OrderHeader.Id });
 
-            
+            //return RedirectToAction("Index", "Home");
+
+            //------------ PAYFAST ------------
+            //Grts passsword from appsettings
+            var onceOffRequest = new PayFastRequest(this.payFastSettings.PassPhrase);
+
+            // Merchant Details, getting various keys,IDs,URLs
+            onceOffRequest.merchant_id = this.payFastSettings.MerchantId;
+            onceOffRequest.merchant_key = this.payFastSettings.MerchantKey;
+            onceOffRequest.return_url = this.payFastSettings.ReturnUrl + detailsCart.OrderHeader.Id;
+            onceOffRequest.cancel_url = this.payFastSettings.CancelUrl;
+            onceOffRequest.notify_url = this.payFastSettings.NotifyUrl;
+
+            // Buyer Details
+            onceOffRequest.email_address = "sbtu01@payfast.co.za";
+
+            // Transaction Details, details for the order
+            onceOffRequest.m_payment_id = detailsCart.OrderHeader.Id.ToString();
+            onceOffRequest.amount = detailsCart.OrderHeader.OrderTotal;
+            onceOffRequest.item_name = $"Order #{detailsCart.OrderHeader.Id}";
+            onceOffRequest.item_description = "Some details about the once off payment";
+
+            // Transaction Options
+            onceOffRequest.email_confirmation = true;
+            onceOffRequest.confirmation_address = "sbtu01@payfast.co.za";
+
+            var redirectUrl = $"{this.payFastSettings.ProcessUrl}{onceOffRequest.ToString()}";
+
+
+            detailsCart.OrderHeader.PaymentStatus = SD.PaymentStatusApproved;
+            detailsCart.OrderHeader.Status = SD.StatusSubmitted;
+
+            await _db.SaveChangesAsync();
+
+            return Redirect(redirectUrl);
+            //------------ PAYFAST ------------
+
+            //Return
+            //return RedirectToAction("Confirm", "Order", new { id = detailCart.OrderHeader.Id });
 
         }
-
-
-
 
         public IActionResult AddCoupon()
         {
