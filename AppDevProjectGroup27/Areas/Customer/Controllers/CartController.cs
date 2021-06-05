@@ -16,6 +16,7 @@ using PayFast;
 using PayFast.AspNetCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Web;
 
 namespace AppDevProjectGroup27.Areas.Customer.Controllers
 {
@@ -191,7 +192,8 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             await _db.SaveChangesAsync();
 
 
-            //return RedirectToAction("Index", "Home");
+           
+
 
             //------------ PAYFAST ------------
             //Grts passsword from appsettings
@@ -210,7 +212,23 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             // Transaction Details, details for the order
             onceOffRequest.m_payment_id = detailsCart.OrderHeader.Id.ToString();
             onceOffRequest.amount = detailsCart.OrderHeader.OrderTotal;
-            onceOffRequest.item_name = $"Order #{detailsCart.OrderHeader.Id}";
+
+            onceOffRequest.item_name = $"Order Number:{detailsCart.OrderHeader.Id}.";
+            onceOffRequest.item_name += $"Order Pickup name:{detailsCart.OrderHeader.PickUpName}";
+
+
+            /*
+             * Order #13
+             * Order Items  Quantity
+             * Medium Rare    5
+             */
+
+
+
+
+
+
+
             onceOffRequest.item_description = "Some details about the once off payment";
 
             // Transaction Options
