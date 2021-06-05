@@ -201,7 +201,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             onceOffRequest.merchant_id = this.payFastSettings.MerchantId;
             onceOffRequest.merchant_key = this.payFastSettings.MerchantKey;
             onceOffRequest.return_url = this.payFastSettings.ReturnUrl + detailsCart.OrderHeader.Id;
-            onceOffRequest.cancel_url = this.payFastSettings.CancelUrl;
+            onceOffRequest.cancel_url = this.payFastSettings.CancelUrl + detailsCart.OrderHeader.Id;
             onceOffRequest.notify_url = this.payFastSettings.NotifyUrl;
 
             // Buyer Details
@@ -220,10 +220,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             var redirectUrl = $"{this.payFastSettings.ProcessUrl}{onceOffRequest.ToString()}";
 
 
-            detailsCart.OrderHeader.PaymentStatus = SD.PaymentStatusApproved;
-            detailsCart.OrderHeader.Status = SD.StatusSubmitted;
-
-            await _db.SaveChangesAsync();
+            // Moved Payment Approved to Confirm Action method
 
             return Redirect(redirectUrl);
             //------------ PAYFAST ------------
