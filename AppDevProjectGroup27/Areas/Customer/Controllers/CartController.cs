@@ -196,7 +196,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
 
             //------------ PAYFAST ------------
-            //Grts passsword from appsettings
+            //Gets passsword from appsettings
             var onceOffRequest = new PayFastRequest(this.payFastSettings.PassPhrase);
 
             // Merchant Details, getting various keys,IDs,URLs
