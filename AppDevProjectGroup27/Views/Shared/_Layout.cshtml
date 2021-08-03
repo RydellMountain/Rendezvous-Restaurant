@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/css/jquery-ui.css" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css" integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk" crossorigin="anonymous">
-    <link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.13.18/jquery.timepicker.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.13.18/jquery.timepicker.css" />
 </head>
 <body class="search-background">
     <header>
@@ -24,7 +24,9 @@
                     <img src="~/images/sushiNew.png">
                     <label stye="cursor:pointer">Rendezvous-Restaurant</label>
                 </a>
-
+                <a class="navbar-brand" asp-area="Customer" asp-controller="" asp-action=""> @*Need to add a contact page*@
+                    <label stye="cursor:pointer">Contact</label>
+                </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -72,9 +74,9 @@
                         }
 
                         @*<li class="nav-item">
-                            <a class="nav-link " asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>*@
-                       
+                                <a class="nav-link " asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>*@
+
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>
@@ -96,7 +98,7 @@
     <script src="https://cdn.tiny.cloud/1/6714fr5ya12mo5nfpb34plu1xm2whg3t95aqdyfbsgjihzdw/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/jquery-ui.js"> </script>
+    <script src="~/js/jquery-ui.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
