@@ -187,13 +187,13 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
                 detailsCart.OrderHeader.OrderTotal = detailsCart.OrderHeader.OrderTotalOriginal;
             }
             detailsCart.OrderHeader.CouponCodeDiscount = detailsCart.OrderHeader.OrderTotalOriginal - detailsCart.OrderHeader.OrderTotal;
-            
+
             _db.ShoppingCart.RemoveRange(detailsCart.listCart);
             HttpContext.Session.SetInt32(SD.ssShoppingCartCount, 0);
             await _db.SaveChangesAsync();
 
 
-           
+
 
 
             //------------ PAYFAST ------------
@@ -311,27 +311,9 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize]
-        public async Task<IActionResult> OrderHistory(int cartId)
-        {
-            var claimsIdentity = (ClaimsIdentity)User.Identity;
-            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
-            List<OrderDetailsViewModel> orderList = new List<OrderDetailsViewModel>();
 
-            List<OrderHeader> orderHeaderList = await _db.OrderHeader.Include(o => o.ApplicationUser).Where(u => u.UserId == claim.Value).ToListAsync();
-
-            foreach(OrderHeader item in orderHeaderList)
-            {
-                OrderDetailsViewModel individual = new OrderDetailsViewModel
-                {
-                    OrderHeader = item,
-                    OrderDetails = await _db.OrderDetails.Where(o => o.OrderId == item.Id).ToListAsync()
-                };
-                orderList.Add(individual);
-            }
-            return View(orderList);
-        }
 
     }
 }
+

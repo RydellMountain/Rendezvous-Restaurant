@@ -28,9 +28,7 @@
                     <img src="~/images/sushiNew.png">
                     <label stye="cursor:pointer">Rendezvous-Restaurant</label>
                 </a>
-                <a class="navbar-brand" asp-area="Customer" asp-controller="" asp-action=""> @*Need to add a contact page*@
-                    <label stye="cursor:pointer">Contact</label>
-                </a>
+               
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -57,6 +55,17 @@
                             </li>
                         }
 
+
+                        @if (User.IsInRole(SD.ManagerUser) || User.IsInRole(SD.CustomerEndUser) || User.IsInRole(SD.FrontDeskUser) || User.IsInRole(SD.KitchenUser))
+                        {
+                            <li class="nav-item">
+                                <a asp-area="Customer" asp-controller="Order" asp-action="OrderHistory" class="nav-link">
+                                    Order History
+                                </a>
+                            </li>
+                           
+                        }
+
                         @if (HttpContextAccessor.HttpContext.Session.GetInt32(@SD.ssShoppingCartCount) != null)
                         {
                             <li style="color:white">
@@ -78,8 +87,8 @@
                         }
 
                         @*<li class="nav-item">
-                                <a class="nav-link " asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                            </li>*@
+            <a class="nav-link " asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+        </li>*@
 
                     </ul>
                     <partial name="_LoginPartial" />
