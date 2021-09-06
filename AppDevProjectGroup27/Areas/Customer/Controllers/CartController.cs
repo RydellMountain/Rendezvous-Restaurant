@@ -17,6 +17,7 @@ using PayFast.AspNetCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Web;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AppDevProjectGroup27.Areas.Customer.Controllers
 {
@@ -308,6 +309,28 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
 
             return RedirectToAction(nameof(Index));
+        }
+
+        [Authorize]
+        public async Task<IActionResult> OrderHistory(int cartId)
+        {
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+
+            List<OrderDetailsViewModel> orderList = new List<OrderDetailsViewModel>();
+
+            List<OrderHeader> orderHeaderList = await _db.OrderHeader.Include(o => o.ApplicationUser).Where(u => u.UserId == claim.Value).ToListAsync();
+
+            foreach(OrderHeader item in orderHeaderList)
+            {
+                OrderDetailsViewModel individual = new OrderDetailsViewModel
+                {
+                    OrderHeader = item,
+                    OrderDetails = await _db.OrderDetails.Where(o => o.OrderId == item.Id).ToListAsync()
+                };
+                orderList.Add(individual);
+            }
+            return View(orderList);
         }
 
     }
