@@ -108,6 +108,12 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             return View(orderListVM);
         }
 
+        public IActionResult GetOrderStatus(int Id)
+        {
+            return PartialView("_OrderStatus", _db.OrderHeader.Where(m => m.Id == Id).FirstOrDefault().Status);
+
+        }
+
         public async Task<IActionResult> GetOrderDetails(int id)
         {
             OrderDetailsViewModel orderDetailsVM = new OrderDetailsViewModel()
