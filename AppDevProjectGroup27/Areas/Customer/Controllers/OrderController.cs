@@ -114,6 +114,69 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
         }
 
+        [Authorize(Roles = SD.KitchenUser + "," + SD.ManagerUser)]
+        public async Task<IActionResult> ManageOrder(int productPage = 1)
+        {
+            List<OrderDetailsViewModel> orderDetailsVMs = new List<OrderDetailsViewModel>();
+            List<OrderHeader> orderHeadersList = await _db.OrderHeader
+                .Where(o => o.Status == SD.StatusSubmitted || o.Status == SD.StatusInProcess)
+                .OrderByDescending(o => o.PickUpTime).ToListAsync();
+
+
+            foreach (OrderHeader item in orderHeadersList)
+            {
+                OrderDetailsViewModel individual = new OrderDetailsViewModel
+                {
+                    OrderHeader = item,
+                    OrderDetails = await _db.OrderDetails.Where(o => o.OrderId == item.Id).ToListAsync()
+                };
+
+                orderDetailsVMs.Add(individual);
+            }
+
+            return View(orderDetailsVMs.OrderBy(o => o.OrderHeader.PickUpTime).ToList());
+        }
+
+        [Authorize(Roles = SD.KitchenUser + "," + SD.ManagerUser)]
+        public async Task<IActionResult> OrderPrepare(int OrderId)
+        {
+            OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
+            orderHeader.Status = SD.StatusInProcess;
+
+            await _db.SaveChangesAsync();
+            return RedirectToAction("ManageOrder", "Order");
+        }
+
+        [Authorize(Roles = SD.KitchenUser + "," + SD.ManagerUser)]
+        public async Task<IActionResult> OrderReady(int OrderId)
+        {
+            OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
+            orderHeader.Status = SD.StatusReady;
+
+            await _db.SaveChangesAsync();
+
+            //will need email logic here
+            //await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == orderHeader.UserId).FirstOrDefault().Email, "Spice - Order: " + orderHeader.Id.ToString() + " - Ready", "Order is ready for pickup");
+
+
+            return RedirectToAction("ManageOrder", "Order");
+        }
+
+        [Authorize(Roles = SD.KitchenUser + "," + SD.ManagerUser)]
+        public async Task<IActionResult> OrderCancel(int OrderId)
+        {
+            OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
+            orderHeader.Status = SD.StatusCancelled;
+
+            await _db.SaveChangesAsync();
+
+            //will need email logic here
+            //await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == orderHeader.UserId).FirstOrDefault().Email, "Spice - Order: " + orderHeader.Id.ToString() + " - Cancelation", "Order has been Cancelled");
+
+            return RedirectToAction("ManageOrder", "Order");
+        }
+
+
         public async Task<IActionResult> GetOrderDetails(int id)
         {
             OrderDetailsViewModel orderDetailsVM = new OrderDetailsViewModel()
