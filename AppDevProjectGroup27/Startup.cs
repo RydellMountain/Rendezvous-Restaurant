@@ -42,6 +42,12 @@ namespace AppDevProjectGroup27
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
             services.AddRazorPages().AddRazorRuntimeCompilation();
+
+            services.AddAuthentication().AddFacebook(facebookoptions =>
+            {
+                facebookoptions.AppId = "642594116712119";
+                facebookoptions.AppSecret = "7ddc711bb79c0b2f244960daa7f1cbb6";
+            });
             
 
 
