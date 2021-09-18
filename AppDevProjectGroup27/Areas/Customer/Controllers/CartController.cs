@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Web;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace AppDevProjectGroup27.Areas.Customer.Controllers
 {
@@ -27,6 +28,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
         private readonly ApplicationDbContext _db;
         private readonly PayFastSettings payFastSettings;
         private readonly ILogger logger;
+        
 
 
         [BindProperty]
@@ -37,6 +39,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             _db = db;
             this.payFastSettings = payFastSettings.Value;
             this.logger = logger;
+            
 
         }
 

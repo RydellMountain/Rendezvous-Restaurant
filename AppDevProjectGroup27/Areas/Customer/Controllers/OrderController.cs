@@ -3,6 +3,7 @@ using AppDevProjectGroup27.Models;
 using AppDevProjectGroup27.Models.ViewModels;
 using AppDevProjectGroup27.Utility;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -19,10 +20,18 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
     {
 
         private ApplicationDbContext _db;
+
+        private readonly IEmailSender _emailSender;
+       
         private int PageSize = 2;
-        public OrderController(ApplicationDbContext db)
+
+        [BindProperty]
+        public OrderDetailsCart detailsCart { get; set; }
+
+        public OrderController(ApplicationDbContext db, IEmailSender emailSender)
         {
             _db = db;
+            _emailSender = emailSender;
         }
 
         [Authorize]
@@ -38,8 +47,12 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
             };
 
+            await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email, "Spice - Order Created " + detailsCart.OrderHeader.Id.ToString(), "Order has been submitted successfully.");
+
             orderDetailsViewModel.OrderHeader.PaymentStatus = SD.PaymentStatusApproved;
             orderDetailsViewModel.OrderHeader.Status = SD.StatusSubmitted;
+
+           
 
             await _db.SaveChangesAsync();
 

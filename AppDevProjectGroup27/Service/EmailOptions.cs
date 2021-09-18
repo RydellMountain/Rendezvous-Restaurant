@@ -7,5 +7,6 @@ namespace AppDevProjectGroup27.Service
 {
     public class EmailOptions
     {
+        public string SendGridKey { get; set; }
     }
 }
