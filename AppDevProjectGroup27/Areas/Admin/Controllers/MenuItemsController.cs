@@ -11,6 +11,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 
 namespace AppDevProjectGroup27.Areas.Admin.Controllers
 {
@@ -43,6 +45,11 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
+            var claimsIdentity = (ClaimsIdentity)this.User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var count = _db.ShoppingCart.Where(c => c.ApplicationUserId == claim.Value).ToList().Count;
+            HttpContext.Session.SetInt32(SD.ssShoppingCartCount, count);
+
             // Using eager loading to load the CategoryId and SubCatagoryId from MenueItems.cs
             var menuItems = await _db.MenuItems.Include(m => m.Category).Include(m => m.SubCategory).ToListAsync();
 
@@ -271,6 +278,25 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                 {
                     System.IO.File.Delete(imagePath);
                 }
+
+                // Add Code to Check Shopping Cart if the item exists
+                /*
+                 Make a variable that holds the shopping cart, locate if the menuitem id exists,
+                 if it does, delete the whole row in the shopping cart.
+                 */
+
+                var Cart = await _db.ShoppingCart.Where(m => m.MenuItemId == menuItem.Id).ToListAsync();
+
+                if (Cart.Count() > 0)
+                {
+                    foreach (var item in Cart)
+                    {
+                        ShoppingCart shop = await _db.ShoppingCart.FindAsync(item.Id);
+                        _db.ShoppingCart.Remove(shop);
+                    }
+
+                }
+
                 _db.MenuItems.Remove(menuItem);
                 await _db.SaveChangesAsync();
 

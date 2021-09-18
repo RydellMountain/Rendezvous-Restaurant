@@ -33,6 +33,10 @@
                                 {
                                     <img srcset="/images/rsz_chilli_spicey.png" title="Very Spicy" />
                                 }
+                                @if (item.OnSpecial)
+                                {
+                                    <img srcset="/images/ribbon.png" title="On Special" />
+                                }
                             </div>
                             <div class="col-4 text-right" style="color:maroon">
                                 <h2>R @item.Price</h2>
