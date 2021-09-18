@@ -32,28 +32,35 @@
                         @Html.DisplayNameFor(m => m.SubCategoryId)
                     </th>
 
+                    <th>
+                        @Html.DisplayNameFor(m => m.OnSpecial)
+                    </th>
+
                     <th></th>
                     <th></th>
                 </tr>
                 @foreach (var item in Model)
                 {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(m => item.Name)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(m => item.Price)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(m => item.Category.Name)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(m => item.SubCategory.Name)
-                        </td>
-                        <td>
-                            <partial name="_TableButtonPartial" model="item.Id" />
-                        </td>
-                    </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(m => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.Category.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.SubCategory.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(m => item.OnSpecial)
+                </td>
+                <td>
+                    <partial name="_TableButtonPartial" model="item.Id" />
+                </td>
+            </tr>
                 }
             </table>
         }

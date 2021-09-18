@@ -40,6 +40,9 @@ namespace AppDevProjectGroup27.Models
         [Range(1, int.MaxValue, ErrorMessage ="Price should be greater than ${1}")]
         public double Price { get; set; }
 
+        [Display(Name = "On Special")]
+        public bool OnSpecial { get; set; }
+
 
 
     }

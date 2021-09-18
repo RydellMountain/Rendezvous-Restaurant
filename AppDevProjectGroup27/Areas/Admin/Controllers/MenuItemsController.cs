@@ -206,6 +206,8 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             menuItemFromDb.Spicyness = MenuItemVM.MenuItems.Spicyness;
             menuItemFromDb.CategoryId = MenuItemVM.MenuItems.CategoryId;
             menuItemFromDb.SubCategoryId = MenuItemVM.MenuItems.SubCategoryId;
+            menuItemFromDb.OnSpecial = MenuItemVM.MenuItems.OnSpecial;
+
 
 
             await _db.SaveChangesAsync();
