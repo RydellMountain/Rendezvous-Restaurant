@@ -61,7 +61,8 @@
                     <label asp-for="MenuItems.CategoryId" class="col-form-label"></label>
                 </div>
                 <div class="col-8">
-                    <select asp-for="@Model.MenuItems.CategoryId" id="CategoryId" asp-items="Model.Category.ToSelectListItem(Model.MenuItems.CategoryId)" class="form-control"></select>
+                    <!--Model.Catergory.ToselectListItems(Model.MenuItem.CatergoryId)-->
+                    <select asp-for="@Model.MenuItems.CategoryId" id="CategoryId" asp-items="Model.CategoryItems" class="form-control"></select>
                 </div>
             </div>
             <br />

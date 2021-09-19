@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace AppDevProjectGroup27.Areas.Admin.Controllers
 {
@@ -59,6 +60,8 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
         //GET-Create
         public IActionResult Create()
         {
+            // The Following Line has been added because of the error that comes up when the Description is left as null
+            MenuItemVM.CategoryItems = _db.Category.AsEnumerable().Select(m => new SelectListItem { Text = m.Name, Value = m.Id.ToString() }).ToList();
             return View(MenuItemVM);
         }
 
@@ -70,8 +73,15 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             //Converting the java code from the view for the SubCategory and assigning it to the Binded MenuItemVM SubCatId
             MenuItemVM.MenuItems.SubCategoryId = Convert.ToInt32(Request.Form["SubCategoryId"].ToString());
 
-            if(!ModelState.IsValid)
+            if (string.IsNullOrWhiteSpace(MenuItemVM.MenuItems.Descriptions))
+                ModelState.AddModelError("MenuItems.Descriptions", "Please enter a Description");
+            else ModelState["MenuItems.Descriptions"].Errors.Clear();
+
+            if (!ModelState.IsValid)
             {
+                // The Following Line has been added because of the error that comes up when the Description is left as null
+                MenuItemVM.CategoryItems = _db.Category.AsEnumerable().Select(m => new SelectListItem { Text = m.Name, Value = m.Id.ToString() }).ToList();
+                MenuItemVM.SubCategory = await _db.SubCategory.Where(s => s.CategoryId == MenuItemVM.MenuItems.CategoryId).ToListAsync();
                 return View(MenuItemVM);
             }
 
@@ -137,6 +147,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             }
 
             MenuItemVM.MenuItems = await _db.MenuItems.Include(m => m.Category).Include(m => m.SubCategory).SingleOrDefaultAsync(m => m.Id == id);
+            MenuItemVM.CategoryItems = _db.Category.AsEnumerable().Select(m => new SelectListItem { Text = m.Name, Value = m.Id.ToString() }).ToList();
             MenuItemVM.SubCategory = await _db.SubCategory.Where(s => s.CategoryId == MenuItemVM.MenuItems.CategoryId).ToListAsync();
 
             if(MenuItemVM.MenuItems==null)
@@ -164,6 +175,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
 
             if (!ModelState.IsValid)
             {
+                MenuItemVM.CategoryItems = _db.Category.AsEnumerable().Select(m => new SelectListItem { Text = m.Name, Value = m.Id.ToString() }).ToList();
                 MenuItemVM.SubCategory = await _db.SubCategory.Where(s => s.CategoryId == MenuItemVM.MenuItems.CategoryId).ToListAsync();
                 return View(MenuItemVM);
             }

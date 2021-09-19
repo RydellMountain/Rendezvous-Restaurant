@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Globalization;
 
 namespace AppDevProjectGroup27
 {
@@ -90,6 +91,15 @@ namespace AppDevProjectGroup27
             app.UseAuthentication();
             app.UseAuthorization();
             dbInitializer.Initialize();
+
+
+            //Force "." for decimal seperator
+            System.Globalization.CultureInfo customCulture = new("en-ZA");
+            customCulture.NumberFormat.NumberDecimalSeparator = ".";
+
+            CultureInfo.DefaultThreadCurrentCulture = customCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = customCulture;
+            //End of Force "."
 
             // For routing
             app.UseEndpoints(endpoints =>
