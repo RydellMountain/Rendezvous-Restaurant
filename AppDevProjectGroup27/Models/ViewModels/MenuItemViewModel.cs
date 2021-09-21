@@ -13,7 +13,5 @@ namespace AppDevProjectGroup27.Models.ViewModels
         public IEnumerable<SubCategory> SubCategory { get; set; }
 
         public List<SelectListItem> CategoryItems { get; set; }
-
-
     }
 }

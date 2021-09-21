@@ -20,7 +20,6 @@
                         <input asp-for="MenuItems.Name" class="form-control" />
                     </div>
                 </div>
-                <br />
                 <div class="form-group row">
                     <div class="col-4">
                         <label asp-for="MenuItems.Descriptions" class="custom-label"></label>
@@ -29,7 +28,14 @@
                         @Html.TextAreaFor(m => m.MenuItems.Descriptions)
                     </div>
                 </div>
-                <br />
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="MenuItems.Quantity" class="custom-label"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="MenuItems.Quantity" class="form-control" />
+                    </div>
+                </div>
                 <div class="form-group row">
                     <div class="col-4">
                         <label asp-for="MenuItems.Price" class="custom-label"></label>
@@ -38,7 +44,7 @@
                         <input asp-for="MenuItems.Price" class="form-control" />
                     </div>
                 </div>
-                <br />
+
                 <div class="form-group row">
                     <div class="col-4">
                         <label asp-for="MenuItems.CategoryId" class="custom-label"></label>
@@ -47,7 +53,6 @@
                         <input asp-for="MenuItems.Category.Name" class="form-control" />
                     </div>
                 </div>
-                <br />
                 <div class="form-group row">
                     <div class="col-4">
                         <label asp-for="MenuItems.SubCategoryId" class="custom-label"></label>
@@ -56,7 +61,6 @@
                         <input asp-for="MenuItems.SubCategory.Name" class="form-control" />
                     </div>
                 </div>
-                <br />
                 <div class="form-group row">
                     <div class="col-4">
                         <label asp-for="MenuItems.Spicyness" class="custom-label"></label>
@@ -73,7 +77,6 @@
         </div>
         <div class="col-8">
             <div class="col-8 offset-4">
-                <br />
                 <partial name="_DeleteAndBackToListButton" model="Model.MenuItems.Id" />
             </div>
         </div>
@@ -81,13 +84,17 @@
 </form>
 
 @section Scripts{
-    <script>tinymce.init({
-                selector: 'textarea',
-                plugins: "lists",
-                toolbar: "undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist",
-                menubar: 'file edit format',
-                readonly: 1
-            });</script>
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            plugins: "lists",
+            toolbar: "undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist",
+            menubar: 'file edit format',
+            readonly: 1
+        });</script>
     <script>tinymce.init({ selector: 'textarea' });</script>
+
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");};
 
 }

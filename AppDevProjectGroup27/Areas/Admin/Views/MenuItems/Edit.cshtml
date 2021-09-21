@@ -14,7 +14,9 @@
     <div class="border backgroundWhite row">
         <input type="hidden" asp-for="MenuItems.Id" />
 
+
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
 
         <div class="col-8">
             <div class="form-group row">
@@ -26,7 +28,6 @@
                 </div>
                 <span asp-validation-for="MenuItems.Name" class="text-danger"></span>
             </div>
-            <br />
             <div class="form-group row">
                 <div class="col-4">
                     <label asp-for="MenuItems.Descriptions" class="col-form-label"></label>
@@ -36,7 +37,15 @@
                 </div>
                 <span asp-validation-for="MenuItems.Descriptions" class="text-danger"></span>
             </div>
-            <br />
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="MenuItems.Quantity" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="MenuItems.Quantity" class="form-control" />
+                </div>
+                <span asp-validation-for="MenuItems.Quantity" class="text-danger"></span>
+            </div>
             <div class="form-group row">
                 <div class="col-4">
                     <label asp-for="MenuItems.Price" class="col-form-label"></label>
@@ -46,7 +55,6 @@
                 </div>
                 <span asp-validation-for="MenuItems.Price" class="text-danger"></span>
             </div>
-            <br />
             <div class="form-group row">
                 <div class="col-4">
                     <label asp-for="MenuItems.Image" class="col-form-label"></label>
@@ -55,7 +63,7 @@
                     <input type="file" name="files" multiple class="form-control" />
                 </div>
             </div>
-            <br />
+
             <div class="form-group row">
                 <div class="col-4">
                     <label asp-for="MenuItems.CategoryId" class="col-form-label"></label>
@@ -65,16 +73,14 @@
                     <select asp-for="@Model.MenuItems.CategoryId" id="CategoryId" asp-items="Model.CategoryItems" class="form-control"></select>
                 </div>
             </div>
-            <br />
             <div class="form-group row">
                 <div class="col-4">
                     <label asp-for="MenuItems.SubCategoryId" class="col-form-label"></label>
                 </div>
                 <div class="col-8">
-                    <select asp-for="@Model.MenuItems.SubCategoryId" name="SubCategoryId" id="SubCategoryId" asp-items="@(new SelectList(string.Empty, "Id", "Name"))" class="form-control"></select>
+                    <select asp-for="@Model.MenuItems.SubCategoryId" name="SubCategoryId" id="SubCategoryId" asp-items="@(new SelectList(string.Empty,"Id","Name"))" class="form-control"></select>
                 </div>
             </div>
-            <br />
             <div class="form-group row">
                 <div class="col-4">
                     <label asp-for="MenuItems.Spicyness" class="col-form-label"></label>
@@ -91,19 +97,19 @@
                     <input type="checkbox" asp-for="MenuItems.OnSpecial" class="form-control" />
                 </div>
             </div>
-            <br />
         </div>
         <div class="col-3 offset-1">
-            <img src="@Model.MenuItems.Image" width="100%" style="border-radius:5px;border: 1px solid #bbb9b9;" />
+            <img src="@Model.MenuItems.Image" width="100%" style="border-radius:5px; border:1px solid #bbb9b9;" />
         </div>
+
 
         <div class="col-8">
             <div class="col-8 offset-4">
-                <partial name="_EditAndBackToListButton" model="Model.MenuItems.Id"/>
+                <partial name="_EditAndBackToListButton" model="Model.MenuItems.Id" />
             </div>
         </div>
 
-        
+
     </div>
 </form>
 
@@ -130,15 +136,15 @@
         });
         function getSubCategory() {
             var url = '@Url.Content("~/")' + "Admin/SubCategory/GetSubCategory";
-            var ddlsoruce = '#CategoryId';
-            $.getJSON(url, { id: $(ddlsoruce).val() }, function (data) {
+            var ddlsource = "#CategoryId";
+            $.getJSON(url, { id: $(ddlsource).val() }, function (data) {
                 var items = '';
                 $('#SubCategoryId').empty();
                 $.each(data, function (i, subcategory) {
                     items += "<option value='" + subcategory.value + "'>" + subcategory.text + "</option>";
                 });
                 $('#SubCategoryId').html(items);
-                if ($(ddlsoruce).val() == @Model.MenuItems.CategoryId) {
+                if ($(ddlsource).val() == @Model.MenuItems.CategoryId) {
                     $('#SubCategoryId').val(@Model.MenuItems.SubCategoryId);
                 }
             })

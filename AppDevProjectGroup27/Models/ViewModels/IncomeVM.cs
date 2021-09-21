@@ -5,14 +5,18 @@ using System.Threading.Tasks;
 
 namespace AppDevProjectGroup27.Models.ViewModels
 {
-    public class IncomeViewModel
+    public class IncomeVM
     {
-        public List<string> Name { get; set; }
-        public List<double> Price { get; set; }
-        public List<int> Quantity { get; set; }
+        public IEnumerable<ItemVM> IncomeList { get; set; }
 
         public double IncomeMade = 0.0;
 
         public int ItemSoldDay = 0;
+
+        public DateTime DisplayDate { get; set; }
+
+        public DateTime EarliestDay { get; set; }
+
+        public DateTime CurrentDate { get; set; }
     }
 }

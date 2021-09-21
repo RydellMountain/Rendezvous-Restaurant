@@ -22,7 +22,6 @@
             </div>
             <span asp-validation-for="MenuItems.Name" class="text-danger"></span>
         </div>
-        <br />
         <div class="form-group row">
             <div class="col-2">
                 <label asp-for="MenuItems.Descriptions" class="col-form-label"></label>
@@ -32,7 +31,15 @@
             </div>
             <span asp-validation-for="MenuItems.Descriptions" class="text-danger"></span>
         </div>
-        <br />
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="MenuItems.Quantity" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <input asp-for="MenuItems.Quantity" class="form-control" />
+            </div>
+            <span asp-validation-for="MenuItems.Quantity" class="text-danger"></span>
+        </div>
         <div class="form-group row">
             <div class="col-2">
                 <label asp-for="MenuItems.Price" class="col-form-label"></label>
@@ -42,7 +49,6 @@
             </div>
             <span asp-validation-for="MenuItems.Price" class="text-danger"></span>
         </div>
-        <br />
         <div class="form-group row">
             <div class="col-2">
                 <label asp-for="MenuItems.Image" class="col-form-label"></label>
@@ -51,17 +57,15 @@
                 <input type="file" name="files" multiple class="form-control" />
             </div>
         </div>
-        <br />
+
         <div class="form-group row">
             <div class="col-2">
                 <label asp-for="MenuItems.CategoryId" class="col-form-label"></label>
             </div>
             <div class="col-5">
-                <!--Removed the following line from the select below: asp-items="Model.Catergory.ToselectListItems(Model.MenuItem.CatergoryId)"-->
                 <select asp-for="@Model.MenuItems.CategoryId" id="CategoryId" asp-items="Model.CategoryItems" class="form-control"></select>
             </div>
         </div>
-        <br />
         <div class="form-group row">
             <div class="col-2">
                 <label asp-for="MenuItems.SubCategoryId" class="col-form-label"></label>
@@ -70,7 +74,6 @@
                 <select asp-for="@Model.MenuItems.SubCategoryId" name="SubCategoryId" id="SubCategoryId" asp-items="@(new SelectList(string.Empty, "Id", "Name"))" class="form-control"></select>
             </div>
         </div>
-        <br />
         <div class="form-group row">
             <div class="col-2">
                 <label asp-for="MenuItems.Spicyness" class="col-form-label"></label>
@@ -79,7 +82,6 @@
                 <select asp-for="MenuItems.Spicyness" asp-items="Html.GetEnumSelectList<MenuItems.ESpicy>()" class="form-control"></select>
             </div>
         </div>
-
         <div class="form-group row">
             <div class="col-2">
                 <label asp-for="MenuItems.OnSpecial" class="col-form-label"></label>
@@ -88,13 +90,11 @@
                 <input type="checkbox" asp-for="MenuItems.OnSpecial" class="form-control" />
             </div>
         </div>
-
-
-        <br />
+        <input type="hidden" value="@Model.MenuItems.Quantity" asp-for="MenuItems.AvaQuantity" />
 
         <div class="form-group row">
             <div class="col-5 offset-2">
-                <partial name="_CreateAndBackToListButton" />
+                <partial name="_CreateAndBacktoListButton" />
             </div>
         </div>
     </div>
@@ -103,7 +103,7 @@
 
 @section Scripts{
 
-    @*for tinyMCE text area for disciption*@ 
+    @*for tinyMCE text area for disciption*@
     <script>
         tinymce.init({
             selector: 'textarea',
@@ -119,6 +119,7 @@
             $('#CategoryId').change(function () {
                 getSubCategory();
             });
+
         });
         function getSubCategory() {
             var url = '@Url.Content("~/")' + "Admin/SubCategory/GetSubCategory";
@@ -130,6 +131,7 @@
                     items += "<option value='" + subcategory.value + "'>" + subcategory.text + "</option>";
                 });
                 $('#SubCategoryId').html(items);
+                
             })
         }
     </script>

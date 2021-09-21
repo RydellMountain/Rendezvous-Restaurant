@@ -173,6 +173,10 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             //Converting the java code from the view for the SubCategory and assigning it to the Binded MenuItemVM SubCatId
             MenuItemVM.MenuItems.SubCategoryId = Convert.ToInt32(Request.Form["SubCategoryId"].ToString());
 
+            if (string.IsNullOrWhiteSpace(MenuItemVM.MenuItems.Descriptions))
+                ModelState.AddModelError("MenuItems.Descriptions", "Please enter a Description");
+            else ModelState["MenuItems.Descriptions"].Errors.Clear();
+
             if (!ModelState.IsValid)
             {
                 MenuItemVM.CategoryItems = _db.Category.AsEnumerable().Select(m => new SelectListItem { Text = m.Name, Value = m.Id.ToString() }).ToList();
@@ -222,6 +226,8 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             menuItemFromDb.Name = MenuItemVM.MenuItems.Name;
             menuItemFromDb.Descriptions = MenuItemVM.MenuItems.Descriptions;
             menuItemFromDb.Price = MenuItemVM.MenuItems.Price;
+            menuItemFromDb.Quantity = MenuItemVM.MenuItems.Quantity;
+            menuItemFromDb.AvaQuantity = MenuItemVM.MenuItems.Quantity;
             menuItemFromDb.Spicyness = MenuItemVM.MenuItems.Spicyness;
             menuItemFromDb.CategoryId = MenuItemVM.MenuItems.CategoryId;
             menuItemFromDb.SubCategoryId = MenuItemVM.MenuItems.SubCategoryId;

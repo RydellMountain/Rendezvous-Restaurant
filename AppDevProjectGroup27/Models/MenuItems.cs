@@ -43,7 +43,13 @@ namespace AppDevProjectGroup27.Models
         [Display(Name = "On Special")]
         public bool OnSpecial { get; set; }
 
+        [Required]
+        [Range(0, int.MaxValue)]
+        public int Quantity { get; set; }
 
+        [Display(Name = "Available Quantity")]
+        [Required]
+        public int AvaQuantity { get; set; }
 
     }
 }
