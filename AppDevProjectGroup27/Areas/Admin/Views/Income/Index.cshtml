@@ -1,0 +1,61 @@
+﻿@model AppDevProjectGroup27.Models.ViewModels.IncomeViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<br />
+<div class="border backgroundWhiteBorder">
+    <div class="row">
+        <div class="col-6">
+            <h2 class="text-info">Income Review:</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6" style="text-align:left">
+            <h4>Income Made:  @Model.IncomeMade.ToString("C")</h4>
+        </div>
+        <div class="col-6" style="text-align:right">
+            <h4>Total Items Sold: @Html.DisplayFor(x => x.ItemSoldDay)</h4>
+        </div>
+    </div>
+    <br />
+    <div>
+        @if (Model.Name.Count() > 0)
+        {
+            <table class="table table-striped border">
+                <tr class="table-secondary">
+                    <th>
+                        Item Name
+                    </th>
+                    <th>
+                        Price
+                    </th>
+                    <th>
+                        Items Sold
+                    </th>
+                </tr>
+                @for (int x = 0; x < Model.Name.Count; x++)
+                {
+                    <tr>
+                        <th>
+                            @Html.DisplayFor(m => m.Name[x])
+                        </th>
+                        <th>
+                            @Html.DisplayFor(m => m.Price[x])
+                        </th>
+                        <th>
+                            @Html.DisplayFor(m => m.Quantity[x])
+                        </th>
+                    </tr>
+                }
+
+            </table>
+        }
+        else
+        {
+            <p>No Income For Today...</p>
+        }
+    </div>
+</div> 

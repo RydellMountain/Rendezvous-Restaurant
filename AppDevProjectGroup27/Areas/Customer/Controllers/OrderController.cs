@@ -47,7 +47,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
             };
 
-            await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email, "Spice - Order Created " + detailsCart.OrderHeader.Id.ToString(), "Order has been submitted successfully.");
+            //await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email, "Spice - Order Created " + detailsCart.OrderHeader.Id.ToString(), "Order has been submitted successfully.");
 
             orderDetailsViewModel.OrderHeader.PaymentStatus = SD.PaymentStatusApproved;
             orderDetailsViewModel.OrderHeader.Status = SD.StatusSubmitted;
@@ -318,7 +318,36 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             return RedirectToAction("OrderPickup", "Order");
         }
 
-        
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> FilterBy(DateTime? datepicker)
+        {
+            if (datepicker == null)
+                return RedirectToAction(nameof(ManageOrder));
+
+
+            List<OrderDetailsViewModel> objODVM = new List<OrderDetailsViewModel>();
+            List<OrderHeader> orderHeadersList = await _db.OrderHeader
+                .Where(o => ((o.Status == SD.StatusSubmitted || o.Status == SD.StatusInProcess) && o.PickUpTime.Date == datepicker.Value.Date))
+                .OrderByDescending(o => o.PickUpTime).ToListAsync();
+            foreach (OrderHeader item in orderHeadersList)
+            {
+                OrderDetailsViewModel individual = new OrderDetailsViewModel
+                {
+                    OrderHeader = item,
+                    OrderDetails = await _db.OrderDetails.Where(o => o.OrderId == item.Id).ToListAsync()
+                };
+
+                objODVM.Add(individual);
+            }
+
+            return View("ManageOrder", objODVM.OrderBy(o => o.OrderHeader.PickUpTime).ToList());
+
+        }
+
+
     }
 }
 

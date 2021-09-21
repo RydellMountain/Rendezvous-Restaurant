@@ -29,7 +29,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(string? subject)
+        public async Task<IActionResult> Index(string subject)
         {
             if (string.IsNullOrWhiteSpace(subject))
                 return View(await _db.MenuItems.Include(m => m.Category).Include(m => m.SubCategory).Where(m => m.OnSpecial == true).ToListAsync());

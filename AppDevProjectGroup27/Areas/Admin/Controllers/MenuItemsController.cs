@@ -317,6 +317,20 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Index(string searchItem)
+        {
+
+            if (string.IsNullOrWhiteSpace(searchItem))
+                return RedirectToAction(nameof(Index));
+
+
+            var Search = await _db.MenuItems.Include(m => m.Category).Include(m => m.SubCategory).Where(m => m.Name.ToLower().Contains(searchItem.ToLower())).ToListAsync();
+
+            return View(Search);
+        }
+
 
     }
 }
