@@ -46,7 +46,8 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            applicationUser.LockoutEnd = DateTime.Now.AddYears(1000);
+
+            applicationUser.LockoutEnd = SharedMethods.GetDateTime().AddYears(1000);
 
             await _db.SaveChangesAsync();
 
@@ -67,7 +68,8 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            applicationUser.LockoutEnd = DateTime.Now;
+
+            applicationUser.LockoutEnd = SharedMethods.GetDateTime();
 
             await _db.SaveChangesAsync();
 

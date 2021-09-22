@@ -84,6 +84,8 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
         //Get-Delete
         public async Task<IActionResult> Delete(int? id)
         {
+
+            ViewBag.IsLinked = "";
             if (id == null)
             {
                 return NotFound();
@@ -104,9 +106,23 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
         {
             var category = await _db.Category.FindAsync(id);
 
+            ViewBag.IsLinked = "";
             if (category == null)
             {
                 return View();
+            }
+
+            var IsLinkedSubCategory = await _db.SubCategory.Where(s => s.CategoryId.Equals(id)).ToListAsync();
+            var IsLinkedMenuItem = await _db.MenuItems.Where(s => s.CategoryId.Equals(id)).ToListAsync();
+            if (IsLinkedSubCategory.Count > 0)
+            {
+                ViewBag.IsLinked = ("Unable to delete \"" + category.Name + "\", because it is linked to a Sub-Category.") as string;
+                return View(category);
+            }
+            else if (IsLinkedMenuItem.Count > 0)
+            {
+                ViewBag.IsLinked = ("Unable to delete \"" + category.Name + "\", because it is linked to a Menu Item.") as string;
+                return View(category);
             }
 
 

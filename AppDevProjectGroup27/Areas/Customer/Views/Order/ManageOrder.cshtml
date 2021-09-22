@@ -80,7 +80,7 @@
                                 @if (item.OrderHeader.Status.Equals(SD.StatusSubmitted))
                                 {
                                 <div class="col-12">
-                                    @if (item.OrderHeader.PickUpTime.Date != DateTime.Now.Date)
+                                    @if (item.OrderHeader.PickUpTime.Date != SharedMethods.GetDateTime().Date)
                                     {
                                         <button type="submit" asp-action="OrderPrepare" asp-route-OrderId="@item.OrderHeader.Id" class="btn btn-info form-control mb-3" disabled>
                                             <i class="fas fa-check"></i>&nbsp; Start Order

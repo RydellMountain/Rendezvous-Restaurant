@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<ApplicationUser>
+@using AppDevProjectGroup27.Utility
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -47,7 +48,7 @@
                             @Html.DisplayFor(m => item.PhoneNumber)
                         </td>
                         <td>
-                            @if (item.LockoutEnd == null || item.LockoutEnd < DateTime.Now)
+                            @if (item.LockoutEnd == null || item.LockoutEnd < SharedMethods.GetDateTime())
                             {
                                 <a class="btn btn-success text-white" asp-action="Lock" asp-route-id="@item.Id"><i class="fas fa-lock-open"></i></a>
                             }
@@ -56,7 +57,7 @@
                                 <a class="btn btn-danger text-white" asp-action="Unlock" asp-route-id="@item.Id"><i class="fas fa-lock"></i></a>
 
                             }
-                        <td>
+<td>
                     </tr>
                 }
 

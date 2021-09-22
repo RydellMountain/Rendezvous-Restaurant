@@ -122,7 +122,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             detailsCart.OrderHeader.OrderTotalOriginal = detailsCart.OrderHeader.OrderTotal;
             detailsCart.OrderHeader.PickUpName = applicationUser.Name;
             detailsCart.OrderHeader.PhoneNumber = applicationUser.PhoneNumber;
-            detailsCart.OrderHeader.PickUpTime = DateTime.Now;
+            detailsCart.OrderHeader.PickUpTime = SharedMethods.GetDateTime();
 
 
             if (HttpContext.Session.GetString(SD.ssCouponCode) != null)
@@ -150,7 +150,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             detailsCart.listCart = await _db.ShoppingCart.Where(c => c.ApplicationUserId == claim.Value).ToListAsync();
 
             detailsCart.OrderHeader.PaymentStatus = SD.PaymentStatusPending;
-            detailsCart.OrderHeader.OrderDate = DateTime.Now;
+            detailsCart.OrderHeader.OrderDate = SharedMethods.GetDateTime();
             detailsCart.OrderHeader.UserId = claim.Value;
             detailsCart.OrderHeader.Status = SD.PaymentStatusPending;
             detailsCart.OrderHeader.PickUpTime = Convert.ToDateTime(detailsCart.OrderHeader.PickUpDate.ToShortDateString() + " " + detailsCart.OrderHeader.PickUpTime.ToShortTimeString());

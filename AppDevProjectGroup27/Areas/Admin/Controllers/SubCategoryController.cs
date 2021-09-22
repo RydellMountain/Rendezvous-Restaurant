@@ -177,6 +177,8 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
         //GET Delete
         public async Task<IActionResult> Delete(int? id)
         {
+
+            ViewBag.IsLinkedSubCategory = "";
             if (id == null)
             {
                 return NotFound();
@@ -195,7 +197,18 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            ViewBag.IsLinkedSubCategory = "";
+
             var subCategory = await _db.SubCategory.SingleOrDefaultAsync(m => m.Id == id);
+
+            var IsLinkedToMenuItem = await _db.MenuItems.Where(s => s.SubCategoryId.Equals(id)).ToListAsync();
+            if (IsLinkedToMenuItem.Count > 0)
+            {
+                var subCategorywithCat = await _db.SubCategory.Include(s => s.Category).SingleOrDefaultAsync(m => m.Id == id);
+                ViewBag.IsLinkedSubCategory = ("Unable to delete \"" + subCategorywithCat.Name + "\", because it is linked to a Menu Item.") as string;
+                return View(nameof(Delete), subCategorywithCat);
+            }
+
             _db.SubCategory.Remove(subCategory);
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

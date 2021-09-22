@@ -2,6 +2,17 @@
 @{
     ViewData["Title"] = "Delete";
 }
+
+@if (ViewBag.IsLinkedSubCategory != "")
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert('@Html.Raw(ViewBag.IsLinkedSubCategory)');
+    }
+    </script>
+    ViewBag.IsLinkedSubCategory = "";
+}
+
 <br />
 <h2 class="text-info">Delete Sub-Category</h2>
 <br />

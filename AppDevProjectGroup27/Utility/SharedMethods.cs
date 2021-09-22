@@ -17,6 +17,7 @@ namespace AppDevProjectGroup27.Utility
             request.ContentType = "application/x-www-form-urlencoded";
             request.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
             System.Net.HttpWebResponse response = (System.Net.HttpWebResponse)request.GetResponse();
+
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
                 string todaysDates = response.Headers["date"];
