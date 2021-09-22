@@ -22,5 +22,7 @@ namespace AppDevProjectGroup27.Data
         public DbSet<ShoppingCart> ShoppingCart { get; set; }
         public DbSet<OrderHeader> OrderHeader { get; set; }
         public DbSet<OrderDetails> OrderDetails { get; set; }
+
+        public object AspNetRoles { get; internal set; }
     }
 }

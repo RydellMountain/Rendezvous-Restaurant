@@ -4,6 +4,18 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+@if (ViewBag.Newsletter != "")
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert('@ViewBag.Newsletter');
+    }
+    </script>
+    ViewBag.Newsletter = "";
+}
+
+
+
 <br />
 <br />
 <div class="border backgroundWhiteBorder">
