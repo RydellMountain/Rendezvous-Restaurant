@@ -10,10 +10,7 @@
 <div class="border backgroundWhiteBorder">
     <div class="row">
         <div class="col-6">
-            <h2 class="text-info"> Past Order History</h2>
-        </div>
-        <div class="col-6 text-right">
-            <partial name="_CreateButtonPartial" />
+            <h2 class="text-info">My Order History</h2>
         </div>
     </div>
     <br />
@@ -38,7 +35,7 @@
                         @Html.DisplayNameFor(m => m.Orders[0].OrderHeader.OrderTotal)
                     </th>
                     <th>
-                        total Items
+                        Total Items
                     </th>
                     <th></th>
 
@@ -99,7 +96,7 @@
         }
         else
         {
-            <p>No Category Exist...</p>
+            <p>No Orders Exist...</p>
         }
     </div>
 </div>

@@ -77,6 +77,8 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                 ModelState.AddModelError("MenuItems.Descriptions", "Please enter a Description");
             else ModelState["MenuItems.Descriptions"].Errors.Clear();
 
+            MenuItemVM.MenuItems.AvaQuantity = MenuItemVM.MenuItems.Quantity;
+
             if (!ModelState.IsValid)
             {
                 // The Following Line has been added because of the error that comes up when the Description is left as null
@@ -84,6 +86,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                 MenuItemVM.SubCategory = await _db.SubCategory.Where(s => s.CategoryId == MenuItemVM.MenuItems.CategoryId).ToListAsync();
                 return View(MenuItemVM);
             }
+
 
             _db.MenuItems.Add(MenuItemVM.MenuItems);
             await _db.SaveChangesAsync();

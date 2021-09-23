@@ -1,5 +1,6 @@
 ﻿using AppDevProjectGroup27.Data;
 using AppDevProjectGroup27.Models;
+using AppDevProjectGroup27.Models.ViewModels;
 using AppDevProjectGroup27.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -85,7 +86,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
 
-            ViewBag.IsLinked = "";
+            
             if (id == null)
             {
                 return NotFound();
@@ -95,7 +96,8 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            return View(category);
+            CategoryDeleteVM objCD = new CategoryDeleteVM { Category = category };
+            return View(objCD);
         }
 
 
@@ -105,24 +107,24 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
         public async Task<IActionResult> DeleteConfirmed(int? id)
         {
             var category = await _db.Category.FindAsync(id);
-
-            ViewBag.IsLinked = "";
             if (category == null)
             {
                 return View();
             }
 
+            CategoryDeleteVM objCD = new CategoryDeleteVM { Category = category };
+
             var IsLinkedSubCategory = await _db.SubCategory.Where(s => s.CategoryId.Equals(id)).ToListAsync();
             var IsLinkedMenuItem = await _db.MenuItems.Where(s => s.CategoryId.Equals(id)).ToListAsync();
             if (IsLinkedSubCategory.Count > 0)
             {
-                ViewBag.IsLinked = ("Unable to delete \"" + category.Name + "\", because it is linked to a Sub-Category.") as string;
-                return View(category);
+                objCD.StatusMessage = "Error : Unable to delete \"" + category.Name + "\", because it is linked to a Sub-Category.";
+                return View(objCD);
             }
             else if (IsLinkedMenuItem.Count > 0)
             {
-                ViewBag.IsLinked = ("Unable to delete \"" + category.Name + "\", because it is linked to a Menu Item.") as string;
-                return View(category);
+                objCD.StatusMessage = "Error : Unable to delete \"" + category.Name + "\", because it is linked to a Menu Item.";
+                return View(objCD);
             }
 
 

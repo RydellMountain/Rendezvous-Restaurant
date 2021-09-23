@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using System.Net.Mail;
 using System.Net;
+using AppDevProjectGroup27.Models.ViewModels;
 
 namespace AppDevProjectGroup27.Areas.Admin.Controllers
 {
@@ -26,19 +27,22 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             _userManager = userManager;
         }
 
+        [TempData]
+        public string StatusMessage { get; set; }
+
         //Get
         public async Task<IActionResult> Index()
         {
-            ViewBag.Newsletter = "";
-            return View(await _db.MenuItems.Include(m => m.Category).Include(m => m.SubCategory).Where(m => m.OnSpecial == true).ToListAsync());
+            SpecialVM objSpecial = new SpecialVM();
+            objSpecial.MenuItems = await _db.MenuItems.Include(m => m.Category).Include(m => m.SubCategory).Where(m => m.OnSpecial == true && m.AvaQuantity > 0).ToListAsync();
+            return View(objSpecial);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(string subject)
+        public async Task<IActionResult> Index(SpecialVM objSpecial)
         {
-            ViewBag.Newsletter = "";
-            if (string.IsNullOrWhiteSpace(subject))
+            if (string.IsNullOrWhiteSpace(objSpecial.Subject))
                 return RedirectToAction(nameof(Index));
 
             else
@@ -59,14 +63,15 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                         {
                             for (int x = 0; x < AllCustomersNames.Count(); x++)
                             {
-                                if (SendEmail(AllCustomersNames[x], AllCustomersEmails[x].Email, subject, "") == true)
+                                if (SendEmail(AllCustomersNames[x], AllCustomersEmails[x].Email, objSpecial.Subject, "") == true)
                                 {
-                                    ViewBag.Newsletter = "Emails Sent to Customers Successfully.";
+                                    StatusMessage = "Emails Sent to Customers Successfully.";
                                 }
                                 else
                                 {
-                                    ViewBag.Newsletter = "Unable to Send Emails to Customers.";
-                                    return View(await _db.MenuItems.Include(m => m.Category).Include(m => m.SubCategory).Where(m => m.OnSpecial == true).ToListAsync());
+                                    objSpecial.StatusMessage = "Error : Unable to Send Emails to Customers.";
+                                    objSpecial.MenuItems = await _db.MenuItems.Include(m => m.Category).Include(m => m.SubCategory).Where(m => m.OnSpecial == true && m.AvaQuantity > 0).ToListAsync();
+                                    return View(objSpecial);
                                 }
                                 // In the above send email, the last parameter is left blank until 
                                 // Code for the Body is done successfully
@@ -75,22 +80,22 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                         }
                         else
                         {
-                            ViewBag.Newsletter = "There are no Customer Names.";
+                            StatusMessage = "Error : There are no Customer Names.";
                         }
                     }
                     catch
                     {
-                        ViewBag.Newsletter = "Unable to retrieve Customers' Names.";
+                        StatusMessage = "Error : Unable to retrieve Customers' Names.";
                     }
                 }
                 else
                 {
-                    ViewBag.Newsletter = "No Customers exist to send the Newsletter to.";
+                    StatusMessage = "Error : No Customers exist to send the Newsletter to.";
                 }
 
-
-                // CODE TO SEND EMAIL TO ALL CUSTOMERS
-                return View(await _db.MenuItems.Include(m => m.Category).Include(m => m.SubCategory).Where(m => m.OnSpecial == true).ToListAsync());
+                objSpecial.StatusMessage = StatusMessage;
+                objSpecial.MenuItems = await _db.MenuItems.Include(m => m.Category).Include(m => m.SubCategory).Where(m => m.OnSpecial == true && m.AvaQuantity > 0).ToListAsync();
+                return View(objSpecial);
             }
         }
         public bool SendEmail(string Name, string Email, string Sub, string BodMessage)

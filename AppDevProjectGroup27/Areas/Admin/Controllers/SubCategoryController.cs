@@ -60,7 +60,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                 if (doesSubcatExists.Count() > 0)
                 {
                     //Error
-                    StatusMessage = "Error : Subcategory already esxists under " + doesSubcatExists.First().Category.Name + " category Please use another name ";
+                    StatusMessage = "Error : Sub-category already exists under, " + doesSubcatExists.First().Category.Name + " category. Please use another name.";
                 }
                 else
                 {
@@ -131,7 +131,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                 if (doesSubcatExists.Count() > 0)
                 {
                     //Error
-                    StatusMessage = "Error : Subcategory already esxists under " + doesSubcatExists.First().Category.Name + " category Please use another name ";
+                    StatusMessage = "Error : Sub-category already exists under, " + doesSubcatExists.First().Category.Name + " category. Please use another name.";
                 }
                 else
                 {
@@ -177,8 +177,6 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
         //GET Delete
         public async Task<IActionResult> Delete(int? id)
         {
-
-            ViewBag.IsLinkedSubCategory = "";
             if (id == null)
             {
                 return NotFound();
@@ -188,8 +186,8 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-
-            return View(subCategory);
+            SubCategoryDeleteVM objSCD = new SubCategoryDeleteVM { SubCategory = subCategory };
+            return View(objSCD);
         }
 
         //POST Delete
@@ -205,8 +203,9 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             if (IsLinkedToMenuItem.Count > 0)
             {
                 var subCategorywithCat = await _db.SubCategory.Include(s => s.Category).SingleOrDefaultAsync(m => m.Id == id);
-                ViewBag.IsLinkedSubCategory = ("Unable to delete \"" + subCategorywithCat.Name + "\", because it is linked to a Menu Item.") as string;
-                return View(nameof(Delete), subCategorywithCat);
+                SubCategoryDeleteVM objSCD = new SubCategoryDeleteVM { SubCategory = subCategorywithCat };
+                objSCD.StatusMessage = "Error : Unable to delete \"" + subCategorywithCat.Name + "\", because it is linked to a Menu Item.";
+                return View(nameof(Delete), objSCD);
             }
 
             _db.SubCategory.Remove(subCategory);

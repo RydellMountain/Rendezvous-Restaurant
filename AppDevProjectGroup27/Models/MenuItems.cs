@@ -37,7 +37,7 @@ namespace AppDevProjectGroup27.Models
         [ForeignKey("SubCategoryId")] // Referencing the table with the key field
         public virtual SubCategory SubCategory { get; set; }
 
-        [Range(1, int.MaxValue, ErrorMessage ="Price should be greater than ${1}")]
+        [Range(1, int.MaxValue, ErrorMessage ="Price should be greater than R{1}")]
         public double Price { get; set; }
 
         [Display(Name = "On Special")]

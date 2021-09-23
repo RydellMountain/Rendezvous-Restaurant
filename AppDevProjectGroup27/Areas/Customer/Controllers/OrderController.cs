@@ -259,8 +259,13 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
                     if (searchEmail != null)
                     {
                         user = await _db.ApplicationUser.Where(u => u.Email.ToLower().Contains(searchEmail.ToLower())).FirstOrDefaultAsync();
+                        if (user != null)
                         orderHeadersList = await _db.OrderHeader.Include(o => o.ApplicationUser)
                                                                 .Where(o => o.UserId == user.Id)
+                                                                .OrderByDescending(o => o.OrderDate).ToListAsync();
+                        else
+                            orderHeadersList = await _db.OrderHeader.Include(o => o.ApplicationUser)
+                                                                .Where(o => o.UserId == "")
                                                                 .OrderByDescending(o => o.OrderDate).ToListAsync();
                     }
                     else

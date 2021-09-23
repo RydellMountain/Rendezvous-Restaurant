@@ -1,5 +1,6 @@
 ﻿@model AppDevProjectGroup27.Models.ViewModels.OrderDetailsCart
 @using Microsoft.Extensions.Options
+@using AppDevProjectGroup27.Utility 
 
 @*@inject IOptions<AppDevProjectGroup27.Utilites.StripeSettings> Stripe*@
 @{
@@ -152,9 +153,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.13.18/jquery.timepicker.js"></script>
     <script>
         $(function () {
-            var minDt = 0;
+            var cDt = new Date('@SharedMethods.GetDateTime().ToString("MM/dd/yyyy")');
+            var minDt = cDt;
             if (getTimeFromCurrentDate >= 20) {
-                minDt = 1;
+                minDt.setDate(cDt.getDate() + 1);
             }
             $("#datepicker").datepicker({ minDate: minDt, maxDate: "+1W" });
             $("#timepicker").timepicker({ 'minTime': '11:00 AM', 'maxTime': '9:00 PM', step: '30' })
@@ -162,7 +164,9 @@
         function setPickUpTime() {
             var dateSelected = document.getElementById("datepicker").value;
             var dt = new Date(dateSelected);
-            var today = new Date();
+            var today = new Date('@SharedMethods.GetDateTime().ToString("MM/dd/yyyy HH:mm:ss")');
+
+
             dt.setHours(0, 0, 0, 0)
             if (dt > today) {
                 selectedTime = '11:00am'
@@ -173,7 +177,8 @@
             $('#timepicker').timepicker('option', 'minTime', selectedTime);
         }
         function getTimeFromCurrentDate() {
-            var curDt = new Date();
+            var curDt =  new Date('@SharedMethods.GetDateTime().ToString("MM/dd/yyyy HH:mm:ss")');
+
             var minTime = "";
             if (curDt.getHours() < 11) {
                 minTime = '12:00pm';

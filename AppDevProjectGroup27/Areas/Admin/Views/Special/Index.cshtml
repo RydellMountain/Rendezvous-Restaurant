@@ -1,23 +1,14 @@
-﻿@model IEnumerable<MenuItems>
+﻿@model AppDevProjectGroup27.Models.ViewModels.SpecialVM
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@if (ViewBag.Newsletter != "")
-{
-    <script type="text/javascript">
-        window.onload = function () {
-            alert('@ViewBag.Newsletter');
-    }
-    </script>
-    ViewBag.Newsletter = "";
-}
-
 
 
 <br />
 <br />
+<partial name="_StatusMessage" model="Model.StatusMessage" />
 <div class="border backgroundWhiteBorder">
     <div class="row">
         <div class="col-6">
@@ -25,13 +16,13 @@
         </div>
     </div>
     <br />
-    @if (Model.Count() > 0)
+    @if (Model.MenuItems.Count() > 0)
     {
         @using (Html.BeginForm("Index", "Special", FormMethod.Post))
         {
             @Html.AntiForgeryToken()
             <div>
-                Subject of Newsletter: &nbsp; <input class="text-box" id="subject" name="subject" type="text" />
+                Subject of Newsletter: &nbsp; <input class="text-box" type="text" asp-for="@Model.Subject" />
                 &emsp;
                 <input type="submit" value="Send Newsletter" class="btn btn-info" />
             </div>
@@ -39,27 +30,27 @@
         <br />
     }
     <div>
-        @if (Model.Count() > 0)
+        @if (Model.MenuItems.Count() > 0)
         {
             <table class="table table-striped border">
                 <tr class="table-secondary">
                     <th>
-                        @Html.DisplayNameFor(m => m.Name)
+                        @Html.DisplayNameFor(m => m.MenuItems.FirstOrDefault().Name)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(m => m.Price)
+                        @Html.DisplayNameFor(m => m.MenuItems.FirstOrDefault().Price)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(m => m.CategoryId)
+                        @Html.DisplayNameFor(m => m.MenuItems.FirstOrDefault().CategoryId)
                     </th>
                     <th>
-                        @Html.DisplayNameFor(m => m.SubCategoryId)
+                        @Html.DisplayNameFor(m => m.MenuItems.FirstOrDefault().SubCategoryId)
                     </th>
                     <th>
 
                     </th>
                 </tr>
-                @foreach (var item in Model)
+                @foreach (var item in Model.MenuItems)
                 {
                     <tr>
                         <td style="vertical-align:middle">
