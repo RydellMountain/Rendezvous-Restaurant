@@ -79,8 +79,17 @@
                     <label asp-for="Count" class="text-info font-weight-bold"></label>
                 </div>
                 <div class="col-md-8">
-                    <input asp-for="Count" class="form-control" />
-                    <span asp-validation-for="Count" class="text-danger"></span>
+                    @if (Model.MenuItems.AvaQuantity == 0)
+                    {
+                        <input class="form-control" value="0" disabled />
+                        <span style="color:red">Amount Available: @Model.MenuItems.AvaQuantity</span>
+                    }
+                    else
+                    {
+                        <input asp-for="Count" class="form-control" max="@Model.MenuItems.AvaQuantity" />
+                        <span style="color:green">Amount Available: @Model.MenuItems.AvaQuantity</span>
+                        <span asp-validation-for="Count" class="text-danger"></span>
+                    }
                 </div>
             </div>
             <br />
@@ -90,9 +99,18 @@
                 <div class="col-md-4">
                     <a asp-action="Index" class="btn btn-success form-control">Go Back to List</a>
                 </div>
-                <div class="col-md-4">
-                    <button type="submit" value="Add to Cart" class="btn btn-primary form-control">Add to Cart</button>
-                </div>
+                @if (Model.MenuItems.AvaQuantity == 0)
+                {
+                    <div class="col-md-4">
+                        <button type="submit" value="Add to Cart" class="btn btn-primary form-control" disabled>Add to Cart</button>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-4">
+                        <button type="submit" value="Add to Cart" class="btn btn-primary form-control">Add to Cart</button>
+                    </div>
+                }
             </div>
             <br />
         </div>

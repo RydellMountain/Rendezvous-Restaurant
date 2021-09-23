@@ -44,33 +44,43 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
         }
 
 
-        public async Task<IActionResult> Index()
+        public OrderDetailsCart GetDetailsCartObj(string StatusMessage)
         {
-
             detailsCart = new OrderDetailsCart()
             {
-                OrderHeader = new Models.OrderHeader()
+                OrderHeader = new Models.OrderHeader(),
+                StatusMessage = StatusMessage
             };
 
             detailsCart.OrderHeader.OrderTotal = 0;
 
-            //Retrivr the user Id of the logged-in user
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
-            //Retrive all the items the uder has added to the cart
             var cart = _db.ShoppingCart.Where(c => c.ApplicationUserId == claim.Value);
-
             if (cart != null)
             {
                 detailsCart.listCart = cart.ToList();
             }
 
+            var MenuItems = _db.MenuItems.ToList();
 
-            //To calculate the order total
             foreach (var list in detailsCart.listCart)
             {
-                list.MenuItems = await _db.MenuItems.FirstOrDefaultAsync(m => m.Id == list.MenuItemId);
+                list.MenuItems = _db.MenuItems.FirstOrDefault(m => m.Id == list.MenuItemId);
+                if (list.MenuItems.AvaQuantity < list.Count)
+                {
+                    if (detailsCart.StatusMessage.Contains("Error"))
+                        detailsCart.StatusMessage += ", \"" + list.MenuItems.Name + "\"";
+                    else
+                    {
+                        if (list.MenuItems.AvaQuantity > 0)
+                            detailsCart.StatusMessage += "Error : Please decrease the quantity of the following item(s): " + list.MenuItems.Name;
+                        else
+                            detailsCart.StatusMessage += "Error : Please remove the following item(s): " + list.MenuItems.Name;
+                    }
+                }
+
                 detailsCart.OrderHeader.OrderTotal = Math.Round(detailsCart.OrderHeader.OrderTotal + (list.MenuItems.Price * list.Count), 2);
                 list.MenuItems.Descriptions = SD.ConvertToRawHtml(list.MenuItems.Descriptions);
                 if (list.MenuItems.Descriptions.Length > 100)
@@ -78,20 +88,24 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
                     list.MenuItems.Descriptions = list.MenuItems.Descriptions.Substring(0, 99) + "...";
                 }
             }
+            if (!string.IsNullOrEmpty(detailsCart.StatusMessage))
+                detailsCart.StatusMessage += ".";
 
-            //Comparing the oderTotal and the orderTotalOriginal
             detailsCart.OrderHeader.OrderTotalOriginal = detailsCart.OrderHeader.OrderTotal;
 
             if (HttpContext.Session.GetString(SD.ssCouponCode) != null)
             {
                 detailsCart.OrderHeader.CouponCode = HttpContext.Session.GetString(SD.ssCouponCode);
-                var couponFromDb = await _db.Coupon.Where(c => c.Name.ToLower() == detailsCart.OrderHeader.CouponCode.ToLower()).FirstOrDefaultAsync();
+                var couponFromDb = _db.Coupon.Where(c => c.Name.ToLower() == detailsCart.OrderHeader.CouponCode.ToLower()).FirstOrDefault();
                 detailsCart.OrderHeader.OrderTotal = SD.DiscountedPrice(couponFromDb, detailsCart.OrderHeader.OrderTotalOriginal);
             }
 
+            return detailsCart;
+        }
 
-            return View(detailsCart);
-
+        public IActionResult Index()
+        {
+            return View(GetDetailsCartObj(""));
         }
 
         public async Task<IActionResult> Summary()
@@ -164,6 +178,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
             foreach (var item in detailsCart.listCart)
             {
+                MenuItems objMenuItem = await _db.MenuItems.FirstOrDefaultAsync(m => m.Id == item.MenuItemId);
                 item.MenuItems = await _db.MenuItems.FirstOrDefaultAsync(m => m.Id == item.MenuItemId);
                 OrderDetails orderDetails = new OrderDetails
                 {
@@ -174,6 +189,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
                     Price = item.MenuItems.Price,
                     Count = item.Count
                 };
+                objMenuItem.AvaQuantity -= item.Count;
                 detailsCart.OrderHeader.OrderTotalOriginal += orderDetails.Count * orderDetails.Price;
                 _db.OrderDetails.Add(orderDetails);
 
@@ -275,7 +291,11 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
         public async Task<IActionResult> plus(int cartId)
         {
             var cart = await _db.ShoppingCart.FirstOrDefaultAsync(c => c.Id == cartId);
-            cart.Count += 1;
+            var MenuItem = await _db.MenuItems.FindAsync(cart.MenuItemId);
+            if ((cart.Count + 1) > MenuItem.AvaQuantity)
+                return View(nameof(Index), GetDetailsCartObj("Error : Cannot add more " + MenuItem.Name + " items"));
+            else
+                cart.Count += 1;
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }

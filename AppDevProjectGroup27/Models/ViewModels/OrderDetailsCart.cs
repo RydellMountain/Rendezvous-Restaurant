@@ -10,5 +10,7 @@ namespace AppDevProjectGroup27.Models.ViewModels
         public List<ShoppingCart> listCart { get; set; }
 
         public OrderHeader OrderHeader { get; set; }
+
+        public string StatusMessage { get; set; }
     }
 }

@@ -4,6 +4,8 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<br />
+<partial name="_StatusMessage" model="@Model.StatusMessage" />
 <form method="post">
     @if (Model.listCart.Count > 0)
     {
@@ -88,11 +90,22 @@
 
 
                 </div>
-                <div class="card-footer">
-                    <div class="col-12 col-lg-4 offset-lg-8 col-md-6 offset-md-6">
-                        <a asp-action="Summary" asp-area="Customer" asp-controller="Cart" class="btn btn-success form-control">Summary</a>
+                @if (!Model.StatusMessage.Contains("Error"))
+                {
+                    <div class="card-footer">
+                        <div class="col-12 col-lg-4 offset-lg-8 col-md-6 offset-md-6">
+                            <a asp-action="Summary" asp-area="Customer" asp-controller="Cart" class="btn btn-success form-control">Summary</a>
+                        </div>
                     </div>
-                </div>
+                }
+                else
+                {
+                    <div class="card-footer">
+                        <div class="col-12 col-lg-4 offset-lg-8 col-md-6 offset-md-6">
+                            <a class="btn btn-success form-control" onclick="return false;">Summary</a>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     }

@@ -37,7 +37,7 @@ namespace AppDevProjectGroup27.Controllers
         {
             IndexViewModel IndexVM = new IndexViewModel
             {
-                MenuItem = await _db.MenuItems.Include(m => m.Category).Include(m => m.SubCategory).ToListAsync(),
+                MenuItem = await _db.MenuItems.Include(m => m.Category).Include(m => m.SubCategory).Where(m => m.AvaQuantity > 0).ToListAsync(),
                 Category = await _db.Category.ToListAsync(),
                 Coupon = await _db.Coupon.Where(c => c.IsActive == true).ToListAsync()
             };
@@ -65,6 +65,19 @@ namespace AppDevProjectGroup27.Controllers
                 MenuItems = menuItemFromDb,
                 MenuItemId = menuItemFromDb.Id
             };
+
+            var claimsIdentity = (ClaimsIdentity)this.User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            cartObj.ApplicationUserId = claim.Value;
+
+            ShoppingCart cartFromDb = await _db.ShoppingCart.Where(c => c.ApplicationUserId == cartObj.ApplicationUserId
+                                            && c.MenuItemId == cartObj.MenuItemId).FirstOrDefaultAsync();
+
+            if (cartFromDb != null)
+            {
+                cartObj.MenuItems.AvaQuantity -= cartFromDb.Count;
+                if (cartObj.MenuItems.AvaQuantity < 0) cartObj.MenuItems.AvaQuantity = 0;
+            }
 
             return View(cartObj);
         }
