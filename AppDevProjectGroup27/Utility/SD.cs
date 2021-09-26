@@ -23,11 +23,13 @@ namespace AppDevProjectGroup27.Utility
 		public const string StatusReady = "Ready for pick up";
 		public const string StatusCompleted = "Completed";
 		public const string StatusCancelled = "Cancelled";
+		
 
 		//Payment
 		public const string PaymentStatusPending = "Pending";
 		public const string PaymentStatusApproved = "Approved";
 		public const string PaymentStatusRejected = "Rejected";
+		public const string PaymentStatusRefunded = "Refunded";
 
 
 

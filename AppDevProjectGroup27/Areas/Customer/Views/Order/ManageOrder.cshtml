@@ -1,13 +1,10 @@
 ﻿@model List<AppDevProjectGroup27.Models.ViewModels.OrderDetailsViewModel>
 @using AppDevProjectGroup27.Utility
-
 @{
-    ViewData["Title"] = "Manage Orders |";
+    ViewData["Title"] = "ManageOrder";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 <h2 class="text-info">Manage Orders</h2>
-
 @using (Html.BeginForm("FilterBy", "Order", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
@@ -31,19 +28,14 @@
                 </div>
             </div>
         </div>
-
     </div>
 }
 
-
-
-
 <form method="post">
     <br />
-    <div class="container row bg-white p-2 border mb-3 rounded">
-        @if (Model.Count > 0)
-        {
-
+    @if (Model.Count > 0)
+    {
+        <div class="container row bg-white p-2 border mb-3 rounded">
             @foreach (var item in Model)
             {
                 <div class="col-12 pb-3 pt-3">
@@ -51,7 +43,6 @@
                         <div class="row" id="OrderTable">
                             <div class="col-4">
                                 Order Number : @item.OrderHeader.Id
-
                                 <ul class="text-info">
                                     @foreach (var details in item.OrderDetails)
                                     {
@@ -64,76 +55,75 @@
                                     <div class="input-group-append">
                                         <span class="input-group-text">Time</span>
                                     </div>
-
                                     <input type="text" class="border rounded form-control" readonly value="@item.OrderHeader.PickUpTime" />
                                 </div>
                                 @{
                                     var comments = item.OrderHeader.Comments;
                                     if (comments == null || comments.Trim().Length == 0)
                                     {
-                                        item.OrderHeader.Comments = "No Special Instructions";
+                                        item.OrderHeader.Comments = "No instructions";
                                     }
                                 }
-
-                                <textarea asp-for="@item.OrderHeader.Comments" readonly class="rounded border form-control" style="width:100%;height:75px;"></textarea>
+                                <textarea asp-for="@item.OrderHeader.Comments" readonly class="rounded border form-control" style="width:100%;height:75px"></textarea>
                             </div>
                             <div class="col-3 offset-1 d-flex align-items-center">
                                 @if (item.OrderHeader.Status.Equals(SD.StatusSubmitted))
                                 {
                                     <div class="col-12">
+                                        @if (item.OrderHeader.PickUpTime.Date != SharedMethods.GetDateTime().Date)
+                                        {
+                                            <button type="submit" asp-action="OrderPrepare" asp-route-OrderId="@item.OrderHeader.Id" class="btn btn-info form-control mb-3" disabled>
+                                                <i class="fas fa-check"></i>&nbsp; Start Order
+                                            </button>
+                                        }
+                                        else
+                                        {
                                             <button type="submit" asp-action="OrderPrepare" asp-route-OrderId="@item.OrderHeader.Id" class="btn btn-info form-control mb-3">
                                                 <i class="fas fa-check"></i>&nbsp; Start Order
                                             </button>
-
+                                        }
                                         <button type="submit" asp-action="CancelOrder" asp-route-OrderId="@item.OrderHeader.Id" class="btn btn-danger form-control mb-3">
                                             <i class="fas fa-times"></i>&nbsp; Cancel Order
                                         </button>
-
+                                        <button type="submit" asp-action="RefundOrder" asp-route-OrderId="@item.OrderHeader.Id" class="btn btn-danger form-control mb-3">
+                                            <i class="fas fa-money-check-alt"></i> &nbsp; Cancel & Refund
+                                        </button>
                                     </div>
                                 }
                                 else
                                 {
-
                                     @if (item.OrderHeader.Status.Equals(SD.StatusInProcess))
                                     {
                                         <div class="col-12">
                                             <button type="submit" asp-action="OrderReady" asp-route-OrderId="@item.OrderHeader.Id" class="btn btn-success form-control mb-3">
-                                                <i class="fas fa-flag-checkered">&nbsp; Order Ready</i>
+                                                <i class="fas fa-flag-checkered"></i>&nbsp; Order Ready
                                             </button>
-                                            <button type="submit" asp-action="OrderCancel" asp-route-OrderId="@item.OrderHeader.Id" class="btn btn-danger form-control mb-3">
-                                                <i class="fas fa-times">&nbsp; Cancel Order</i>
+                                            <button type="submit" asp-action="CancelOrder" asp-route-OrderId="@item.OrderHeader.Id" class="btn btn-danger form-control mb-3">
+                                                <i class="fas fa-times"></i>&nbsp; Cancel Order
+                                            </button>
+                                            <button type="submit" asp-action="RefundOrder" asp-route-OrderId="@item.OrderHeader.Id" class="btn btn-danger form-control mb-3">
+                                                <i class="fas fa-money-check-alt"></i> Cancel and Refund Order
                                             </button>
                                         </div>
                                     }
-
                                 }
                             </div>
                         </div>
                     </div>
                 </div>
             }
-            <br />
-        }
-        else
-        {
-            <br />
-            <p>No Orders to Manage...</p>
-        }
-    </div>
+        </div>
+    }
 </form>
-
 @section Scripts{
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.13.18/jquery.timepicker.js">
     </script>
-
-
     <script>
         $(document).ready(function () {
             $("#datepicker").attr("readonly", true);
         });
         function getTimeFromCurrentDate() {
             var curDt = new Date('@SharedMethods.GetDateTime().ToString("MM/dd/yyyy HH:mm:ss")');
-
             var minTime = "";
             if (curDt.getHours() < 11) {
                 minTime = '12:00pm';
@@ -157,5 +147,4 @@
             $("#datepicker").datepicker({ minDate: minDt, maxDate: "+1W" });
         });
     </script>
-
-} 
+}

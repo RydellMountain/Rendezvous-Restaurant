@@ -60,6 +60,12 @@
                                     Income Review
                                 </a>
                             </li>
+
+                            <li class="nav-item">
+                                <a asp-area="Customer" asp-controller="Order" asp-action="CusOrderHistory" class="nav-link">
+                                    Customers' Order History
+                                </a>
+                            </li>
                         }
 
                         @if (User.IsInRole(SD.KitchenUser) || User.IsInRole(SD.FrontDeskUser) || User.IsInRole(SD.ManagerUser))
@@ -89,7 +95,7 @@
                         {
                             <li class="nav-item">
                                 <a asp-area="Customer" asp-controller="Order" asp-action="OrderHistory" class="nav-link">
-                                  My  Order History
+                                    My  Order History
                                 </a>
                             </li>
 

@@ -5,6 +5,7 @@ using AppDevProjectGroup27.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -33,6 +34,137 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             _db = db;
             _emailSender = emailSender;
         }
+
+        [Authorize(Roles = SD.KitchenUser + "," + SD.ManagerUser)]
+        public async Task<IActionResult> RefundOrder(int OrderId)
+        {
+            OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
+            orderHeader.Status = SD.StatusCancelled;
+            orderHeader.PaymentStatus = SD.PaymentStatusRefunded;
+            await _db.SaveChangesAsync();
+            return RedirectToAction("ManageOrder", "Order");
+        }
+        [Authorize(Roles = SD.KitchenUser + "," + SD.ManagerUser)]
+        public async Task<IActionResult> Refund(int OrderId)
+        {
+            OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
+            orderHeader.PaymentStatus = SD.PaymentStatusRefunded;
+            await _db.SaveChangesAsync();
+            string StatusMessage = "Order " + OrderId + " has been marked as " + SD.PaymentStatusRefunded;
+            return View(nameof(CusOrderHistory), GetCusOrderVM(SD.StatusCancelled, SD.PaymentStatusRefunded, orderHeader.OrderDate.Date, StatusMessage));
+        }
+
+        public async Task<IActionResult> GetCusOrderDetails(int id)
+        {
+            OrderDetailsViewModel orderDetailsVM = new OrderDetailsViewModel()
+            {
+                OrderHeader = await _db.OrderHeader.FirstOrDefaultAsync(m => m.Id == id),
+                OrderDetails = await _db.OrderDetails.Where(m => m.OrderId == id).ToListAsync()
+
+            };
+
+            orderDetailsVM.OrderHeader.ApplicationUser = await _db.ApplicationUser.FirstOrDefaultAsync(u => u.Id == orderDetailsVM.OrderHeader.UserId);
+
+            return PartialView("_IndividualCusOrderDetails", orderDetailsVM);
+
+
+        }
+
+
+        public CusOrderHistoryVM GetCusOrderVM(string Status, string PaymentStatus, DateTime? dateChosen, string StatusMessage)
+        {
+            CusOrderHistoryVM cusOrderHistoryVM = new CusOrderHistoryVM()
+            {
+                Orders = new List<OrderDetailsViewModel>(),
+                Status = new List<SelectListItem>()
+                {
+                    new SelectListItem() { Text = SD.StatusSubmitted, Value = SD.StatusSubmitted},
+                    new SelectListItem() { Text = SD.StatusInProcess, Value = SD.StatusInProcess},
+                    new SelectListItem() { Text = SD.StatusReady, Value = SD.StatusReady},
+                     new SelectListItem() { Text = SD.StatusCompleted, Value = SD.StatusCompleted },
+                    new SelectListItem() { Text = SD.StatusCancelled, Value = SD.StatusCancelled }
+                },
+                PaymentStatus = new List<SelectListItem>()
+                {
+                    new SelectListItem() { Text = SD.PaymentStatusPending, Value = SD.PaymentStatusPending},
+                    new SelectListItem() { Text = SD.PaymentStatusApproved, Value = SD.PaymentStatusApproved},
+                    new SelectListItem() { Text = SD.PaymentStatusRejected, Value = SD.PaymentStatusRejected},
+                    new SelectListItem() { Text = SD.PaymentStatusRefunded, Value = SD.PaymentStatusRefunded},
+                }
+                ,
+                CurrentDate = SharedMethods.GetDateTime().Date,
+                StatusChosen = Status,
+                StatusMessage = StatusMessage,
+                PaymentStatusChosen = PaymentStatus
+            };
+
+            var orderHeaderTbl = _db.OrderHeader.Where(o => (o.Status == SD.StatusCancelled) || (o.Status == SD.StatusCompleted) || (o.Status == SD.StatusSubmitted)).Select(o => o.OrderDate);
+
+            if (orderHeaderTbl.Any())
+                cusOrderHistoryVM.EarliestDate = orderHeaderTbl.Min().Date;
+            else
+                cusOrderHistoryVM.EarliestDate = SharedMethods.GetDateTime().Date;
+
+
+
+            List<OrderHeader> orderHeadersList = new List<OrderHeader>();
+
+            if (!string.IsNullOrEmpty(Status) && !string.IsNullOrEmpty(PaymentStatus) && dateChosen != null)
+                orderHeadersList = _db.OrderHeader.Include(o => o.ApplicationUser).Where(o => o.Status == Status && o.PaymentStatus == PaymentStatus && o.OrderDate.Date == dateChosen.Value.Date).ToList();
+            else if (!string.IsNullOrEmpty(Status) && string.IsNullOrEmpty(PaymentStatus) && dateChosen == null)
+                orderHeadersList = _db.OrderHeader.Include(o => o.ApplicationUser).Where(o => o.Status == Status).ToList();
+            else if (string.IsNullOrEmpty(Status) && !string.IsNullOrEmpty(PaymentStatus) && dateChosen == null)
+                orderHeadersList = _db.OrderHeader.Include(o => o.ApplicationUser).Where(o => o.PaymentStatus == PaymentStatus).ToList();
+            else if (string.IsNullOrEmpty(Status) && string.IsNullOrEmpty(PaymentStatus) && dateChosen != null)
+                orderHeadersList = _db.OrderHeader.Include(o => o.ApplicationUser).Where(o => o.OrderDate.Date == dateChosen.Value.Date).ToList();
+            else if (!string.IsNullOrEmpty(Status) && !string.IsNullOrEmpty(PaymentStatus) && dateChosen == null)
+                orderHeadersList = _db.OrderHeader.Include(o => o.ApplicationUser).Where(o => o.Status == Status && o.PaymentStatus == PaymentStatus).ToList();
+            else if (!string.IsNullOrEmpty(Status) && string.IsNullOrEmpty(PaymentStatus) && dateChosen != null)
+                orderHeadersList = _db.OrderHeader.Include(o => o.ApplicationUser).Where(o => o.Status == Status && o.OrderDate.Date == dateChosen.Value.Date).ToList();
+            else if (string.IsNullOrEmpty(Status) && !string.IsNullOrEmpty(PaymentStatus) && dateChosen != null)
+                orderHeadersList = _db.OrderHeader.Include(o => o.ApplicationUser).Where(o => o.PaymentStatus == PaymentStatus && o.OrderDate.Date == dateChosen.Value.Date).ToList();
+            else
+            {
+                Status = SD.StatusCompleted;
+                PaymentStatus = SD.PaymentStatusApproved;
+                dateChosen = SharedMethods.GetDateTime().Date;
+                orderHeadersList = _db.OrderHeader.Include(o => o.ApplicationUser).Where(o => o.Status == SD.StatusCompleted && o.PaymentStatus == SD.PaymentStatusApproved && o.OrderDate.Date == SharedMethods.GetDateTime().Date).ToList();
+            }
+
+
+            foreach (OrderHeader item in orderHeadersList)
+            {
+                OrderDetailsViewModel individual = new OrderDetailsViewModel
+                {
+                    OrderHeader = item,
+                    OrderDetails = _db.OrderDetails.Where(o => o.OrderId == item.Id).ToList()
+                };
+                cusOrderHistoryVM.Orders.Add(individual);
+            }
+
+            cusOrderHistoryVM.Orders = cusOrderHistoryVM.Orders.OrderByDescending(o => o.OrderHeader.Id).ToList();
+
+            cusOrderHistoryVM.DisplayDate = dateChosen;
+            return cusOrderHistoryVM;
+        }
+
+        [Authorize(Roles = SD.KitchenUser + "," + SD.ManagerUser)]
+        public IActionResult CusOrderHistory()
+        {
+            return View(GetCusOrderVM(SD.StatusCompleted, SD.PaymentStatusApproved, SharedMethods.GetDateTime().Date, ""));
+        }
+
+        [Authorize(Roles = SD.KitchenUser + "," + SD.ManagerUser)]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CusOrderHistory(string Status, string PaymentStatus, DateTime? datepicker)
+        {
+            return View(GetCusOrderVM(Status, PaymentStatus, datepicker, ""));
+
+        }
+
+
+
 
         [Authorize]
         public async Task<IActionResult> Confirm(int id)
