@@ -86,7 +86,6 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
                 },
                 PaymentStatus = new List<SelectListItem>()
                 {
-                    new SelectListItem() { Text = SD.PaymentStatusPending, Value = SD.PaymentStatusPending},
                     new SelectListItem() { Text = SD.PaymentStatusApproved, Value = SD.PaymentStatusApproved},
                     new SelectListItem() { Text = SD.PaymentStatusRejected, Value = SD.PaymentStatusRejected},
                     new SelectListItem() { Text = SD.PaymentStatusRefunded, Value = SD.PaymentStatusRefunded},
@@ -98,7 +97,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
                 PaymentStatusChosen = PaymentStatus
             };
 
-            var orderHeaderTbl = _db.OrderHeader.Where(o => (o.Status == SD.StatusCancelled) || (o.Status == SD.StatusCompleted) || (o.Status == SD.StatusSubmitted)).Select(o => o.OrderDate);
+            var orderHeaderTbl = _db.OrderHeader.Select(o => o.OrderDate);
 
             if (orderHeaderTbl.Any())
                 cusOrderHistoryVM.EarliestDate = orderHeaderTbl.Min().Date;
@@ -181,6 +180,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
             //await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email, "Spice - Order Created " + detailsCart.OrderHeader.Id.ToString(), "Order has been submitted successfully.");
 
+            // Are these 2 lines going to be taken out?
             orderDetailsViewModel.OrderHeader.PaymentStatus = SD.PaymentStatusApproved;
             orderDetailsViewModel.OrderHeader.Status = SD.StatusSubmitted;
 
