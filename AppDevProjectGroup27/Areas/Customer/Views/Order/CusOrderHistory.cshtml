@@ -100,7 +100,22 @@
                     @Html.DisplayNameFor(m => m.Orders[0].OrderHeader.ApplicationUser.Email)
                 </th>
                 <th>
+                    @Html.DisplayNameFor(m => m.Orders[0].OrderHeader.EstimatedTimeComplete)
+                </th>
+                <th>
                     @Html.DisplayNameFor(m => m.Orders[0].OrderHeader.PickUpTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => m.Orders[0].OrderHeader.StartDateTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => m.Orders[0].OrderHeader.CompleteDateTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => m.Orders[0].OrderHeader.PickedUpOrder)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => m.Orders[0].OrderHeader.Duration)
                 </th>
                 <th>
                     @Html.DisplayNameFor(m => m.Orders[0].OrderHeader.OrderTotal)
@@ -114,37 +129,80 @@
             </tr>
             @foreach (var item in Model.Orders)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(m => item.OrderHeader.Id)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(m => item.OrderHeader.PickUpName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(m => item.OrderHeader.ApplicationUser.Email)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(m => item.OrderHeader.PickUpTime)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(m => item.OrderHeader.OrderTotal)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(m => item.OrderDetails.Count)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(m => item.OrderHeader.Status)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(m => item.OrderHeader.PaymentStatus)
-                    </td>
-                    <td>
-                        <button type="submit" class="btn btn-success anchorDetail" data-id="@item.OrderHeader.Id" data-toggle="modal">
-                            <i class="far fa-list-alt"></i>Details
-                        </button>
-                    </td>
-                </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(m => item.OrderHeader.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(m => item.OrderHeader.PickUpName)
+            </td>
+            <td>
+                @Html.DisplayFor(m => item.OrderHeader.ApplicationUser.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(m => item.OrderHeader.EstimatedTimeComplete)
+            </td>
+            <td>
+                @Html.DisplayFor(m => item.OrderHeader.PickUpTime)
+            </td>
+            @if (item.OrderHeader.StartDateTime == null)
+            {
+                <td>
+                    -
+                </td>
+            }
+            else
+            {
+                <td>@Html.DisplayFor(m => item.OrderHeader.StartDateTime)</td>
+            }
+            @if (item.OrderHeader.CompleteDateTime == null)
+            {
+                <td>
+                    -
+                </td>
+            }
+            else
+            {
+                <td>@Html.DisplayFor(m => item.OrderHeader.CompleteDateTime)</td>
+            }
+            @if (item.OrderHeader.PickedUpOrder == null)
+            {
+                <td>
+                    -
+                </td>
+            }
+            else
+            {
+                <td>@Html.DisplayFor(m => item.OrderHeader.PickedUpOrder)</td>
+            }
+            @if (string.IsNullOrEmpty(item.OrderHeader.Duration))
+            {
+                <td>
+                    -
+                </td>
+            }
+            else
+            {
+                <td>@Html.DisplayFor(m => item.OrderHeader.Duration)</td>
+            }
+            <td>
+                @Html.DisplayFor(m => item.OrderHeader.OrderTotal)
+            </td>
+            <td>
+                @Html.DisplayFor(m => item.OrderDetails.Count)
+            </td>
+            <td>
+                @Html.DisplayFor(m => item.OrderHeader.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(m => item.OrderHeader.PaymentStatus)
+            </td>
+            <td>
+                <button type="submit" class="btn btn-success anchorDetail" data-id="@item.OrderHeader.Id" data-toggle="modal">
+                    <i class="far fa-list-alt"></i>Details
+                </button>
+            </td>
+        </tr>
             }
         </table>
     }

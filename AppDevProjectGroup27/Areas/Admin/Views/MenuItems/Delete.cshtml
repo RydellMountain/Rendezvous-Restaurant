@@ -69,6 +69,14 @@
                         <select asp-for="MenuItems.Spicyness" asp-items="Html.GetEnumSelectList<MenuItems.ESpicy>()" class="form-control"></select>
                     </div>
                 </div>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="MenuItems.ETAEstimate" class="custom-label"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="MenuItems.ETAEstimate" class="form-control" />
+                    </div>
+                </div>
             </fieldset>
         </div>
         <div class="col-1"></div>

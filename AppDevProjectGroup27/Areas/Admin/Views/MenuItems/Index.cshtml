@@ -60,6 +60,9 @@
                         @Html.DisplayNameFor(m => m.SubCategoryId)
                     </th>
                     <th>
+                        @Html.DisplayNameFor(m => m.ETAEstimate)
+                    </th>
+                    <th>
                         @Html.DisplayNameFor(m => m.OnSpecial)
                     </th>
                     <th></th>
@@ -104,6 +107,9 @@
                         </td>
                         <td>
                             @Html.DisplayFor(m => item.SubCategory.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => item.ETAEstimate)
                         </td>
                         <td>
                             @Html.DisplayFor(m => item.OnSpecial)

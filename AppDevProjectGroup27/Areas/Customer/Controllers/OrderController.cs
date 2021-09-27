@@ -288,7 +288,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
         {
             OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
             orderHeader.Status = SD.StatusInProcess;
-
+            orderHeader.StartDateTime = SharedMethods.GetDateTime();
             await _db.SaveChangesAsync();
             return RedirectToAction("ManageOrder", "Order");
         }
@@ -298,6 +298,23 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
         {
             OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
             orderHeader.Status = SD.StatusReady;
+
+            orderHeader.CompleteDateTime = SharedMethods.GetDateTime();
+            TimeSpan SubtractQuan = orderHeader.CompleteDateTime.Value.Subtract(orderHeader.StartDateTime.Value);
+            double Hours = Math.Abs(SubtractQuan.Hours);
+            double Min = Math.Abs(SubtractQuan.Minutes);
+            double Secs = Math.Abs(SubtractQuan.Seconds);
+            if (Hours > 0)
+            {
+                if (Min == 0)
+                    orderHeader.Duration = Hours.ToString() + "hours";
+                else
+                    orderHeader.Duration = Hours.ToString() + " h " + Min.ToString();
+            }
+            else if (Min > 0)
+                orderHeader.Duration = Min.ToString() + " mins";
+            else
+                orderHeader.Duration = Secs.ToString() + " secs";
 
             await _db.SaveChangesAsync();
 
@@ -451,6 +468,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
         {
             OrderHeader orderHeader = await _db.OrderHeader.FindAsync(orderId);
             orderHeader.Status = SD.StatusCompleted;
+            orderHeader.PickedUpOrder = SharedMethods.GetDateTime();
             await _db.SaveChangesAsync();
             return RedirectToAction("OrderPickup", "Order");
         }

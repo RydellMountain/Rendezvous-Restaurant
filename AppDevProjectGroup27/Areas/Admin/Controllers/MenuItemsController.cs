@@ -235,7 +235,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             menuItemFromDb.CategoryId = MenuItemVM.MenuItems.CategoryId;
             menuItemFromDb.SubCategoryId = MenuItemVM.MenuItems.SubCategoryId;
             menuItemFromDb.OnSpecial = MenuItemVM.MenuItems.OnSpecial;
-
+            menuItemFromDb.ETAEstimate = MenuItemVM.MenuItems.ETAEstimate;
 
 
             await _db.SaveChangesAsync();

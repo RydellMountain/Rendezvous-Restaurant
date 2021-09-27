@@ -168,6 +168,34 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             detailsCart.OrderHeader.UserId = claim.Value;
             detailsCart.OrderHeader.Status = SD.PaymentStatusPending;
             detailsCart.OrderHeader.PickUpTime = Convert.ToDateTime(detailsCart.OrderHeader.PickUpDate.ToShortDateString() + " " + detailsCart.OrderHeader.PickUpTime.ToShortTimeString());
+            detailsCart.OrderHeader.StartDateTime = null;
+            detailsCart.OrderHeader.PickedUpOrder = null;
+            detailsCart.OrderHeader.CompleteDateTime = null;
+            detailsCart.OrderHeader.Duration = "";
+
+            int CalcMins = 0;
+            foreach (var item in detailsCart.listCart)
+            {
+                MenuItems objM = await _db.MenuItems.FindAsync(item.MenuItemId);
+                int ETA = objM.ETAEstimate;
+                CalcMins += ETA * item.Count;
+            }
+
+            TimeSpan tempTime = TimeSpan.FromMinutes(CalcMins);
+            double Hours = Math.Abs(tempTime.Hours);
+            double Min = Math.Abs(tempTime.Minutes);
+            if (Hours > 0)
+            {
+                if (Min == 0)
+                    detailsCart.OrderHeader.EstimatedTimeComplete = Hours.ToString() + " hours";
+                else
+                    detailsCart.OrderHeader.EstimatedTimeComplete = Hours.ToString() + " h " + Min.ToString();
+            }
+            else if (Min > 0)
+                detailsCart.OrderHeader.EstimatedTimeComplete = Min.ToString() + " mins";
+            else
+                detailsCart.OrderHeader.EstimatedTimeComplete = "0 mins";
+
 
             List<OrderDetails> orderDetailsList = new List<OrderDetails>();
             _db.OrderHeader.Add(detailsCart.OrderHeader);

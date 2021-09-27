@@ -51,5 +51,9 @@ namespace AppDevProjectGroup27.Models
         [Required]
         public int AvaQuantity { get; set; }
 
+        [Display(Name = "Estimated Preparation Duration [mins]")]
+        [Required]
+        [Range(0, int.MaxValue)]
+        public int ETAEstimate { get; set; }
     }
 }

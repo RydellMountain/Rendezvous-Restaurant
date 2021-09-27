@@ -57,5 +57,19 @@ namespace AppDevProjectGroup27.Models
         public string PhoneNumber { get; set; }
 
         public string TransactionId { get; set; }
+
+
+        [Display(Name = "Date/Time Started")]
+        public DateTime? StartDateTime { get; set; }
+        [Display(Name = "Date/Time Food Ready")]
+        public DateTime? CompleteDateTime { get; set; }
+        [Display(Name = "Date/Time Order Picked Up")]
+        public DateTime? PickedUpOrder { get; set; }
+
+        [Display(Name = "Preparation Duration")]
+        public string Duration { get; set; }
+
+        [Display(Name = "ETA")]
+        public string EstimatedTimeComplete { get; set; }
     }
 }
