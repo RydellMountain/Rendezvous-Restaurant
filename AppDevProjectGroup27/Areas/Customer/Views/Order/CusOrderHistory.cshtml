@@ -8,7 +8,7 @@
 
 <br />
 <partial name="_StatusMessage" model="Model.StatusMessage" />
-<div class="border backgroundWhiteBorder">
+<div>
     <div class="row">
         <div class="col-12">
             <h2 class="text-info">Customers' Order History</h2>
@@ -45,7 +45,7 @@
     @using (Html.BeginForm("CusOrderHistory", "Order", FormMethod.Post))
     {
         @Html.AntiForgeryToken()
-        <div class="container border border-secondary" style="height:60px;">
+        <div class="container border border-secondary" style="height:60px; width:4000px;">
             <div class="row container">
                 <div class="col-12">
                     <div class="row" style="padding-top:10px">
@@ -77,6 +77,7 @@
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
+
                     </div>
 
                 </div>
