@@ -3,13 +3,18 @@ using AppDevProjectGroup27.Models;
 using AppDevProjectGroup27.Models.ViewModels;
 using AppDevProjectGroup27.Utility;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,16 +28,18 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
         private ApplicationDbContext _db;
 
         private readonly IEmailSender _emailSender;
-       
+        private readonly IWebHostEnvironment _hostEnviroment;
+
         private int PageSize = 2;
 
         [BindProperty]
         public OrderDetailsCart detailsCart { get; set; }
 
-        public OrderController(ApplicationDbContext db, IEmailSender emailSender)
+        public OrderController(ApplicationDbContext db, IEmailSender emailSender, IWebHostEnvironment hostEnvironment)
         {
             _db = db;
             _emailSender = emailSender;
+            _hostEnviroment = hostEnvironment;
         }
 
         [Authorize(Roles = SD.KitchenUser + "," + SD.ManagerUser)]
@@ -178,13 +185,24 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
             };
 
-            //await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email, "Spice - Order Created " + detailsCart.OrderHeader.Id.ToString(), "Order has been submitted successfully.");
+            //await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == claim.Value).FirstOrDefault().Email, "Spice - Order Created " + detailsCart.OrderHeader.Id.ToString(), "Test email");
+
+            var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == claim.Value).FirstOrDefault();
+            var CustomerEmail = CustomerInfo.Email;
+
+            if(SendEmail("Name",CustomerEmail, "Order Confirmed: "+id, "Poes")== true)
+            {
+                
+            }
+           
+            
+
 
             // Are these 2 lines going to be taken out?
             orderDetailsViewModel.OrderHeader.PaymentStatus = SD.PaymentStatusApproved;
             orderDetailsViewModel.OrderHeader.Status = SD.StatusSubmitted;
 
-           
+
 
             await _db.SaveChangesAsync();
 
@@ -215,7 +233,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> OrderHistory(int productPage=1)
+        public async Task<IActionResult> OrderHistory(int productPage = 1)
         {
             var claimsIdentity = (ClaimsIdentity)User.Identity;
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
@@ -409,9 +427,9 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
                     {
                         user = await _db.ApplicationUser.Where(u => u.Email.ToLower().Contains(searchEmail.ToLower())).FirstOrDefaultAsync();
                         if (user != null)
-                        orderHeadersList = await _db.OrderHeader.Include(o => o.ApplicationUser)
-                                                                .Where(o => o.UserId == user.Id)
-                                                                .OrderByDescending(o => o.OrderDate).ToListAsync();
+                            orderHeadersList = await _db.OrderHeader.Include(o => o.ApplicationUser)
+                                                                    .Where(o => o.UserId == user.Id)
+                                                                    .OrderByDescending(o => o.OrderDate).ToListAsync();
                         else
                             orderHeadersList = await _db.OrderHeader.Include(o => o.ApplicationUser)
                                                                 .Where(o => o.UserId == "")
@@ -502,7 +520,75 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
         }
 
+        public bool SendEmail(string Name, string Email, string Sub, string Body)
+        {
+            try
+            {
+                // locating the Templete's path
+                var PathToFile = _hostEnviroment.WebRootPath + Path.DirectorySeparatorChar.ToString()
+                    + "Templates" + Path.DirectorySeparatorChar.ToString() + "EmailTemplates"
+                    + Path.DirectorySeparatorChar.ToString() + "index.html";
 
+
+                var BusEmail = new MailAddress("rendezvousrestaurantdut@gmail.com", "Rendezvous Restuarant");
+                var email = new MailAddress(Email, Name);
+                var pass = "DUTRendezvous123";
+                var subject = Sub;
+                // var body = BodMessage;
+                //Assigning the template to the body of the email
+                string HtmlBody = "";
+                using (StreamReader streamReader = System.IO.File.OpenText(PathToFile))
+                {
+                    HtmlBody = streamReader.ReadToEnd();
+                }
+                //{0} : Name
+
+                //string UrlMain = "https://localhost/Customer/Home/Details/";
+                //foreach (var item in objMenuItems)
+                //{
+                //    HtmlBody += "<tr>\r\n<td>" +
+                //        item.Name + "</td>\r\n<td>" +
+                //        item.Price.ToString("C") +
+                //        "</td>\r\n<td>" +
+                //        UrlMain + item.Id + "</td>\r\n</tr>\r\n";
+
+                //    //"\n" + item.Image
+                //}
+
+                //HtmlBody += "</table>\r\n</body>\r\n</html>";
+
+                var body = HtmlBody;
+
+                var smtp = new SmtpClient
+                {
+                    Host = "smtp.gmail.com",
+                    Port = 587,
+                    EnableSsl = true,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    UseDefaultCredentials = false,
+                    Credentials = new NetworkCredential(BusEmail.Address, pass)
+                };
+                using (var message = new MailMessage(BusEmail, email)
+                {
+                    Subject = subject,
+                    Body = body,
+                    IsBodyHtml = true
+                })
+                {
+                    smtp.Send(message);
+                }
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
+
+        }
     }
+
+
+
 }
 
