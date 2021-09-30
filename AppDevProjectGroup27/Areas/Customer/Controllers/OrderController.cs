@@ -48,6 +48,13 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
             orderHeader.Status = SD.StatusCancelled;
             orderHeader.PaymentStatus = SD.PaymentStatusRefunded;
+
+            var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == orderHeader.UserId).FirstOrDefault();
+            var CustomerEmail = CustomerInfo.Email;
+            var CustomerName = CustomerInfo.Name;
+
+            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId+" - Cancelled & Refund", "Order number "+OrderId+", has been cancelled, and is in the process of being refunded by our staff.", null);
+
             await _db.SaveChangesAsync();
             return RedirectToAction("ManageOrder", "Order");
         }
@@ -56,6 +63,13 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
         {
             OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
             orderHeader.PaymentStatus = SD.PaymentStatusRefunded;
+
+            var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == orderHeader.UserId).FirstOrDefault();
+            var CustomerEmail = CustomerInfo.Email;
+            var CustomerName = CustomerInfo.Name;
+
+            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId+" - Refund", "Order number "+OrderId+", is in the process of being refunded by our staff.", null);
+
             await _db.SaveChangesAsync();
             string StatusMessage = "Order " + OrderId + " has been marked as " + SD.PaymentStatusRefunded;
             return View(nameof(CusOrderHistory), GetCusOrderVM(SD.StatusCancelled, SD.PaymentStatusRefunded, orderHeader.OrderDate.Date, StatusMessage));
@@ -189,16 +203,12 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
             var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == claim.Value).FirstOrDefault();
             var CustomerEmail = CustomerInfo.Email;
+            var CustomerName = CustomerInfo.Name;
 
-            if(SendEmail("Name",CustomerEmail, "Order Confirmed: "+id, "Poes")== true)
-            {
-                
-            }
+
+            SendEmail(CustomerName, CustomerEmail, "Order : " + id+" - Confirmation", "Thank you for your order, your order details are as follows:", orderDetailsViewModel.OrderDetails);
+  
            
-            
-
-
-            // Are these 2 lines going to be taken out?
             orderDetailsViewModel.OrderHeader.PaymentStatus = SD.PaymentStatusApproved;
             orderDetailsViewModel.OrderHeader.Status = SD.StatusSubmitted;
 
@@ -208,6 +218,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
             return View(orderDetailsViewModel);
         }
+
 
         [Authorize]
         public async Task<IActionResult> Cancel(int id)
@@ -222,7 +233,12 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
             };
 
+            var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == claim.Value).FirstOrDefault();
+            var CustomerEmail = CustomerInfo.Email;
+            var CustomerName = CustomerInfo.Name;
 
+
+            SendEmail(CustomerName, CustomerEmail, "Order : " + id+" - Cancelled", "Your order has been cancelled, the order details are as follows:", orderDetailsViewModel.OrderDetails);
             //Changes
             orderDetailsViewModel.OrderHeader.PaymentStatus = SD.PaymentStatusRejected;
             orderDetailsViewModel.OrderHeader.Status = SD.StatusCancelled;
@@ -307,6 +323,14 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
             orderHeader.Status = SD.StatusInProcess;
             orderHeader.StartDateTime = SharedMethods.GetDateTime();
+
+            var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == orderHeader.UserId).FirstOrDefault();
+            var CustomerEmail = CustomerInfo.Email;
+            var CustomerName = CustomerInfo.Name;
+
+            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId+" - Being Prepared", "Order number "+OrderId+", is currently being prepared by our awesome cooks.\nThe Estimated Cooking Time is "+orderHeader.EstimatedTimeComplete+".", null );
+
+
             await _db.SaveChangesAsync();
             return RedirectToAction("ManageOrder", "Order");
         }
@@ -334,6 +358,16 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             else
                 orderHeader.Duration = Secs.ToString() + " secs";
 
+
+
+
+            var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == orderHeader.UserId).FirstOrDefault();
+            var CustomerEmail = CustomerInfo.Email;
+            var CustomerName = CustomerInfo.Name;
+
+            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId+" - Ready for pick up", "Order number "+OrderId+", is ready.\nYour order awaits your arrival.", null);
+
+
             await _db.SaveChangesAsync();
 
             //will need email logic here
@@ -348,7 +382,15 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
         {
             OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
             orderHeader.Status = SD.StatusCancelled;
+            
+                
+            var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == orderHeader.UserId).FirstOrDefault();
+            var CustomerEmail = CustomerInfo.Email;
+            var CustomerName = CustomerInfo.Name;
 
+            List<OrderDetails> objDetails = await _db.OrderDetails.Where(o => o.OrderId == OrderId).ToListAsync();
+
+            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId+" - Cancelled", "Your order has been cancelled, the order details are as follows:", objDetails);
             await _db.SaveChangesAsync();
 
             //will need email logic here
@@ -487,6 +529,13 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             OrderHeader orderHeader = await _db.OrderHeader.FindAsync(orderId);
             orderHeader.Status = SD.StatusCompleted;
             orderHeader.PickedUpOrder = SharedMethods.GetDateTime();
+           
+            var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == orderHeader.UserId).FirstOrDefault();
+            var CustomerEmail = CustomerInfo.Email;
+            var CustomerName = CustomerInfo.Name;
+
+            SendEmail(CustomerName, CustomerEmail, "Order : " + orderId+" - Completed", "We see that you have picked your order.\nWe hope that you enjoy your meal.", null);
+
             await _db.SaveChangesAsync();
             return RedirectToAction("OrderPickup", "Order");
         }
@@ -520,14 +569,14 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
         }
 
-        public bool SendEmail(string Name, string Email, string Sub, string Body)
+        public void SendEmail(string Name, string Email, string Sub, string Body ,List<OrderDetails> objDetails)
         {
             try
             {
                 // locating the Templete's path
-                var PathToFile = _hostEnviroment.WebRootPath + Path.DirectorySeparatorChar.ToString()
-                    + "Templates" + Path.DirectorySeparatorChar.ToString() + "EmailTemplates"
-                    + Path.DirectorySeparatorChar.ToString() + "index.html";
+                //var PathToFile = _hostEnviroment.WebRootPath + Path.DirectorySeparatorChar.ToString()
+                //    + "Templates" + Path.DirectorySeparatorChar.ToString() + "EmailTemplates"
+                //    + Path.DirectorySeparatorChar.ToString() + "index.html";
 
 
                 var BusEmail = new MailAddress("rendezvousrestaurantdut@gmail.com", "Rendezvous Restuarant");
@@ -536,10 +585,25 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
                 var subject = Sub;
                 // var body = BodMessage;
                 //Assigning the template to the body of the email
-                string HtmlBody = "";
-                using (StreamReader streamReader = System.IO.File.OpenText(PathToFile))
-                {
-                    HtmlBody = streamReader.ReadToEnd();
+                //string HtmlBody = "";
+                //using (StreamReader streamReader = System.IO.File.OpenText(PathToFile))
+                //{
+                //    HtmlBody = streamReader.ReadToEnd();
+                //}
+
+                string OrderDetailsBody = "";
+                double TotalPrice = 0.0;
+                if (objDetails != null)
+                { 
+                    foreach (var item in objDetails)
+                    {
+                        double PriceQuan = item.Count * item.Price;
+                        OrderDetailsBody +=   item.Count + " x " + item.Name + "  ~ " + (PriceQuan).ToString("C") + "\n";
+                        TotalPrice += PriceQuan;
+
+                    }
+
+                OrderDetailsBody += "\nTotal Price: " + TotalPrice.ToString("C");
                 }
                 //{0} : Name
 
@@ -557,7 +621,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
                 //HtmlBody += "</table>\r\n</body>\r\n</html>";
 
-                var body = HtmlBody;
+                var body = "Good day, " + Name + "\n\n" + Body+"\n\n" +OrderDetailsBody + "\nHave a Lovely day.\nThe Rendezvous-Restaurant Team.";
 
                 var smtp = new SmtpClient
                 {
@@ -572,16 +636,15 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
                 {
                     Subject = subject,
                     Body = body,
-                    IsBodyHtml = true
+                    IsBodyHtml = false
                 })
                 {
                     smtp.Send(message);
                 }
-                return true;
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+              
             }
 
 
