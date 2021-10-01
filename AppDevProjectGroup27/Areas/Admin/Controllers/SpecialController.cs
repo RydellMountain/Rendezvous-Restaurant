@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using AppDevProjectGroup27.Data;
 using AppDevProjectGroup27.Utility;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +10,9 @@ using Microsoft.AspNetCore.Identity;
 using System.Net.Mail;
 using System.Net;
 using AppDevProjectGroup27.Models.ViewModels;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
+using AppDevProjectGroup27.Models;
 
 namespace AppDevProjectGroup27.Areas.Admin.Controllers
 {
@@ -20,11 +22,13 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public SpecialController(ApplicationDbContext db, UserManager<IdentityUser> userManager)
+        public SpecialController(ApplicationDbContext db, UserManager<IdentityUser> userManager, IWebHostEnvironment hostEnvironment)
         {
             _db = db;
             _userManager = userManager;
+            _hostEnvironment = hostEnvironment;
         }
 
         [TempData]
@@ -42,6 +46,9 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(SpecialVM objSpecial)
         {
+            objSpecial.MenuItems = await _db.MenuItems.Include(m => m.Category).Include(m => m.SubCategory).Where(m => m.OnSpecial == true && m.AvaQuantity > 0).ToListAsync();
+
+
             if (string.IsNullOrWhiteSpace(objSpecial.Subject))
                 return RedirectToAction(nameof(Index));
 
@@ -63,7 +70,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                         {
                             for (int x = 0; x < AllCustomersNames.Count(); x++)
                             {
-                                if (SendEmail(AllCustomersNames[x], AllCustomersEmails[x].Email, objSpecial.Subject, "") == true)
+                                if (SendEmail(AllCustomersNames[x], AllCustomersEmails[x].Email, objSpecial.Subject, objSpecial.MenuItems) == true)
                                 {
                                     StatusMessage = "Emails Sent to Customers Successfully.";
                                 }
@@ -98,15 +105,44 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                 return View(objSpecial);
             }
         }
-        public bool SendEmail(string Name, string Email, string Sub, string BodMessage)
+        public bool SendEmail(string Name, string Email, string Sub, IEnumerable<MenuItems> objMenuItems)
         {
             try
             {
-                var BusEmail = new MailAddress("<Email the Business>", "<Name of the Business>");
+                // locating the Templete's path
+                var PathToFile = _hostEnvironment.WebRootPath + Path.DirectorySeparatorChar.ToString()
+                    + "Templates" + Path.DirectorySeparatorChar.ToString() + "EmailTemplates"
+                    + Path.DirectorySeparatorChar.ToString() + "Newsletter.html";
+
+                var BusEmail = new MailAddress("rendezvousrestaurantdut@gmail.com", "Rendezvous Restuarant");
                 var email = new MailAddress(Email, Name);
-                var pass = "<Password for the business>";
+                var pass = "DUTRendezvous123";
                 var subject = Sub;
-                var body = BodMessage;
+                //var body = BodMessage;
+
+                //Assigning the template to the body of the email
+                string HtmlBody = "";
+                using (StreamReader streamReader = System.IO.File.OpenText(PathToFile))
+                {
+                    HtmlBody = streamReader.ReadToEnd();
+                }
+
+                // var Hypelink = "<a href="+UrlMain+">Click here</a>";
+                string UrlMain = "https://localhost/Customer/Home/Details/";
+                foreach (var item in objMenuItems)
+                {
+                    HtmlBody += "<tr>\r\n<td>" +
+                        item.Name + "</td>\r\n<td>" +
+                        item.Price.ToString("C") +
+                        "</td>\r\n<td>" +
+                        UrlMain + item.Id + "</td>\r\n</tr>\r\n";
+
+                    
+                }
+
+                HtmlBody += "</table>\r\n</body>\r\n</html>";
+
+                var body = HtmlBody;
                 var smtp = new SmtpClient
                 {
                     Host = "smtp.gmail.com",
@@ -119,7 +155,8 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                 using (var message = new MailMessage(BusEmail, email)
                 {
                     Subject = subject,
-                    Body = body
+                    Body = body,
+                    IsBodyHtml = true
                 })
                 {
                     smtp.Send(message);
