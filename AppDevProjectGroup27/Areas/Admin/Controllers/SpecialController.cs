@@ -140,7 +140,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                         Hypelink + "</td>\r\n</tr>\r\n";
                 }
 
-                HtmlBody += "</table>\r\n</body>\r\n</html>";
+                HtmlBody += "</table>\r\n<p style=\"text-align=center;font-size:10px\">Ts and Cs Apply</p></body>\r\n</html>";
 
                 var body = HtmlBody;
                 var smtp = new SmtpClient
