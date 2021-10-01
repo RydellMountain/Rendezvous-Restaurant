@@ -127,17 +127,17 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                     HtmlBody = streamReader.ReadToEnd();
                 }
 
-                // var Hypelink = "<a href="+UrlMain+">Click here</a>";
+                
                 string UrlMain = "https://localhost/Customer/Home/Details/";
                 foreach (var item in objMenuItems)
                 {
+                    var Hypelink = "<a href=" + UrlMain + item.Id + ">Go to the Store</a>";
+
                     HtmlBody += "<tr>\r\n<td>" +
                         item.Name + "</td>\r\n<td>" +
                         item.Price.ToString("C") +
                         "</td>\r\n<td>" +
-                        UrlMain + item.Id + "</td>\r\n</tr>\r\n";
-
-                    
+                        Hypelink + "</td>\r\n</tr>\r\n";
                 }
 
                 HtmlBody += "</table>\r\n</body>\r\n</html>";
