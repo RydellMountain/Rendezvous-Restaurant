@@ -322,7 +322,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
         {
             OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
             orderHeader.Status = SD.StatusInProcess;
-            orderHeader.StartDateTime = SharedMethods.GetDateTime();
+            orderHeader.StartDateTime = DateTime.Now;
 
             var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == orderHeader.UserId).FirstOrDefault();
             var CustomerEmail = CustomerInfo.Email;
@@ -341,7 +341,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
             orderHeader.Status = SD.StatusReady;
 
-            orderHeader.CompleteDateTime = SharedMethods.GetDateTime();
+            orderHeader.CompleteDateTime = DateTime.Now;
             TimeSpan SubtractQuan = orderHeader.CompleteDateTime.Value.Subtract(orderHeader.StartDateTime.Value);
             double Hours = Math.Abs(SubtractQuan.Hours);
             double Min = Math.Abs(SubtractQuan.Minutes);
@@ -528,7 +528,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
         {
             OrderHeader orderHeader = await _db.OrderHeader.FindAsync(orderId);
             orderHeader.Status = SD.StatusCompleted;
-            orderHeader.PickedUpOrder = SharedMethods.GetDateTime();
+            orderHeader.PickedUpOrder = DateTime.Now;
            
             var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == orderHeader.UserId).FirstOrDefault();
             var CustomerEmail = CustomerInfo.Email;

@@ -49,15 +49,15 @@ namespace AppDevProjectGroup27.Data
 
             _userManager.CreateAsync(new ApplicationUser
             {
-                UserName = "admin@gmail.com",
-                Email = "admin@gmail.com",
-                Name = "Matt Waller",
+                UserName = "rendezvousrestaurantdut@gmail.com",
+                Email = "rendezvousrestaurantdut@gmail.com",
+                Name = "Rendezvous Admin",
                 EmailConfirmed = true,
                 PhoneNumber = "1234567890"
 
             }, "Abc123!").GetAwaiter().GetResult();
 
-            IdentityUser user = await _db.Users.FirstOrDefaultAsync(u => u.Email == "admin@gmail.com");
+            IdentityUser user = await _db.Users.FirstOrDefaultAsync(u => u.Email == "rendezvousrestaurantdut@gmail.com");
 
             await _userManager.AddToRoleAsync(user, SD.ManagerUser);
         }

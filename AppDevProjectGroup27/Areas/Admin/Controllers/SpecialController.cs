@@ -128,7 +128,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                 }
 
                 
-                string UrlMain = "https://localhost/Customer/Home/Details/";
+                string UrlMain = "https://2021grp27.azurewebsites.net/Customer/Home/Details/";
                 foreach (var item in objMenuItems)
                 {
                     var Hypelink = "<a href=" + UrlMain + item.Id + ">Go to the Store</a>";
