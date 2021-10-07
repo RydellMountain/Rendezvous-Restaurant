@@ -324,6 +324,13 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             orderHeader.Status = SD.StatusInProcess;
             orderHeader.StartDateTime = DateTime.Now;
 
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var StaffName =  _db.ApplicationUser.Where(a => a.Id == claim.Value).SingleOrDefault().Name;
+
+            orderHeader.OrderStartedBy = StaffName;
+            // orderHeader.OrderStartedBy 
+
             var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == orderHeader.UserId).FirstOrDefault();
             var CustomerEmail = CustomerInfo.Email;
             var CustomerName = CustomerInfo.Name;
@@ -529,7 +536,13 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             OrderHeader orderHeader = await _db.OrderHeader.FindAsync(orderId);
             orderHeader.Status = SD.StatusCompleted;
             orderHeader.PickedUpOrder = DateTime.Now;
-           
+
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var StaffName = _db.ApplicationUser.Where(a => a.Id == claim.Value).SingleOrDefault().Name;
+
+            orderHeader.OrderCompletedBy = StaffName;
+
             var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == orderHeader.UserId).FirstOrDefault();
             var CustomerEmail = CustomerInfo.Email;
             var CustomerName = CustomerInfo.Name;

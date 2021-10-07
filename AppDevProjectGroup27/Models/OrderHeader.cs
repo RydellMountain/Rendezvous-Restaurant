@@ -71,5 +71,11 @@ namespace AppDevProjectGroup27.Models
 
         [Display(Name = "ETA")]
         public string EstimatedTimeComplete { get; set; }
+
+
+        [Display(Name ="Started By")]
+        public string OrderStartedBy { get; set; }
+        [Display(Name = "Completed By")]
+        public string OrderCompletedBy { get; set; }
     }
 }

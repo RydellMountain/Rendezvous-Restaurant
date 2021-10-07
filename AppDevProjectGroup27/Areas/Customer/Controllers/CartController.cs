@@ -172,6 +172,8 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             detailsCart.OrderHeader.PickedUpOrder = null;
             detailsCart.OrderHeader.CompleteDateTime = null;
             detailsCart.OrderHeader.Duration = "";
+            detailsCart.OrderHeader.OrderStartedBy = "";
+            detailsCart.OrderHeader.OrderCompletedBy = "";
 
             int CalcMins = 0;
             foreach (var item in detailsCart.listCart)
