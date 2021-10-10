@@ -384,6 +384,31 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             return RedirectToAction("ManageOrder", "Order");
         }
 
+        [Authorize]
+        public async Task<IActionResult> CusOrderCancel(int OrderId)
+        {
+            OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
+            orderHeader.Status = SD.StatusCancelled;
+
+
+            var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == orderHeader.UserId).FirstOrDefault();
+            var CustomerEmail = CustomerInfo.Email;
+            var CustomerName = CustomerInfo.Name;
+
+            List<OrderDetails> objDetails = await _db.OrderDetails.Where(o => o.OrderId == OrderId).ToListAsync();
+            // Send To customer
+            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId + " - Cancelled", "You have successfully cancelled your order, the order details are as follows:", objDetails);
+            // Send to Admin
+            SendEmail("Rendezvous Restaurant", "rendezvousrestaurantdut@gmail.com", "Order : " + OrderId + " - Customer Cancelled", "Customer Name: "+CustomerName+"\nCustomer Email: "+CustomerEmail+"\n\nHas decided to cancel their order, the order details are as follows:", objDetails);
+            
+            await _db.SaveChangesAsync();
+
+            //will need email logic here
+            //await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == orderHeader.UserId).FirstOrDefault().Email, "Spice - Order: " + orderHeader.Id.ToString() + " - Cancelation", "Order has been Cancelled");
+
+            return RedirectToAction(nameof(OrderHistory), "Order");
+        }
+
         [Authorize(Roles = SD.KitchenUser + "," + SD.ManagerUser)]
         public async Task<IActionResult> OrderCancel(int OrderId)
         {
