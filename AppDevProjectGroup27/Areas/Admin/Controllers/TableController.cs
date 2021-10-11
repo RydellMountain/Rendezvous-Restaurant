@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace AppDevProjectGroup27.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class TableController : Controller
     {
 
@@ -32,7 +33,6 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
         //Get - Create
         public IActionResult Create()
         {
-            return View();
             TableCreateVM objT = new TableCreateVM();
             return View(objT);
         }
@@ -42,6 +42,11 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(TableCreateVM objTable)
         {
+            if (objTable.Table.SeatingName == null)
+            {
+                ModelState.AddModelError("Table.SeatingName", "Please enter a number");
+                return View(objTable);
+            }
             if (ModelState.IsValid)
             {
                 string TableName = objTable.Table.SeatingName + " Seater";
@@ -113,6 +118,11 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
 
         public async Task<IActionResult> Edit(TableEditVM objTable)
         {
+            if (objTable.Table.SeatingName == null)
+            {
+                ModelState.AddModelError("Table.SeatingName", "Please enter a number");
+                return View(objTable);
+            }
             if (ModelState.IsValid)
             {
                 string TableName = objTable.Table.SeatingName + " Seater";

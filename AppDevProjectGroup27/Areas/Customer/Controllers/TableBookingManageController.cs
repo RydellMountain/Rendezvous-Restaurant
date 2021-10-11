@@ -16,10 +16,6 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
     [Area("Customer")]
     public class TableBookingManageController : Controller
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
 
         private ApplicationDbContext _db;
         public TableBookingManageController(ApplicationDbContext db)
