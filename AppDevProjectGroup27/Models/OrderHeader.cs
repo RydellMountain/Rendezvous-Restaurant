@@ -77,5 +77,9 @@ namespace AppDevProjectGroup27.Models
         public string OrderStartedBy { get; set; }
         [Display(Name = "Completed By")]
         public string OrderCompletedBy { get; set; }
+        [Display(Name = "Cancelled By")]
+        public string OrderCancelledBy { get; set; }
+        [Display(Name = "Refunded By")]
+        public string OrderRefundedBy { get; set; }
     }
 }

@@ -128,6 +128,8 @@
                 <th>Payment Status</th>
                 <th>@Html.DisplayNameFor(m => m.Orders[0].OrderHeader.OrderStartedBy)</th>
                 <th>@Html.DisplayNameFor(m => m.Orders[0].OrderHeader.OrderCompletedBy)</th>
+                <th>@Html.DisplayNameFor(m => m.Orders[0].OrderHeader.OrderCancelledBy)</th>
+                <th>@Html.DisplayNameFor(m => m.Orders[0].OrderHeader.OrderRefundedBy)</th>
                 <th></th>
             </tr>
             @foreach (var item in Model.Orders)
@@ -219,6 +221,26 @@
             else
             {
                 <td>@Html.DisplayFor(m => item.OrderHeader.OrderCompletedBy)</td>
+            }
+            @if (string.IsNullOrEmpty(item.OrderHeader.OrderCancelledBy))
+            {
+                <td>
+                    -
+                </td>
+            }
+            else
+            {
+                <td>@Html.DisplayFor(m => item.OrderHeader.OrderCancelledBy)</td>
+            }
+            @if (string.IsNullOrEmpty(item.OrderHeader.OrderRefundedBy))
+            {
+                <td>
+                    -
+                </td>
+            }
+            else
+            {
+                <td>@Html.DisplayFor(m => item.OrderHeader.OrderRefundedBy)</td>
             }
             <td>
                 <button type="submit" class="btn btn-success anchorDetail" data-id="@item.OrderHeader.Id" data-toggle="modal">

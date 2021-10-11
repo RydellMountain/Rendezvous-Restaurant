@@ -49,6 +49,13 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             orderHeader.Status = SD.StatusCancelled;
             orderHeader.PaymentStatus = SD.PaymentStatusRefunded;
 
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var StaffName = _db.ApplicationUser.Where(a => a.Id == claim.Value).SingleOrDefault().Name;
+
+            orderHeader.OrderCancelledBy = StaffName;
+            orderHeader.OrderRefundedBy = StaffName;
+
             var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == orderHeader.UserId).FirstOrDefault();
             var CustomerEmail = CustomerInfo.Email;
             var CustomerName = CustomerInfo.Name;
@@ -63,6 +70,12 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
         {
             OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
             orderHeader.PaymentStatus = SD.PaymentStatusRefunded;
+
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var StaffName = _db.ApplicationUser.Where(a => a.Id == claim.Value).SingleOrDefault().Name;
+
+            orderHeader.OrderRefundedBy = StaffName;
 
             var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == orderHeader.UserId).FirstOrDefault();
             var CustomerEmail = CustomerInfo.Email;
@@ -242,6 +255,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             //Changes
             orderDetailsViewModel.OrderHeader.PaymentStatus = SD.PaymentStatusRejected;
             orderDetailsViewModel.OrderHeader.Status = SD.StatusCancelled;
+            orderDetailsViewModel.OrderHeader.OrderCancelledBy = "Customer";
 
             await _db.SaveChangesAsync();
             //Changes
@@ -389,7 +403,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
         {
             OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
             orderHeader.Status = SD.StatusCancelled;
-
+            orderHeader.OrderCancelledBy = "Customer";
 
             var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == orderHeader.UserId).FirstOrDefault();
             var CustomerEmail = CustomerInfo.Email;
@@ -414,8 +428,13 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
         {
             OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
             orderHeader.Status = SD.StatusCancelled;
-            
-                
+
+            var claimsIdentity = (ClaimsIdentity)User.Identity;
+            var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var StaffName = _db.ApplicationUser.Where(a => a.Id == claim.Value).SingleOrDefault().Name;
+
+            orderHeader.OrderCancelledBy = StaffName;
+
             var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == orderHeader.UserId).FirstOrDefault();
             var CustomerEmail = CustomerInfo.Email;
             var CustomerName = CustomerInfo.Name;
