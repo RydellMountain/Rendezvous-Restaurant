@@ -31,6 +31,15 @@ namespace AppDevProjectGroup27.Utility
 		public const string PaymentStatusRejected = "Rejected";
 		public const string PaymentStatusRefunded = "Refunded";
 
+		public const string TableStatusSubmitted = "Submitted";
+		public const string TableStatusStart = "Start";
+		public const string TableStatusCompleted = "Completed";
+		public const string TableStatusCancelled = "Cancelled";
+
+		public const string BookTableStatusApproved = "Approved";
+		public const string BookTableStatusRejected = "Rejected";
+		public const string BookTableStatusPending = "Pending";
+
 
 
 		public static string ConvertToRawHtml(string source)
