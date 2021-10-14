@@ -40,6 +40,9 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
                 Text = t.SeatingName,
                 Value = t.Id.ToString()
             }).ToListAsync();
+            else
+                objCB.TableList = new List<SelectListItem>();
+
             return View(objCB);
         }
 
@@ -80,6 +83,8 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
                 Text = t.SeatingName,
                 Value = t.Id.ToString()
             }).ToListAsync();
+            else
+                objCB.TableList = new List<SelectListItem>();
 
             objCB.Quantity = 0;
 

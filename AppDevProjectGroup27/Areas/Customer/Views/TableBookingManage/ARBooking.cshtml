@@ -2,10 +2,12 @@
 @using AppDevProjectGroup27.Utility
 
 @{
-    ViewData["Title"] = "Approve/Reject Table Booking";
+    ViewData["Title"] = "Approve/Reject Table Booking |";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<br />
+<partial name="_StatusMessage" model="@Model.StatusMessage" />
 <h2 class="text-info">Approve/Reject Table Bookings</h2>
 @using (Html.BeginForm("FilterByAR", "TableBookingManage", FormMethod.Post))
 {
@@ -37,8 +39,6 @@
     </div>
 }
 
-
-<partial name="_StatusMessage" model="@Model.StatusMessage" />
 
 <form method="post">
     <br />

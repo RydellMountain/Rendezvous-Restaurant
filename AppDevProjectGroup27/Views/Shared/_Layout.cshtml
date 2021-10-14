@@ -103,9 +103,8 @@
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="navbarDropDownMenuLink" role="button" aria-haspopup="true" aria-expanded="false">Table Bookings</a>
                                     <div class="dropdown-menu" aria-labelledby="navbarDropDownMenuLink">
-                                        <a class="dropdown-item" asp-action="ManageBooking" asp-controller="TableBookingManage" asp-area="Customer">Manage Table Bookings</a>
                                         <a class="dropdown-item" asp-action="ARBooking" asp-controller="TableBookingManage" asp-area="Customer">Approve/Reject Table Bookings</a>
-
+                                        <a class="dropdown-item" asp-action="ManageBooking" asp-controller="TableBookingManage" asp-area="Customer">Manage Table Bookings</a>
                                     </div>
                                 </li>
                             }
@@ -121,8 +120,13 @@
                             </li>
 
                             <li class="nav-item">
-                                <a asp-area="Customer" asp-controller="TableHome" asp-action="Index" class="nav-link">
-                                    Table Section
+                                <a asp-area="Customer" asp-controller="TableBookingHistory" asp-action="Index" class="nav-link">
+                                    Table Booking History
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-area="Customer" asp-controller="CustomerTableBooking" asp-action="Index" class="nav-link">
+                                    Book A Table
                                 </a>
                             </li>
 

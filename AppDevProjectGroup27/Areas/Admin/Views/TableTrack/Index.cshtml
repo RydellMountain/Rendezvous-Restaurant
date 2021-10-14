@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<TableTrack>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Table Track |";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -46,14 +46,7 @@
                             @item.TimeTable.ToString(@"hh\:mm")
                         </td>
                         <td>
-                            @if (item.AmtAva < 0)
-                            {
-                                <p>0</p>
-                            }
-                            else
-                            {
-                                @Html.DisplayFor(m => item.AmtAva)
-                            }
+                            @Html.DisplayFor(m => item.AmtAva)
                         </td>
                     </tr>
                 }

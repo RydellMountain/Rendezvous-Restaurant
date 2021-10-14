@@ -1,6 +1,7 @@
 ﻿using AppDevProjectGroup27.Data;
 using AppDevProjectGroup27.Models;
 using AppDevProjectGroup27.Models.ViewModels;
+using AppDevProjectGroup27.Utility;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -62,7 +63,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                     await _db.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
-                
+
             }
             objTable.StatusMessage = StatusMessage;
             return View(objTable);
@@ -118,60 +119,31 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
 
         public async Task<IActionResult> Edit(TableEditVM objTable)
         {
-            if (objTable.Table.SeatingName == null)
-            {
-                ModelState.AddModelError("Table.SeatingName", "Please enter a number");
-                return View(objTable);
-            }
             if (ModelState.IsValid)
             {
-                string TableName = objTable.Table.SeatingName + " Seater";
-                var DoesTableAlreadyExist = _db.Table.Where(t => t.SeatingName == TableName);
-                if (DoesTableAlreadyExist.Any())
+                if (objTable.Table.MaxTables != objTable.OldMaxValue)
                 {
-                    if (DoesTableAlreadyExist.First().Id != objTable.Table.Id)
+                    int SubtractTab = objTable.Table.MaxTables - objTable.OldMaxValue;
+
+                    var TableTrackObj = await _db.TableTrack.Include(t => t.Table).Where(t => t.TableId == objTable.Table.Id).ToListAsync();
+
+                    if (TableTrackObj.Any())
                     {
-                        StatusMessage = "Error : A " + TableName + " Table already exists.";
-                        objTable.StatusMessage = StatusMessage;
-                        return View(objTable);
-                    }
-                    else if (DoesTableAlreadyExist.First().MaxTables == objTable.Table.MaxTables && DoesTableAlreadyExist.First().Active == objTable.Table.Active)
-                    {
-                        StatusMessage = "Error : Please edit at least one field.";
-                        objTable.StatusMessage = StatusMessage;
-                        return View(objTable);
+                        foreach (var item in TableTrackObj)
+                        {
+                            TableTrack objTT = await _db.TableTrack.FindAsync(item.Id);
+                            objTT.AmtAva += SubtractTab;
+                            if (objTT.AmtAva < 0) objTT.AmtAva = 0;
+                        }
                     }
                 }
-
-
-                objTable.Table.SeatingName += " Seater";
-
-                int SubtractTab = objTable.Table.MaxTables - objTable.OldMaxValue;
-
-                var TableTrackObj = await _db.TableTrack.Include(t => t.Table).Where(t => t.TableId == objTable.Table.Id).ToListAsync();
-
-                if (TableTrackObj.Any())
-                {
-                    foreach (var item in TableTrackObj)
-                    {
-                        TableTrack objTT = await _db.TableTrack.FindAsync(item.Id);
-                        objTT.AmtAva += SubtractTab;
-                        //await _db.SaveChangesAsync();
-                    }
-                }
-                //  objTable.Table.TableAva += SubtractTab;
-
-                //  if (objTable.Table.TableAva < 0)
-                //   objTable.Table.TableAva = 0;
 
                 var TableFromDb = await _db.Table.FindAsync(objTable.Table.Id);
-                TableFromDb.SeatingName = objTable.Table.SeatingName;
                 TableFromDb.MaxTables = objTable.Table.MaxTables;
-                // TableFromDb.TableAva = objTable.Table.TableAva;
                 TableFromDb.Active = objTable.Table.Active;
 
                 await _db.SaveChangesAsync();
-                return RedirectToActionPermanent(nameof(Index));
+                return RedirectToAction(nameof(Index));
             }
             return View(objTable);
         }
@@ -204,7 +176,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                 return View();
             }
 
-            // Send Email to All pending bookings for specific item that is being deleted
+            // Send Email to All pending and approved bookings for specific item that is being deleted
             // Inform Customers that the table is no longer available etc.
 
             /*
@@ -220,6 +192,36 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                     _db.TableTrack.Remove(tableTrack);
                 }
             }
+
+            /*
+            Following code is to cancel/reject all bookings that have the soon to be deleted table name
+            */
+
+            //Reject Pending Ones:
+            var CheckTableHeaderPending = await _db.TableBookingHeader.Where(t => t.TableName == table.SeatingName && t.BookStatus == SD.BookTableStatusPending).ToListAsync();
+            if (CheckTableHeaderPending.Any())
+            {
+                foreach (var item in CheckTableHeaderPending)
+                {
+                    TableBookingHeader tableHeader = _db.TableBookingHeader.Find(item.Id);
+                    tableHeader.BookStatus = SD.BookTableStatusRejected;
+                    // Send Email saying their booking was rejected because table is unavailable
+                }
+            }
+
+            //Cancel Approved Ones:
+            var CheckTableHeaderApproved = await _db.TableBookingHeader.Where(t => t.TableName == table.SeatingName && t.BookStatus == SD.BookTableStatusApproved && t.Status == SD.TableStatusSubmitted).ToListAsync();
+            if (CheckTableHeaderApproved.Any())
+            {
+                foreach (var item in CheckTableHeaderApproved)
+                {
+                    TableBookingHeader tableHeader = _db.TableBookingHeader.Find(item.Id);
+                    tableHeader.Status = SD.TableStatusCancelled;
+                    // Send Email saying their booking was cancelled because table is unavailable
+                }
+            }
+
+
 
 
             _db.Table.Remove(table);

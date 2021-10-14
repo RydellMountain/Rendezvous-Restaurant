@@ -2,14 +2,15 @@
 @using AppDevProjectGroup27.Utility
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Book A Table |";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <br />
 <br />
-<h2>Book A Table</h2>
+<h2 class="text-info">Book A Table</h2>
 <br />
+
 
 <form asp-action="Index">
     @Html.AntiForgeryToken()
@@ -78,7 +79,7 @@
                         @Model.TableTracks.TimeTable.ToString(@"hh\:mm")
                     </td>
                     <td>
-                        @if (Model.TableTracks.AmtAva < 0)
+                        @if (Model.TableTracks.AmtAva <= 0)
                         {
                             <p>0</p>
                         }
@@ -88,9 +89,9 @@
                         }
                     </td>
                     <td>
-                        @if (Model.TableTracks.AmtAva < 0)
+                        @if (Model.TableTracks.AmtAva <= 0)
                         {
-                            <input class="form-control" type="number" min="0" max="0" step="1" disabled />
+                            <p style="color:red">Sorry, All Tables Booked!</p>
                         }
                         else
                         {
@@ -102,11 +103,14 @@
             </table>
 
             <br />
+            @if(Model.TableTracks.AmtAva > 0)
+            {
             <p style="text-align:right">
                 <button type="submit" name="submit" value="Submit" class="btn btn-success form-control" onclick="if (confirm('Are you sure you want to book this table?'))  return true; else { event.preventDefault(); return   false; }">
                     Create Booking
                 </button>
             </p>
+            }
         </form>
     }
     else

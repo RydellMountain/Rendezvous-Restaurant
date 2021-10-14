@@ -1,7 +1,7 @@
 ﻿@model AppDevProjectGroup27.Models.ViewModels.TableBookingHistVM
 @using AppDevProjectGroup27.Utility
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Table Booking History |";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -58,7 +58,7 @@
                         @item.SitInTime.ToString(@"hh\:mm")
                     </td>
                     <td>
-                        @if (item.Status == SD.TableStatusCancelled)
+                        @if (item.Status == SD.TableStatusCancelled || item.Status == SD.TableStatusCompleted)
                         {
                             <p>@Html.DisplayFor(m => item.Status)</p>
                         }

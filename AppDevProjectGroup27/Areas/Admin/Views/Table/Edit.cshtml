@@ -10,11 +10,10 @@
 <h2 class="text-info">Edit Table</h2>
 <br />
 
-<partial name="_StatusMessage" model="Model.StatusMessage" />
 <form method="post" asp-action="Edit">
-    <input type="hidden" value="@Model.OldMaxValue" asp-for="OldMaxValue" />
-    <input type="hidden" value="@Model.Table.Id" asp-for="Table.Id" />
-    @*<input type="hidden" value="@Model.Table.TableAva" asp-for="Table.TableAva" />*@
+    <input type="hidden" asp-for="OldMaxValue" />
+    <input type="hidden" asp-for="Table.Id" />
+    <input type="hidden" asp-for="Table.SeatingName" />
     <div class="border backgroundWhite">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group row">
@@ -22,9 +21,8 @@
                 <label asp-for="Table.SeatingName" class="col-form-label"></label>
             </div>
             <div class="col-5">
-                <input asp-for="Table.SeatingName" class="form-control" type="number" min="1" max="@int.MaxValue" step="1" onkeydown="return ValidNumeric(event);" />
+                <input asp-for="Table.SeatingName" class="form-control" disabled />
             </div>
-            <span asp-validation-for="Table.SeatingName" class="text-danger"></span>
         </div>
         <div class="form-group row">
             <div class="col-2">

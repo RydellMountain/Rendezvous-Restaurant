@@ -170,6 +170,9 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
                     if (objT != null)
                     {
                         objT.AmtAva += tblDetailsObj.TableBooked;
+                        if (objT.AmtAva > objT.Table.MaxTables)
+                            objT.AmtAva = objT.Table.MaxTables;
+
                         _db.SaveChanges();
                     }
                 }
