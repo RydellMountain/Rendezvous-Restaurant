@@ -23,25 +23,18 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             _db = db;
         }
 
+
         // DONT FORGET: When table booking is involved customers cannot eat in one hour before final meal (Remove 9PM time)
 
-        public async Task<IActionResult> ARBooking()
+
+        public async Task<IActionResult> ARBooking(string message = "")
         {
-            List<TableDetailsVM> tableDetailsVM = new List<TableDetailsVM>();
             List<TableBookingHeader> tableBookingHeaderList = await _db.TableBookingHeader
-                .Where(t => t.BookStatus == SD.BookTableStatusPending).OrderByDescending(t => t.SitInDate).ThenByDescending(t => t.SitInTime).ToListAsync();
-            foreach (TableBookingHeader item in tableBookingHeaderList)
-            {
-                TableDetailsVM individual = new TableDetailsVM
-                {
-                    TableBookingHeader = item,
-                    TableBookingDetails = await _db.TableBookingDetails.Where(t => t.TableBookingHeaderId == item.Id).ToListAsync()
-                };
+                .Where(t => t.BookStatus == SD.BookTableStatusPending).OrderBy(t => t.SitInDate).ThenBy(t => t.SitInTime).ToListAsync();
 
-                tableDetailsVM.Add(individual);
-            }
+            TableARVM objTArm = new TableARVM { tableBookingHeaders = tableBookingHeaderList, StatusMessage = message };
 
-            return View(tableDetailsVM.OrderBy(t => t.TableBookingHeader.SitInDate).ThenBy(t => t.TableBookingHeader.SitInTime).ToList());
+            return View(objTArm);
         }
         public IActionResult Approve(int TableHeaderId)
         {
@@ -54,8 +47,9 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             // var Email = _db.ApplicationUser.Find(tableHeader.UserId).Email;
             // End of Get Email (Please check if this code works first
 
+            string Message = "Table Booking Approved";
 
-            return RedirectToAction(nameof(ARBooking));
+            return RedirectToAction(nameof(ARBooking), new { message = Message });
         }
         public IActionResult Reject(int TableHeaderId)
         {
@@ -74,8 +68,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             // var Email = _db.ApplicationUser.Find(tableHeader.UserId).Email;
             // End of Get Email (Please check if this code works first
 
-
-            return RedirectToAction(nameof(ARBooking));
+            return RedirectToAction(nameof(ARBooking), new { message = "Table Booking Rejected" });
         }
 
         [Authorize]
@@ -83,49 +76,26 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> FilterByAR(DateTime? datepicker, DateTime? timepicker)
         {
-            List<TableDetailsVM> tableDetailsVM = new List<TableDetailsVM>();
             List<TableBookingHeader> tableBookingHeaderList = new List<TableBookingHeader>();
             if ((datepicker == null && timepicker == null) || (datepicker == null && timepicker != null))
                 return RedirectToAction(nameof(ARBooking));
             else if (datepicker != null && timepicker == null)
                 tableBookingHeaderList = await _db.TableBookingHeader
-                .Where(t => t.BookStatus == SD.BookTableStatusPending && t.SitInDate.Date == datepicker.Value.Date).OrderByDescending(t => t.SitInDate).ThenByDescending(t => t.SitInTime).ToListAsync();
+                .Where(t => t.BookStatus == SD.BookTableStatusPending && t.SitInDate.Date == datepicker.Value.Date).OrderBy(t => t.SitInDate).ThenBy(t => t.SitInTime).ToListAsync();
             else if (datepicker != null && timepicker != null)
                 tableBookingHeaderList = await _db.TableBookingHeader
-                .Where(t => t.BookStatus == SD.BookTableStatusPending && t.SitInDate.Date == datepicker.Value.Date && t.SitInTime == timepicker.Value.TimeOfDay).OrderByDescending(t => t.SitInDate).ThenByDescending(t => t.SitInTime).ToListAsync();
+                .Where(t => t.BookStatus == SD.BookTableStatusPending && t.SitInDate.Date == datepicker.Value.Date && t.SitInTime == timepicker.Value.TimeOfDay).OrderBy(t => t.SitInDate).ThenBy(t => t.SitInTime).ToListAsync();
 
-            foreach (TableBookingHeader item in tableBookingHeaderList)
-            {
-                TableDetailsVM individual = new TableDetailsVM
-                {
-                    TableBookingHeader = item,
-                    TableBookingDetails = await _db.TableBookingDetails.Where(t => t.TableBookingHeaderId == item.Id).ToListAsync()
-                };
 
-                tableDetailsVM.Add(individual);
-            }
-
-            return View(nameof(ARBooking), tableDetailsVM.OrderBy(t => t.TableBookingHeader.SitInDate).ThenBy(t => t.TableBookingHeader.SitInTime).ToList());
+            TableARVM objTArm = new TableARVM { tableBookingHeaders = tableBookingHeaderList, StatusMessage = "" };
+            return View(nameof(ARBooking), objTArm);
 
         }
 
         public async Task<IActionResult> ManageBooking()
         {
-            List<TableDetailsVM> tableDetailsVM = new List<TableDetailsVM>();
-            List<TableBookingHeader> tableBookingHeaderList = await _db.TableBookingHeader.Where(t => t.Status != SD.TableStatusCancelled && t.Status != SD.TableStatusCompleted && t.BookStatus == SD.BookTableStatusApproved).OrderByDescending(t => t.SitInDate).ThenByDescending(t => t.SitInTime).ToListAsync();
-
-            foreach (TableBookingHeader item in tableBookingHeaderList)
-            {
-                TableDetailsVM individual = new TableDetailsVM
-                {
-                    TableBookingHeader = item,
-                    TableBookingDetails = await _db.TableBookingDetails.Where(t => t.TableBookingHeaderId == item.Id).ToListAsync()
-                };
-
-                tableDetailsVM.Add(individual);
-            }
-
-            return View(tableDetailsVM.OrderBy(t => t.TableBookingHeader.SitInDate).ThenBy(t => t.TableBookingHeader.SitInTime).ToList());
+            List<TableBookingHeader> tableBookingHeaderList = await _db.TableBookingHeader.Where(t => t.Status != SD.TableStatusCancelled && t.Status != SD.TableStatusCompleted && t.BookStatus == SD.BookTableStatusApproved).OrderBy(t => t.SitInDate).ThenBy(t => t.SitInTime).ToListAsync();
+            return View(tableBookingHeaderList);
         }
 
         [Authorize]
@@ -133,29 +103,16 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> FilterBy(DateTime? datepicker, DateTime? timepicker)
         {
-            List<TableDetailsVM> tableDetailsVM = new List<TableDetailsVM>();
             List<TableBookingHeader> tableBookingHeaderList = new List<TableBookingHeader>();
             if ((datepicker == null && timepicker == null) || (datepicker == null && timepicker != null))
                 return RedirectToAction(nameof(ManageBooking));
             else if (datepicker != null && timepicker == null)
-                tableBookingHeaderList = await _db.TableBookingHeader.Where(t => t.Status != SD.TableStatusCancelled && t.Status != SD.TableStatusCompleted && t.BookStatus == SD.BookTableStatusApproved && t.SitInDate.Date == datepicker.Value.Date).OrderByDescending(t => t.SitInDate).ThenByDescending(t => t.SitInTime).ToListAsync();
+                tableBookingHeaderList = await _db.TableBookingHeader.Where(t => t.Status != SD.TableStatusCancelled && t.Status != SD.TableStatusCompleted && t.BookStatus == SD.BookTableStatusApproved && t.SitInDate.Date == datepicker.Value.Date).OrderBy(t => t.SitInDate).ThenBy(t => t.SitInTime).ToListAsync();
             else if (datepicker != null && timepicker != null)
-                tableBookingHeaderList = await _db.TableBookingHeader.Where(t => t.Status != SD.TableStatusCancelled && t.Status != SD.TableStatusCompleted && t.BookStatus == SD.BookTableStatusApproved && t.SitInDate.Date == datepicker.Value.Date && t.SitInTime == timepicker.Value.TimeOfDay).OrderByDescending(t => t.SitInDate).ThenByDescending(t => t.SitInTime).ToListAsync();
+                tableBookingHeaderList = await _db.TableBookingHeader.Where(t => t.Status != SD.TableStatusCancelled && t.Status != SD.TableStatusCompleted && t.BookStatus == SD.BookTableStatusApproved && t.SitInDate.Date == datepicker.Value.Date && t.SitInTime == timepicker.Value.TimeOfDay).OrderBy(t => t.SitInDate).ThenBy(t => t.SitInTime).ToListAsync();
 
 
-
-            foreach (TableBookingHeader item in tableBookingHeaderList)
-            {
-                TableDetailsVM individual = new TableDetailsVM
-                {
-                    TableBookingHeader = item,
-                    TableBookingDetails = await _db.TableBookingDetails.Where(t => t.TableBookingHeaderId == item.Id).ToListAsync()
-                };
-
-                tableDetailsVM.Add(individual);
-            }
-
-            return View(nameof(ManageBooking), tableDetailsVM.OrderBy(t => t.TableBookingHeader.SitInDate).ThenBy(t => t.TableBookingHeader.SitInTime).ToList());
+            return View(nameof(ManageBooking), tableBookingHeaderList);
 
         }
 
@@ -206,17 +163,14 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
         {
             try
             {
-                var tblDetailsObj = _db.TableBookingDetails.Include(t => t.TableBookingHeader).Where(t => t.TableBookingHeaderId == TableHeaderId).ToList();
-                if (tblDetailsObj.Any())
+                var tblDetailsObj = _db.TableBookingHeader.Where(t => t.Id == TableHeaderId).FirstOrDefault();
+                if (tblDetailsObj != null)
                 {
-                    foreach (var item in tblDetailsObj)
+                    TableTrack objT = _db.TableTrack.Include(t => t.Table).Where(t => t.DateTable.Date == tblDetailsObj.SitInDate.Date && t.TimeTable == tblDetailsObj.SitInTime && t.Table.SeatingName == tblDetailsObj.TableName).FirstOrDefault();
+                    if (objT != null)
                     {
-                        TableTrack objT = _db.TableTrack.Include(t => t.Table).Where(t => t.DateTable.Date == item.TableBookingHeader.SitInDate.Date && t.TimeTable == item.TableBookingHeader.SitInTime && t.Table.SeatingName == item.TableName).FirstOrDefault();
-                        if (objT != null)
-                        {
-                            objT.AmtAva += item.TableBooked;
-                            _db.SaveChanges();
-                        }
+                        objT.AmtAva += tblDetailsObj.TableBooked;
+                        _db.SaveChanges();
                     }
                 }
                 return true;

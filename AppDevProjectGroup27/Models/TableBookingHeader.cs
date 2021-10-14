@@ -29,6 +29,14 @@ namespace AppDevProjectGroup27.Models
         [Required]
         public TimeSpan SitInTime { get; set; }
 
+        [Display(Name = "Table Name")]
+        [Required]
+        public string TableName { get; set; }
+
+        [Display(Name = "Tables Booked")]
+        [Required]
+        public int TableBooked { get; set; }
+
         public string Status { get; set; }
         public string BookStatus { get; set; }
     }

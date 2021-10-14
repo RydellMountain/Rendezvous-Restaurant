@@ -1,0 +1,87 @@
+﻿@model AppDevProjectGroup27.Models.ViewModels.TableBookingHistVM
+@using AppDevProjectGroup27.Utility
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<div class="border backgroundWhiteBorder">
+    <h2 class="text-info">Table Booking History:</h2>
+    <br />
+    @if (Model.tableBookingHeaders.Count() > 0)
+    {
+
+        <table class="table table-striped border">
+            <tr class="table-secondary">
+                <th>
+                    @Html.DisplayNameFor(m => m.tableBookingHeaders.First().Id)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => m.tableBookingHeaders.First().TableName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => m.tableBookingHeaders.First().TableBooked)
+                </th>
+                <th>
+                    Date Booked
+                </th>
+                <th>
+                    Date
+                </th>
+                <th>
+                    Time
+                </th>
+                <th>
+                    Status
+                </th>
+            </tr>
+            @foreach (var item in Model.tableBookingHeaders)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(m => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => item.TableName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => item.TableBooked)
+                    </td>
+                    <td>
+                        @item.DateBookingMade.ToString("dd/MM/yyyy")
+                    </td>
+                    <td>
+                        @item.SitInDate.ToString("dd/MM/yyyy")
+                    </td>
+                    <td>
+                        @item.SitInTime.ToString(@"hh\:mm")
+                    </td>
+                    <td>
+                        @if (item.Status == SD.TableStatusCancelled)
+                        {
+                            <p>@Html.DisplayFor(m => item.Status)</p>
+                        }
+                        else
+                        {
+                            <p>@Html.DisplayFor(m => item.BookStatus)</p>
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+        <div page-model="@Model.PagingInfo"
+             page-classes-enabled="true"
+             page-class="btn border"
+             page-class-normal="btn btn-light"
+             page-class-selected="btn btn-info active"
+             class="btn-group float-right">
+
+        </div>
+        <br />
+    }
+    else
+    {
+        <p>No Table Bookings...</p>
+    }
+</div>

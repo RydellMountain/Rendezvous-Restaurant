@@ -27,9 +27,11 @@
                         @Html.DisplayNameFor(m => m.DateTable)
                     </th>
                     <th>
+                        @Html.DisplayNameFor(m => m.TimeTable)
+                    </th>
+                    <th>
                         @Html.DisplayNameFor(m => m.AmtAva)
                     </th>
-                    <th></th>
                 </tr>
                 @foreach (var item in Model)
                 {
@@ -38,18 +40,21 @@
                             @Html.DisplayFor(m => item.Table.SeatingName)
                         </td>
                         <td>
-                            @Html.DisplayFor(m => item.DateTable)
+                            @item.DateTable.ToString("dd/MM/yyyy")
                         </td>
                         <td>
-                            @Html.DisplayFor(m => item.AmtAva)
+                            @item.TimeTable.ToString(@"hh\:mm")
                         </td>
                         <td>
-                            <div class="btn-group" role="group">
-                                <a class="btn btn-primary text-white" asp-controller="Table" asp-action="Edit" asp-route-Id="@item.TableId">
-                                    <i class="far fa-edit"></i>
-                                </a>
-                            </div>
-                        <td>
+                            @if (item.AmtAva < 0)
+                            {
+                                <p>0</p>
+                            }
+                            else
+                            {
+                                @Html.DisplayFor(m => item.AmtAva)
+                            }
+                        </td>
                     </tr>
                 }
 

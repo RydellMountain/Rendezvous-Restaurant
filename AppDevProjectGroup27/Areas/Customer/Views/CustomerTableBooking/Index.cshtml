@@ -1,0 +1,168 @@
+﻿@model AppDevProjectGroup27.Models.ViewModels.CustomerBookingVM
+@using AppDevProjectGroup27.Utility
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<br />
+<h2>Book A Table</h2>
+<br />
+
+<form asp-action="Index">
+    @Html.AntiForgeryToken()
+    <div class="container border border-secondary" style="height:60px;">
+        <div class="row container">
+            <div class="col-9">
+                <div class="row" style="padding-top:10px">
+                    <div class="col-3" style="vertical-align:middle; text-align:left">
+                        <h4>Search Table:</h4>
+                    </div>
+                    <div class="col-3">
+                        @Html.DropDownListFor(x => x.ChosenTableId, Model.TableList, "Select Table", new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                    <div class="col-3">
+                        <input type="text" id="datepicker" asp-for="@Model.DateChosen" value="" class="form-control" placeholder="Date" />
+                    </div>
+                    <div class="col-3">
+                        <input type="text" id="timepicker" asp-for="@Model.TimeChosen" value="" class="form-control" placeholder="Time" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-1">
+                <div class="row" style="padding-top:10px;">
+                    <button type="submit" name="submit" value="Search" class="btn btn-info form-control">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</form>
+<br />
+<div class="backgroundWhiteBorder10Padding">
+    @if (Model.TableTracks != null)
+    {
+        <form asp-action="AddToTable" method="post">
+            @Html.AntiForgeryToken()
+            <table class="table table-striped border">
+                <tr class="table-secondary">
+                    <th>
+                        @Html.DisplayNameFor(m => m.TableTracks.Table.SeatingName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(m => m.TableTracks.DateTable)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(m => m.TableTracks.TimeTable)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(m => m.TableTracks.AmtAva)
+                    </th>
+                    <th>
+
+                    </th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(m => m.TableTracks.Table.SeatingName)
+                    </td>
+                    <td>
+                        @Model.TableTracks.DateTable.ToString("dd/MM/yyyy")
+                    </td>
+                    <td>
+                        @Model.TableTracks.TimeTable.ToString(@"hh\:mm")
+                    </td>
+                    <td>
+                        @if (Model.TableTracks.AmtAva < 0)
+                        {
+                            <p>0</p>
+                        }
+                        else
+                        {
+                            @Html.DisplayFor(m => m.TableTracks.AmtAva)
+                        }
+                    </td>
+                    <td>
+                        @if (Model.TableTracks.AmtAva < 0)
+                        {
+                            <input class="form-control" type="number" min="0" max="0" step="1" disabled />
+                        }
+                        else
+                        {
+                            <input type="hidden" value="@Model.TableTracks.Id" name="TableTrackId" id="TableTrackId" />
+                            <input name="Quantity" id="Quantity" class="form-control" type="number" min="1" max="@Model.TableTracks.AmtAva" step="1" onkeydown="return false;" value="1" />
+                        }
+                    <td>
+                </tr>
+            </table>
+
+            <br />
+            <p style="text-align:right">
+                <button type="submit" name="submit" value="Submit" class="btn btn-success form-control" onclick="if (confirm('Are you sure you want to book this table?'))  return true; else { event.preventDefault(); return   false; }">
+                    Create Booking
+                </button>
+            </p>
+        </form>
+    }
+    else
+    {
+
+        <p>No Tables To Book...</p>
+    }
+</div>
+
+
+@section Scripts
+{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.13.18/jquery.timepicker.js">
+    </script>
+    <script>
+            $(function () {
+            var cDt = new Date('@SharedMethods.GetDateTime().ToString("MM/dd/yyyy")');
+            var minDt = cDt;
+            if (getTimeFromCurrentDate >= 20) {
+                minDt.setDate(cDt.getDate() + 1);
+            }
+            $("#datepicker").datepicker({ minDate: minDt, maxDate: "+1W" });
+            $("#timepicker").timepicker({'minTime': '11:00 AM','maxTime':'8:00 PM', step:'30'})
+        });
+        function setPickUpTime() {
+            var dateSelected = document.getElementById("datepicker").value;
+            var dt = new Date(dateSelected);
+            var today = new Date('@SharedMethods.GetDateTime().ToString("MM/dd/yyyy HH:mm:ss")');
+            dt.setHours(0, 0, 0, 0)
+            if (dt > today) {
+                selectedTime = '11:00am'
+            }
+            else {
+                selectedTime = getTimeFromCurrentDate();
+            }
+            $('#timepicker').timepicker('option', 'minTime', selectedTime);
+        }
+        function getTimeFromCurrentDate() {
+            var curDt = new Date('@SharedMethods.GetDateTime().ToString("MM/dd/yyyy HH:mm:ss")');
+            var minTime = "";
+            if (curDt.getHours() < 11) {
+                minTime = '12:00pm';
+            }
+            else {
+                if (curDt.getMinutes < 30) {
+                    minTime = (curDt.getHours() + 1).toString() + ':30pm'
+                }
+                else {
+                    minTime = (curDt.getHours() + 2).toString() + ':00pm'
+                }
+            }
+            return minTime;
+        }
+        $('#datepicker').change(function () {
+            setPickUpTime();
+        });
+    </script>
+
+}

@@ -23,7 +23,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View(await _db.TableTrack.Include(t => t.Table).ToListAsync());
+            return View(await _db.TableTrack.Include(t => t.Table).OrderByDescending(t => t.DateTable).ThenByDescending(t => t.TimeTable).ToListAsync());
         }
     }
 }

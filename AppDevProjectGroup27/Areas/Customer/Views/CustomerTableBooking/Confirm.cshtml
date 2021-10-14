@@ -1,0 +1,78 @@
+﻿@model TableBookingHeader
+
+@{
+    ViewData["Title"] = "Confirm";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<div class="backgroundWhite">
+    <div class="row px-3">
+        <div class="col-8">
+            <h2 class="text-info">Table Booking Confirmed</h2>
+        </div>
+        <div class="col-4 text-right">
+            <a asp-action="Index" asp-controller="CustomerTableBooking" class="btn btn-success form-control">New Table Booking</a>
+        </div>
+    </div>
+
+    @if (Model != null)
+    {
+        <div style="color:maroon" class="p-3">
+            Your Table Booking has been made and is awaiting confirmation! Please see the booking summary below.
+            <br />
+            You will receive an e-mail when your booking is confirmed.
+            <br />
+            Feel free to contact us for any questions.
+        </div>
+        <div class="container row border ml-1 backgroundWhiteBorder10Padding" style="width:100%">
+            <div class="col-lg-8 col-12" style="border-right:1px solid #bbb9b9">
+                <br />
+                <div class="form-group row">
+                    <div class="col-3">
+                        <label>Booking ID</label>
+                    </div>
+                    <div class="col-9">
+                        <input asp-for="Id" disabled class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-3">
+                        <label>Table</label>
+                    </div>
+                    <div class="col-9">
+                        <input asp-for="TableName" disabled class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-3">
+                        <label asp-for="TableBooked"></label>
+                    </div>
+                    <div class="col-9">
+                        <input asp-for="TableBooked" disabled class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-3">
+                        <label>Date</label>
+                    </div>
+                    <div class="col-9">
+                        <input value="@Model.SitInDate.ToShortDateString()" disabled class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-3">
+                        <label>Time</label>
+                    </div>
+                    <div class="col-9">
+                        <input value="@Model.SitInTime.ToString(@"hh\:mm")" disabled class="form-control" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-danger">Error ... Please Try again</div>
+    }
+</div>
