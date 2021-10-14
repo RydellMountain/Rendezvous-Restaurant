@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace AppDevProjectGroup27.Areas.Customer.Controllers
 {
-    [Authorize(Roles = SD.FrontDeskUser + "," + SD.ManagerUser)]
+    [Authorize]
     [Area("Customer")]
     public class TableBookingHistoryController : Controller
     {
