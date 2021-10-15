@@ -1,0 +1,272 @@
+﻿@model AppDevProjectGroup27.Models.ViewModels.CusTableBookingHistoryVM
+
+@{
+    ViewData["Title"] = "Customers' Table Booking History |";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<div>
+    <div class="row">
+        <div class="col-12">
+            <h2 class="text-info">Customers' Table Booking History</h2>
+            <br />
+            @if (Model.DisplayDate.HasValue)
+            {<h3>Booked Date: <b>@Model.DisplayDate.Value.ToString("MM/dd/yyyy")</b></h3>}
+        else
+        {
+            <h3>Booked Date: <b>-</b></h3>
+        }
+        </div>
+        <div class="col-12">
+            @if (!string.IsNullOrEmpty(Model.StatusChosen))
+            {
+                <h4>Status: <b>@Model.StatusChosen</b></h4>
+            }
+            else
+            {
+                <h4>Status: <b>-</b></h4>
+            }
+        </div>
+        <div class="col-12">
+            @if (!string.IsNullOrEmpty(Model.BookStatusChosen))
+            {
+                <h4>Book Status: <b>@Model.BookStatusChosen</b></h4>
+            }
+            else
+            {
+                <h4>Book Status: <b>-</b></h4>
+            }
+        </div>
+    </div>
+    <br />
+    @using (Html.BeginForm("CusTableBookingHis", "TableBookingHistory", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <div class="container border border-secondary" style="height:60px; width:4000px;">
+            <div class="row container">
+                <div class="col-12">
+                    <div class="row" style="padding-top:10px">
+                        <div class="col-1">
+                            <h6>Bookings of:</h6>
+                        </div>
+                        <div class="col-2">
+                            <input type="text" id="datepicker" name="datepicker" value="" class="form-control" />
+                        </div>
+                        <div class="col-1">
+                            <h6 style="vertical-align:middle">Status:</h6>
+                        </div>
+                        <div class="col-2">
+                            <select id="Status" name="Status" asp-items="Model.Status">
+                                <option value="">Select Status</option>
+                            </select>
+                        </div>
+                        <div class="col-2">
+                            <h6 style="vertical-align:middle">Booking Status:</h6>
+                        </div>
+                        <div class="col-2">
+                            <select id="BookStatus" name="BookStatus" asp-items="Model.BookStatus">
+                                <option value="">Select Booking Status</option>
+                            </select>
+                        </div>
+                        <div class="col-1"></div>
+                        <div class="col-1">
+                            <button type="submit" name="submit" value="Filter" class="btn btn-info form-control">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+    <br />
+    @if (Model.TableBookings.Count > 0)
+    {
+        <table class="table table-striped border">
+            <tr class="table-secondary">
+                <th>
+                    @Html.DisplayNameFor(m => m.TableBookings[0].Id)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => m.TableBookings[0].ApplicationUser.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => m.TableBookings[0].ApplicationUser.Email)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => m.TableBookings[0].TableName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => m.TableBookings[0].TableBooked)
+                </th>
+                <th>
+                    Date Booked
+                </th>
+                <th>@Html.DisplayNameFor(m => m.TableBookings[0].Status)</th>
+                <th>
+                    @Html.DisplayNameFor(m => m.TableBookings[0].BookStatus)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => m.TableBookings[0].SitInDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => m.TableBookings[0].SitInTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => m.TableBookings[0].TimeApproved)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => m.TableBookings[0].TimeRejected)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => m.TableBookings[0].TimeSitIn)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => m.TableBookings[0].TimeCheckOut)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(m => m.TableBookings[0].Duration)
+                </th>
+                <th>@Html.DisplayNameFor(m => m.TableBookings[0].ApprovedBy)</th>
+                <th>@Html.DisplayNameFor(m => m.TableBookings[0].RejectedBy)</th>
+            </tr>
+            @foreach (var item in Model.TableBookings)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(m => item.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => item.ApplicationUser.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => item.ApplicationUser.Email)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => item.TableName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => item.TableBooked)
+                    </td>
+                    <td>
+                        @item.DateBookingMade.ToString("dd/MM/yyyy")
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => item.Status)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => item.BookStatus)
+                    </td>
+                    <td>
+                        @item.SitInDate.ToString("dd/MM/yyyy")
+                    </td>
+                    <td>
+                        @item.SitInTime.ToString(@"hh\:mm")
+                    </td>
+                    @if (item.TimeApproved == null)
+                    {
+                        <td>
+                            -
+                        </td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(m => item.TimeApproved)</td>
+                    }
+                    @if (item.TimeRejected == null)
+                    {
+                        <td>
+                            -
+                        </td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(m => item.TimeRejected)</td>
+                    }
+                    @if (item.TimeSitIn == null)
+                    {
+                        <td>
+                            -
+                        </td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(m => item.TimeSitIn)</td>
+                    }
+                    @if (item.TimeCheckOut == null)
+                    {
+                        <td>
+                            -
+                        </td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(m => item.TimeCheckOut)</td>
+                    }
+                    @if (string.IsNullOrEmpty(item.Duration))
+                    {
+                        <td>
+                            -
+                        </td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(m => item.Duration)</td>
+                    }
+                    @if (string.IsNullOrEmpty(item.ApprovedBy))
+                    {
+                        <td>
+                            -
+                        </td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(m => item.ApprovedBy)</td>
+                    }
+                    @if (string.IsNullOrEmpty(item.RejectedBy))
+                    {
+                        <td>
+                            -
+                        </td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(m => item.RejectedBy)</td>
+                    }
+                </tr>
+            }
+        </table>
+    }
+    else
+    {
+        <p>No Bookings...</p>
+    }
+</div>
+
+
+@section Scripts{
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.13.18/jquery.timepicker.js">
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            var Today = new Date('@Model.CurrentDate.ToString("MM/dd/yyyy")');
+            var TDate = Today.getDate();
+            var TMonth = Today.getMonth();
+            var TYear = Today.getFullYear();
+            var Early = new Date('@Model.EarliestDate.ToString("MM/dd/yyyy")');
+            var EarlDate = Early.getDate();
+            var EarlMonth = Early.getMonth();
+            var EarlYear = Early.getFullYear();
+            $("#datepicker").datepicker({ minDate: new Date(EarlYear, EarlMonth, EarlDate), maxDate: new Date(TYear, TMonth, TDate) });
+        });
+        $(document).ready(function () {
+            $("#datepicker").attr("readonly", true);
+        });
+    </script>
+}

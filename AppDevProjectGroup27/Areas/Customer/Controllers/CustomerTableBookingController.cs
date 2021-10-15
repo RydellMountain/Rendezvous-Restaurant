@@ -122,7 +122,14 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
                 TableName = tableTrack.Table.SeatingName,
                 TableBooked = Quantity.Value,
                 Status = SD.TableStatusSubmitted,
-                BookStatus = SD.BookTableStatusPending
+                BookStatus = SD.BookTableStatusPending,
+                ApprovedBy = "",
+                RejectedBy = "",
+                TimeApproved = null,
+                TimeCheckOut = null,
+                TimeRejected = null,
+                TimeSitIn = null,
+                Duration = ""
             };
 
             await _db.TableBookingHeader.AddAsync(objTBH);

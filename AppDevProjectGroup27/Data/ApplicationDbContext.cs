@@ -26,7 +26,6 @@ namespace AppDevProjectGroup27.Data
         public DbSet<Table> Table { get; set; }
         public DbSet<TableTrack> TableTrack { get; set; }
         public DbSet<TableBookingHeader> TableBookingHeader { get; set; }
-        public DbSet<TableBookingDetails> TableBookingDetails { get; set; }
 
         public object AspNetRoles { get; internal set; }
     }

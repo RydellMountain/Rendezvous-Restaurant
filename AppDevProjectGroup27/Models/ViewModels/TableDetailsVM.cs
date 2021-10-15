@@ -8,6 +8,6 @@ namespace AppDevProjectGroup27.Models.ViewModels
     public class TableDetailsVM
     {
         public TableBookingHeader TableBookingHeader { get; set; }
-        public List<TableBookingDetails> TableBookingDetails { get; set; }
+        //public List<TableBookingDetails> TableBookingDetails { get; set; }
     }
 }

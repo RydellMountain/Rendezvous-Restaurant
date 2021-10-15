@@ -25,5 +25,19 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
         {
             return View(await _db.TableTrack.Include(t => t.Table).OrderByDescending(t => t.DateTable).ThenByDescending(t => t.TimeTable).ToListAsync());
         }
+
+        public async Task<IActionResult> CleanUp()
+        {
+            var objTT = await _db.TableTrack.ToListAsync();
+            foreach (var item in objTT)
+            {
+                if (item.DateTable.Date < DateTime.Now.Date)
+                {
+                    _db.TableTrack.Remove(item);
+                }
+            }
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

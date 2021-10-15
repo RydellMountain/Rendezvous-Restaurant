@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace AppDevProjectGroup27.Areas.Admin.Controllers
@@ -198,25 +199,38 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             */
 
             //Reject Pending Ones:
-            var CheckTableHeaderPending = await _db.TableBookingHeader.Where(t => t.TableName == table.SeatingName && t.BookStatus == SD.BookTableStatusPending).ToListAsync();
+            var CheckTableHeaderPending = await _db.TableBookingHeader.Where(t => t.TableName == table.SeatingName && t.Status != SD.TableStatusCancelled && t.BookStatus == SD.BookTableStatusPending && t.SitInDate.Date > DateTime.Now.Date).ToListAsync();
             if (CheckTableHeaderPending.Any())
             {
                 foreach (var item in CheckTableHeaderPending)
                 {
                     TableBookingHeader tableHeader = _db.TableBookingHeader.Find(item.Id);
                     tableHeader.BookStatus = SD.BookTableStatusRejected;
+                    tableHeader.TimeRejected = DateTime.Now;
+
+                    var claimsIdentity = (ClaimsIdentity)User.Identity;
+                    var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+                    var StaffName = _db.ApplicationUser.Where(a => a.Id == claim.Value).SingleOrDefault().Name;
+
+                    tableHeader.RejectedBy = StaffName;
                     // Send Email saying their booking was rejected because table is unavailable
                 }
             }
 
             //Cancel Approved Ones:
-            var CheckTableHeaderApproved = await _db.TableBookingHeader.Where(t => t.TableName == table.SeatingName && t.BookStatus == SD.BookTableStatusApproved && t.Status == SD.TableStatusSubmitted).ToListAsync();
+            var CheckTableHeaderApproved = await _db.TableBookingHeader.Where(t => t.TableName == table.SeatingName && t.BookStatus == SD.BookTableStatusApproved && t.Status == SD.TableStatusSubmitted && t.SitInDate.Date > DateTime.Now.Date).ToListAsync();
             if (CheckTableHeaderApproved.Any())
             {
                 foreach (var item in CheckTableHeaderApproved)
                 {
                     TableBookingHeader tableHeader = _db.TableBookingHeader.Find(item.Id);
                     tableHeader.Status = SD.TableStatusCancelled;
+                    tableHeader.TimeRejected = DateTime.Now;
+                    var claimsIdentity = (ClaimsIdentity)User.Identity;
+                    var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+                    var StaffName = _db.ApplicationUser.Where(a => a.Id == claim.Value).SingleOrDefault().Name;
+
+                    tableHeader.RejectedBy = StaffName;
                     // Send Email saying their booking was cancelled because table is unavailable
                 }
             }

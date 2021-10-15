@@ -4,14 +4,16 @@ using AppDevProjectGroup27.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AppDevProjectGroup27.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211015091918_AddedApprovedAndRejectedByInTableBookingHeader")]
+    partial class AddedApprovedAndRejectedByInTableBookingHeader
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -311,9 +313,6 @@ namespace AppDevProjectGroup27.Data.Migrations
                     b.Property<DateTime>("DateBookingMade")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Duration")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("RejectedBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -332,18 +331,6 @@ namespace AppDevProjectGroup27.Data.Migrations
                     b.Property<string>("TableName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("TimeApproved")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("TimeCheckOut")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("TimeRejected")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("TimeSitIn")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
                         .IsRequired()

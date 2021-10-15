@@ -74,6 +74,11 @@
                                     Customers' Order History
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a asp-area="Customer" asp-controller="TableBookingHistory" asp-action="CusTableBookingHis" class="nav-link">
+                                    Customers' Table Booking History
+                                </a>
+                            </li>
                         }
 
                         @if (User.IsInRole(SD.KitchenUser) || User.IsInRole(SD.FrontDeskUser) || User.IsInRole(SD.ManagerUser))
@@ -121,7 +126,7 @@
 
                             <li class="nav-item">
                                 <a asp-area="Customer" asp-controller="TableBookingHistory" asp-action="Index" class="nav-link">
-                                    Table Booking History
+                                    My Table Booking History
                                 </a>
                             </li>
                             <li class="nav-item">
