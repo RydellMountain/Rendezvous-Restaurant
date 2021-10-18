@@ -35,7 +35,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
                 Quantity = 0
             };
             var TableObj = await _db.Table.AnyAsync();
-            if (TableObj) objCB.TableList = await _db.Table.Where(t => t.Active == true).Select(t => new SelectListItem
+            if (TableObj) objCB.TableList = await _db.Table.Where(t => t.Active == true).OrderBy(t=>t.SeatingName).Select(t => new SelectListItem
             {
                 Text = t.SeatingName,
                 Value = t.Id.ToString()
@@ -78,7 +78,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             }
 
             var TableObj = await _db.Table.AnyAsync();
-            if (TableObj) objCB.TableList = await _db.Table.Where(t => t.Active == true).Select(t => new SelectListItem
+            if (TableObj) objCB.TableList = await _db.Table.Where(t => t.Active == true).OrderBy(t=>t.SeatingName).Select(t => new SelectListItem
             {
                 Text = t.SeatingName,
                 Value = t.Id.ToString()
