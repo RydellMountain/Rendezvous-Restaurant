@@ -2,10 +2,12 @@
 using AppDevProjectGroup27.Models;
 using AppDevProjectGroup27.Models.ViewModels;
 using AppDevProjectGroup27.Utility;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -17,9 +19,12 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
     {
 
         public readonly ApplicationDbContext _db;
-        public TableController(ApplicationDbContext db)
+
+        private readonly IWebHostEnvironment _hostingEnvironment;
+        public TableController(ApplicationDbContext db, IWebHostEnvironment hostingEnvironment)
         {
             _db = db;
+            _hostingEnvironment = hostingEnvironment;
         }
 
 
@@ -62,6 +67,50 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                     objTable.Table.SeatingName += " Seater";
                     _db.Table.Add(objTable.Table);
                     await _db.SaveChangesAsync();
+
+                    // BEGINNING OF IMAGE
+                    //Image saving Section
+                    //Name of image will be the ID of the menuItem number
+
+
+                    //Extracting the root path for where images will be saved
+                    string webRootPath = _hostingEnvironment.WebRootPath;
+                    var files = HttpContext.Request.Form.Files;
+
+                    //Recieving MenuItem From DB
+                    var tableFromDb = await _db.Table.FindAsync(objTable.Table.Id);
+
+                    if (files.Count > 0)
+                    {
+                        //File was upload
+
+                        //Combining the webroot path with images
+                        var uploads = Path.Combine(webRootPath, @"images\Table");
+                        var extension = Path.GetExtension(files[0].FileName);
+
+                        using (var filesStream = new FileStream(Path.Combine(uploads, objTable.Table.Id + extension), FileMode.Create))
+                        {
+                            //will copy the image to the file location on the sever and rename it
+                            files[0].CopyTo(filesStream);
+                        }
+
+                        //In database the name will be changed to te loctaion where the image is saved
+                        tableFromDb.Image = @"\images\Table\" + objTable.Table.Id + extension;
+
+                    }
+                    else
+                    {
+                        //No file uploaded so default will be used
+                        var uploads = Path.Combine(webRootPath, @"images\Table\" + SD.DefaultTableImage);
+                        System.IO.File.Copy(uploads, webRootPath + @"\images\Table\" + objTable.Table.Id + ".png");
+
+                        tableFromDb.Image = @"\images\Table\" + objTable.Table.Id + ".png";
+
+                    }
+
+                    await _db.SaveChangesAsync();
+
+                    //END of IMAGE
                     return RedirectToAction(nameof(Index));
                 }
 
@@ -140,6 +189,40 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                 }
 
                 var TableFromDb = await _db.Table.FindAsync(objTable.Table.Id);
+
+                //Begin Image
+                string webRootPath = _hostingEnvironment.WebRootPath;
+                var files = HttpContext.Request.Form.Files;
+                if (files.Count > 0)
+                {
+                    //New Image File was upload
+
+                    //Combining the webroot path with images
+                    var uploads = Path.Combine(webRootPath, @"images\Table");
+                    var extension_new = Path.GetExtension(files[0].FileName);
+
+                    // Delete Image File that was in Database
+                    var imagePath = Path.Combine(webRootPath, TableFromDb.Image.TrimStart('\\'));
+
+                    if (System.IO.File.Exists(imagePath))
+                    {
+                        System.IO.File.Delete(imagePath);
+                    }
+
+                    // New Image File will be uploaded
+                    using (var filesStream = new FileStream(Path.Combine(uploads, objTable.Table.Id + extension_new), FileMode.Create))
+                    {
+                        //will copy the image to the file location on the sever and rename it
+                        files[0].CopyTo(filesStream);
+                    }
+
+                    //In database the name will be changed to te loctaion where the image is saved
+                    TableFromDb.Image = @"\images\Table\" + objTable.Table.Id + extension_new;
+
+                }
+                //End Image
+
+
                 TableFromDb.MaxTables = objTable.Table.MaxTables;
                 TableFromDb.Active = objTable.Table.Active;
 
@@ -177,6 +260,15 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                 return View();
             }
 
+            // Delete Image
+            string webRootPath = _hostingEnvironment.WebRootPath;
+            var imagePath = Path.Combine(webRootPath, table.Image.TrimStart('\\'));
+
+            if (System.IO.File.Exists(imagePath))
+            {
+                System.IO.File.Delete(imagePath);
+            }
+            //End Delete Image
             // Send Email to All pending and approved bookings for specific item that is being deleted
             // Inform Customers that the table is no longer available etc.
 

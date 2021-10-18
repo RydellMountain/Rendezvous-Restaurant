@@ -20,5 +20,6 @@ namespace AppDevProjectGroup27.Models
         public int MaxTables { get; set; }
 
         public bool Active { get; set; }
+        public string Image { get; set; }
     }
 }

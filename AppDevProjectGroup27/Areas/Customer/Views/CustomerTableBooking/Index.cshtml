@@ -51,6 +51,9 @@
             @Html.AntiForgeryToken()
             <table class="table table-striped border">
                 <tr class="table-secondary">
+                    <th width="25%">
+
+                    </th>
                     <th>
                         @Html.DisplayNameFor(m => m.TableTracks.Table.SeatingName)
                     </th>
@@ -69,16 +72,19 @@
                     <th></th>
                 </tr>
                 <tr>
-                    <td>
+                    <td width="25%">
+                        <img src="@Model.TableTracks.Table.Image" width="100%" style="border-radius:5px;border:1px solid #bbb9b9" />
+                    </td>
+                    <td style="vertical-align:middle">
                         @Html.DisplayFor(m => m.TableTracks.Table.SeatingName)
                     </td>
-                    <td>
+                    <td style="vertical-align:middle">
                         @Model.TableTracks.DateTable.ToString("dd/MM/yyyy")
                     </td>
-                    <td>
+                    <td style="vertical-align:middle">
                         @Model.TableTracks.TimeTable.ToString(@"hh\:mm")
                     </td>
-                    <td>
+                    <td style="vertical-align:middle">
                         @if (Model.TableTracks.AmtAva <= 0)
                         {
                             <p>0</p>
@@ -88,7 +94,7 @@
                             @Html.DisplayFor(m => m.TableTracks.AmtAva)
                         }
                     </td>
-                    <td>
+                    <td style="vertical-align:middle">
                         @if (Model.TableTracks.AmtAva <= 0)
                         {
                             <p style="color:red">Sorry, All Tables Booked!</p>

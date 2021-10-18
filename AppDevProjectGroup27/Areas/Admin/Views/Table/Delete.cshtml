@@ -10,38 +10,45 @@
 <br />
 
 <form method="post">
-    <div class="border backgroundWhite">
+    <div class="backgroundWhiteBorder row">
         <input type="hidden" asp-for="Id" />
-        <fieldset disabled>
-            <div class="form-group row">
-                <div class="col-2">
-                    <label asp-for="SeatingName" class="col-form-label"></label>
+        <div class="col-8">
+            <fieldset disabled>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="SeatingName" class="col-form-label"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="SeatingName" class="form-control" />
+                    </div>
                 </div>
-                <div class="col-5">
-                    <input asp-for="SeatingName" class="form-control" />
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="MaxTables" class="col-form-label"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="MaxTables" class="form-control" />
+                    </div>
                 </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-2">
-                    <label asp-for="MaxTables" class="col-form-label"></label>
+                <div class="form-group row">
+                    <div class="col-4">
+                        <label asp-for="Active" class="col-form-label"></label>
+                    </div>
+                    <div class="col-8">
+                        <input type="checkbox" asp-for="Active" class="form-control" />
+                    </div>
                 </div>
-                <div class="col-5">
-                    <input asp-for="MaxTables" class="form-control" />
+                <div class="form-group row">
+
                 </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-2">
-                    <label asp-for="Active" class="col-form-label"></label>
-                </div>
-                <div class="col-5">
-                    <input type="checkbox" asp-for="Active" class="form-control" />
-                </div>
-            </div>
-        </fieldset>
-        <div class="form-group row">
-            <div class="col-5 offset-2">
+            </fieldset>
+            <div class="col-8 offset-4">
                 <partial name="_DeleteAndBackToListButton" model="Model.Id" />
             </div>
+        </div>
+        <div class="col-1"></div>
+        <div class="col-3">
+            <img src="@Model.Image" width="100%" style="border-radius:5px;border:1px solid #bbb9b9;" />
         </div>
     </div>
 </form>

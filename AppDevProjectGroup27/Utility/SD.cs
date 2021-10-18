@@ -8,7 +8,8 @@ namespace AppDevProjectGroup27.Utility
 {
     public static class SD
     {
-        public const string DefaultFoodImage = "fast-food.png";
+		public const string DefaultTableImage = "dining-table.png";
+		public const string DefaultFoodImage = "fast-food.png";
         public const string ManagerUser = "Manager";
         public const string KitchenUser = "Kitchen";
         public const string FrontDeskUser = "FrontDesk";
