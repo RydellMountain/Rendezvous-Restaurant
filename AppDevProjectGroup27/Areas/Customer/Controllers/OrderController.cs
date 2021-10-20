@@ -60,7 +60,9 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             var CustomerEmail = CustomerInfo.Email;
             var CustomerName = CustomerInfo.Name;
 
-            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId+" - Cancelled & Refund", "Order number "+OrderId+", has been cancelled, and is in the process of being refunded by our staff.", null);
+            List<OrderDetails> objDetails = await _db.OrderDetails.Where(o => o.OrderId == OrderId).ToListAsync();
+
+            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId+" - Cancelled & Refund", "Order number "+OrderId+", has been cancelled, and is in the process of being refunded by our staff.<br />The order details are as follows:", objDetails,orderHeader.CouponCode, orderHeader.CouponCodeDiscount);
 
             await _db.SaveChangesAsync();
             return RedirectToAction("ManageOrder", "Order");
@@ -81,7 +83,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             var CustomerEmail = CustomerInfo.Email;
             var CustomerName = CustomerInfo.Name;
 
-            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId+" - Refund", "Order number "+OrderId+", is in the process of being refunded by our staff.", null);
+            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId+" - Refund", "Order number "+OrderId+", is in the process of being refunded by our staff.", null,null,0);
 
             await _db.SaveChangesAsync();
             string StatusMessage = "Order " + OrderId + " has been marked as " + SD.PaymentStatusRefunded;
@@ -219,7 +221,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             var CustomerName = CustomerInfo.Name;
 
 
-            SendEmail(CustomerName, CustomerEmail, "Order : " + id+" - Confirmation", "Thank you for your order, your order details are as follows:", orderDetailsViewModel.OrderDetails);
+            SendEmail(CustomerName, CustomerEmail, "Order : " + id+" - Confirmation", "Thank you for your order, your order details are as follows:", orderDetailsViewModel.OrderDetails,orderDetailsViewModel.OrderHeader.CouponCode,orderDetailsViewModel.OrderHeader.CouponCodeDiscount);
   
            
             orderDetailsViewModel.OrderHeader.PaymentStatus = SD.PaymentStatusApproved;
@@ -251,7 +253,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             var CustomerName = CustomerInfo.Name;
 
 
-            SendEmail(CustomerName, CustomerEmail, "Order : " + id+" - Cancelled", "Your order has been cancelled, the order details are as follows:", orderDetailsViewModel.OrderDetails);
+            SendEmail(CustomerName, CustomerEmail, "Order : " + id+" - Cancelled", "Your order has been cancelled, the order details are as follows:", orderDetailsViewModel.OrderDetails,orderDetailsViewModel.OrderHeader.CouponCode,orderDetailsViewModel.OrderHeader.CouponCodeDiscount);
             //Changes
             orderDetailsViewModel.OrderHeader.PaymentStatus = SD.PaymentStatusRejected;
             orderDetailsViewModel.OrderHeader.Status = SD.StatusCancelled;
@@ -349,7 +351,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             var CustomerEmail = CustomerInfo.Email;
             var CustomerName = CustomerInfo.Name;
 
-            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId+" - Being Prepared", "Order number "+OrderId+", is currently being prepared by our awesome cooks.\nThe Estimated Cooking Time is "+orderHeader.EstimatedTimeComplete+".", null );
+            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId+" - Being Prepared", "Order number "+OrderId+", is currently being prepared by our awesome cooks.<br />The Estimated Cooking Time is "+orderHeader.EstimatedTimeComplete+".", null,null,0);
 
 
             await _db.SaveChangesAsync();
@@ -386,7 +388,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             var CustomerEmail = CustomerInfo.Email;
             var CustomerName = CustomerInfo.Name;
 
-            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId+" - Ready for pick up", "Order number "+OrderId+", is ready.\nYour order awaits your arrival.", null);
+            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId+" - Ready for pick up", "Order number "+OrderId+", is ready.<br />Your order awaits your arrival.", null,null,0);
 
 
             await _db.SaveChangesAsync();
@@ -411,10 +413,36 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
             List<OrderDetails> objDetails = await _db.OrderDetails.Where(o => o.OrderId == OrderId).ToListAsync();
             // Send To customer
-            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId + " - Cancelled", "You have successfully cancelled your order, the order details are as follows:", objDetails);
+            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId + " - Cancelled", "You have successfully cancelled your order, the order details are as follows:", objDetails,orderHeader.CouponCode,orderHeader.CouponCodeDiscount);
             // Send to Admin
-            SendEmail("Rendezvous Restaurant", "rendezvousrestaurantdut@gmail.com", "Order : " + OrderId + " - Customer Cancelled", "Customer Name: "+CustomerName+"\nCustomer Email: "+CustomerEmail+"\n\nHas decided to cancel their order, the order details are as follows:", objDetails);
+            SendEmail("Rendezvous Restaurant", "rendezvousrestaurantdut@gmail.com", "Order : " + OrderId + " - Customer Cancelled", "Customer Name: "+CustomerName+"<br />Customer Email: "+CustomerEmail+"<br /><br />Has decided to cancel their order, the order details are as follows:", objDetails, orderHeader.CouponCode, orderHeader.CouponCodeDiscount);
             
+            await _db.SaveChangesAsync();
+
+            //will need email logic here
+            //await _emailSender.SendEmailAsync(_db.Users.Where(u => u.Id == orderHeader.UserId).FirstOrDefault().Email, "Spice - Order: " + orderHeader.Id.ToString() + " - Cancelation", "Order has been Cancelled");
+
+            return RedirectToAction(nameof(OrderHistory), "Order");
+        }
+        [Authorize]
+        public async Task<IActionResult> SpecCusOrderCancel(int OrderId)
+        {
+            OrderHeader orderHeader = await _db.OrderHeader.FindAsync(OrderId);
+            orderHeader.Status = SD.StatusCancelled;
+            
+
+            var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == orderHeader.UserId).FirstOrDefault();
+            var CustomerEmail = CustomerInfo.Email;
+            var CustomerName = CustomerInfo.Name;
+
+            orderHeader.OrderCancelledBy = CustomerName;
+
+            List<OrderDetails> objDetails = await _db.OrderDetails.Where(o => o.OrderId == OrderId).ToListAsync();
+            // Send To customer
+            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId + " - Cancelled", "You have successfully cancelled your order, the order details are as follows:", objDetails, orderHeader.CouponCode, orderHeader.CouponCodeDiscount);
+            // Send to Admin
+            SendEmail("Rendezvous Restaurant", "rendezvousrestaurantdut@gmail.com", "Order : " + OrderId + " - Customer Cancelled", "Customer Name: " + CustomerName + "<br />Customer Email: " + CustomerEmail + "<br /><br />Has decided to cancel their order, the order details are as follows:", objDetails, orderHeader.CouponCode, orderHeader.CouponCodeDiscount);
+
             await _db.SaveChangesAsync();
 
             //will need email logic here
@@ -441,7 +469,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
             List<OrderDetails> objDetails = await _db.OrderDetails.Where(o => o.OrderId == OrderId).ToListAsync();
 
-            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId+" - Cancelled", "Your order has been cancelled, the order details are as follows:", objDetails);
+            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId+" - Cancelled", "Your order has been cancelled, the order details are as follows:", objDetails,orderHeader.CouponCode,orderHeader.CouponCodeDiscount);
             await _db.SaveChangesAsync();
 
             //will need email logic here
@@ -591,7 +619,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             var CustomerEmail = CustomerInfo.Email;
             var CustomerName = CustomerInfo.Name;
 
-            SendEmail(CustomerName, CustomerEmail, "Order : " + orderId+" - Completed", "We see that you have picked your order.\nWe hope that you enjoy your meal.", null);
+            SendEmail(CustomerName, CustomerEmail, "Order : " + orderId+" - Completed", "We see that you have picked your order.<br />We hope that you enjoy your meal.", null,null,0);
 
             await _db.SaveChangesAsync();
             return RedirectToAction("OrderPickup", "Order");
@@ -626,59 +654,44 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
         }
 
-        public void SendEmail(string Name, string Email, string Sub, string Body ,List<OrderDetails> objDetails)
+        public void SendEmail(string Name, string Email, string Sub, string Body ,List<OrderDetails> objDetails, string Coupon, double? CouponDiscount)
         {
             try
             {
-                // locating the Templete's path
-                //var PathToFile = _hostEnviroment.WebRootPath + Path.DirectorySeparatorChar.ToString()
-                //    + "Templates" + Path.DirectorySeparatorChar.ToString() + "EmailTemplates"
-                //    + Path.DirectorySeparatorChar.ToString() + "index.html";
-
-
-                var BusEmail = new MailAddress("rendezvousrestaurantdut@gmail.com", "Rendezvous Restuarant");
+                var BusEmail = new MailAddress("rendezvousrestaurantdut@gmail.com", "Rendezvous Restaurant");
                 var email = new MailAddress(Email, Name);
                 var pass = "DUTRendezvous123";
                 var subject = Sub;
-                // var body = BodMessage;
-                //Assigning the template to the body of the email
-                //string HtmlBody = "";
-                //using (StreamReader streamReader = System.IO.File.OpenText(PathToFile))
-                //{
-                //    HtmlBody = streamReader.ReadToEnd();
-                //}
+                var body = "Good day, <strong>" + Name
+                    + "</strong>.<br /><br />" + Body;
 
-                string OrderDetailsBody = "";
                 double TotalPrice = 0.0;
                 if (objDetails != null)
                 { 
+                    body += "<br /><br /><table border =" + 1 + " cellpadding=" + 0 + " cellspacing=" + 0 + " width = " + 400 + "><tr><th>Item</th><th>Quantity</th><th>Price</th><th>Total Price</th></tr>";
                     foreach (var item in objDetails)
                     {
+                        body += "<tr><td>"+ item.Name+"</td><td>"+item.Count+"</td><td>"+item.Price.ToString("C")+"</td><td>";
                         double PriceQuan = item.Count * item.Price;
-                        OrderDetailsBody +=   item.Count + " x " + item.Name + "  ~ " + (PriceQuan).ToString("C") + "\n";
+                        body += PriceQuan.ToString("C") + "</td></tr>";
                         TotalPrice += PriceQuan;
 
                     }
-
-                OrderDetailsBody += "\nTotal Price: " + TotalPrice.ToString("C");
+                    body += "<tr height ="+10+"><td colspan = " + 4 + "></td></tr>";
+                    if (!string.IsNullOrEmpty(Coupon) && CouponDiscount != null)
+                    {
+                        body += "<tr><td colspan = " + 3 + ">Coupon:</td><td>" + Coupon + "</td></tr>"
+                            + "<tr><td colspan = " + 3 + ">Discount:</td><td>-"+CouponDiscount.Value.ToString("C")+"</td></tr>"
+                            + "<tr><td colspan = " + 3 + ">Total(Excl Discount):</td><td>"+TotalPrice.ToString("C")+"</td></tr>";
+                    }
+                    if (CouponDiscount != null)
+                        body += "<tr><td colspan = " + 3 + "><b>TOTAL:</b></td><td>" + (TotalPrice - CouponDiscount.Value).ToString("C") + "</td></tr></table>";
+                    else
+                        body += "<tr><td colspan = " + 3 + "><b>TOTAL:</b></td><td>" + TotalPrice.ToString("C") + "</td></tr></table>";
                 }
-                //{0} : Name
 
-                //string UrlMain = "https://localhost/Customer/Home/Details/";
-                //foreach (var item in objMenuItems)
-                //{
-                //    HtmlBody += "<tr>\r\n<td>" +
-                //        item.Name + "</td>\r\n<td>" +
-                //        item.Price.ToString("C") +
-                //        "</td>\r\n<td>" +
-                //        UrlMain + item.Id + "</td>\r\n</tr>\r\n";
-
-                //    //"\n" + item.Image
-                //}
-
-                //HtmlBody += "</table>\r\n</body>\r\n</html>";
-
-                var body = "Good day, " + Name + "\n\n" + Body+"\n\n" +OrderDetailsBody + "\nHave a Lovely day.\nThe Rendezvous-Restaurant Team.";
+                body += "<br /><br />Have A Lovely day.<br/>The Rendezvous-Restaurant Team.";
+                // var body = "Good day, " + Name + "\n\n" + Body+"\n\n" +OrderDetailsBody + "\nHave a Lovely day.\nThe Rendezvous-Restaurant Team.";
 
                 var smtp = new SmtpClient
                 {
@@ -693,7 +706,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
                 {
                     Subject = subject,
                     Body = body,
-                    IsBodyHtml = false
+                    IsBodyHtml = true
                 })
                 {
                     smtp.Send(message);
