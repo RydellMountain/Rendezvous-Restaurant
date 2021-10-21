@@ -21,7 +21,7 @@
 <body class="search-background">
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
-            <div class="container">
+            <div class= "container row col-md-12" style="width: 100%; margin: 0px auto;" >
                 <a class="navbar-brand" asp-area="Customer" asp-controller="Home" asp-action="Index" title="Home">
                     <img src="~/images/boiledNew.png" />
                     <img src="~/images/hamburgerNew.png" />
@@ -43,7 +43,7 @@
 
                             <li class="nav-item dropdown text-white-50">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropDownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Content Management
+                                    Manage Content
                                 </a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropDownMenuLink">
                                     <a class="dropdown-item" asp-action="Index" asp-controller="Category" asp-area="Admin">Category</a>
@@ -62,23 +62,37 @@
             </li>*@
 
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="navbarDropDownMenuLink" role="button" aria-haspopup="true" aria-expanded="false">Table Management</a>
+                                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="navbarDropDownMenuLink" role="button" aria-haspopup="true" aria-expanded="false">Manage Table</a>
                                 <div class="dropdown-menu" aria-labelledby="navbarDropDownMenuLink">
                                     <a class="dropdown-item" asp-action="Index" asp-controller="Table" asp-area="Admin">Table</a>
                                     <a class="dropdown-item" asp-action="Index" asp-controller="TableTrack" asp-area="Admin">Table Track</a>
                                 </div>
                             </li>
 
-                            <li class="nav-item">
-                                <a asp-area="Customer" asp-controller="Order" asp-action="CusOrderHistory" class="nav-link">
-                                    Customers' Order History
-                                </a>
+                            @*<li class="nav-item">
+                <a asp-area="Customer" asp-controller="Order" asp-action="CusOrderHistory" class="nav-link">
+                    Customers' Order History
+                </a>
+            </li>
+            <li class="nav-item">
+                <a asp-area="Customer" asp-controller="TableBookingHistory" asp-action="CusTableBookingHis" class="nav-link">
+                    Customers' Table Booking History
+                </a>
+            </li>*@
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="navbarDropDownMenuLink" role="button" aria-haspopup="true" aria-expanded="false">Customer Histories</a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropDownMenuLink">
+                                    <a class="dropdown-item" asp-area="Customer" asp-controller="Order" asp-action="CusOrderHistory">
+                                        Customers' Order History
+                                    </a>
+                                    <a class="dropdown-item" asp-area="Customer" asp-controller="TableBookingHistory" asp-action="CusTableBookingHis">
+                                        Customers' Table Booking History
+                                    </a>
+                                </div>
                             </li>
-                            <li class="nav-item">
-                                <a asp-area="Customer" asp-controller="TableBookingHistory" asp-action="CusTableBookingHis" class="nav-link">
-                                    Customers' Table Booking History
-                                </a>
-                            </li>
+
+
+
                         }
 
                         @if (User.IsInRole(SD.KitchenUser) || User.IsInRole(SD.FrontDeskUser) || User.IsInRole(SD.ManagerUser))
