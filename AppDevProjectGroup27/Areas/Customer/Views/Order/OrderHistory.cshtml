@@ -7,7 +7,7 @@
 
 <br />
 <br />
-<div class="border backgroundWhiteBorder">
+<div>
     <div class="row">
         <div class="col-6">
             <h2 class="text-info">My Order History</h2>
@@ -17,7 +17,7 @@
     <div>
         @if (Model.Orders.Count() > 0)
         {
-            <table class="table table-striped border">
+            <table class="table table-striped border" style="text-align:left">
                 <tr class="table-secondary">
                     <th>
                         @Html.DisplayNameFor(m => m.Orders[0].OrderHeader.Id)
@@ -58,103 +58,103 @@
                 </tr>
                 @foreach (var item in Model.Orders)
                 {
-            <tr>
-                <td>
-                    @Html.DisplayFor(m => item.OrderHeader.Id)
-                </td>
-                <td>
-                    @Html.DisplayFor(m => item.OrderHeader.PickUpName)
-                </td>
-                <td>
-                    @Html.DisplayFor(m => item.OrderHeader.ApplicationUser.Email)
-                </td>
-                <td>
-                    @Html.DisplayFor(m => item.OrderHeader.EstimatedTimeComplete)
-                </td>
-                <td>
-                    @Html.DisplayFor(m => item.OrderHeader.PickUpTime)
-                </td>
-                @if (item.OrderHeader.StartDateTime == null)
-                {
-                    <td>
-                        -
-                    </td>
-                }
-                else
-                {
-                    <td>@Html.DisplayFor(m => item.OrderHeader.StartDateTime)</td>
-                }
-                @if (item.OrderHeader.CompleteDateTime == null)
-                {
-                    <td>
-                        -
-                    </td>
-                }
-                else
-                {
-                    <td>@Html.DisplayFor(m => item.OrderHeader.CompleteDateTime)</td>
-                }
-                @if (item.OrderHeader.PickedUpOrder == null)
-                {
-                    <td>
-                        -
-                    </td>
-                }
-                else
-                {
-                    <td>@Html.DisplayFor(m => item.OrderHeader.PickedUpOrder)</td>
-                }
-                @if (string.IsNullOrEmpty(item.OrderHeader.Duration))
-                {
-                    <td>
-                        -
-                    </td>
-                }
-                else
-                {
-                    <td>@Html.DisplayFor(m => item.OrderHeader.Duration)</td>
-                }
-                <td>
-                    @Html.DisplayFor(m => item.OrderHeader.OrderTotal)
-                </td>
-                <td>
-                    @Html.DisplayFor(m => item.OrderDetails.Count)
-                </td>
-                <td>
-                    <button type="submit" class="btn btn-success anchorDetail" data-id="@item.OrderHeader.Id" data-toggle="modal">
-                        <i class="far fa-list-alt"></i>Details
-                    </button>
-                    @if (item.OrderHeader.Status == SD.StatusSubmitted || item.OrderHeader.Status == SD.StatusInProcess || item.OrderHeader.Status == SD.StatusCompleted || item.OrderHeader.Status == SD.StatusReady)
-
-                    {
-                        <button type="button" class="btn btn-info btnOrderStatus" data-id="@item.OrderHeader.Id" data-toggle="modal">
-                            <i class="far fa-clock"></i> Status
-                        </button>
-                    }
-
-
-
-                </td>
-                <td>
-                    @if ((item.OrderHeader.Status == SD.StatusSubmitted || item.OrderHeader.Status == SD.StatusInProcess) && (item.OrderHeader.PaymentStatus == SD.PaymentStatusApproved || item.OrderHeader.PaymentStatus == SD.PaymentStatusPending) && User.IsInRole(SD.CustomerEndUser))
-                    {
-                        <form method="post">
-                            <button type="submit" asp-action="CusOrderCancel" asp-route-OrderId="@item.OrderHeader.Id" class="btn btn-danger form-control mb-3">
-                                <i class="fas fa-times"></i>&nbsp; Cancel Order
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(m => item.OrderHeader.Id)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => item.OrderHeader.PickUpName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => item.OrderHeader.ApplicationUser.Email)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => item.OrderHeader.EstimatedTimeComplete)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => item.OrderHeader.PickUpTime)
+                        </td>
+                        @if (item.OrderHeader.StartDateTime == null)
+                        {
+                            <td>
+                                -
+                            </td>
+                        }
+                        else
+                        {
+                            <td>@Html.DisplayFor(m => item.OrderHeader.StartDateTime)</td>
+                        }
+                        @if (item.OrderHeader.CompleteDateTime == null)
+                        {
+                            <td>
+                                -
+                            </td>
+                        }
+                        else
+                        {
+                            <td>@Html.DisplayFor(m => item.OrderHeader.CompleteDateTime)</td>
+                        }
+                        @if (item.OrderHeader.PickedUpOrder == null)
+                        {
+                            <td>
+                                -
+                            </td>
+                        }
+                        else
+                        {
+                            <td>@Html.DisplayFor(m => item.OrderHeader.PickedUpOrder)</td>
+                        }
+                        @if (string.IsNullOrEmpty(item.OrderHeader.Duration))
+                        {
+                            <td>
+                                -
+                            </td>
+                        }
+                        else
+                        {
+                            <td>@Html.DisplayFor(m => item.OrderHeader.Duration)</td>
+                        }
+                        <td>
+                            @Html.DisplayFor(m => item.OrderHeader.OrderTotal)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(m => item.OrderDetails.Count)
+                        </td>
+                        <td>
+                            <button type="submit" class="btn btn-success anchorDetail" data-id="@item.OrderHeader.Id" data-toggle="modal">
+                                <i class="far fa-list-alt"></i>Details
                             </button>
-                        </form>
-                    }
-                    else if ((item.OrderHeader.Status == SD.StatusSubmitted || item.OrderHeader.Status == SD.StatusInProcess) && (item.OrderHeader.PaymentStatus == SD.PaymentStatusApproved || item.OrderHeader.PaymentStatus == SD.PaymentStatusPending) && (User.IsInRole(SD.ManagerUser) || User.IsInRole(SD.FrontDeskUser) || User.IsInRole(SD.KitchenUser)))
-                    {
-                        <form method="post">
-                            <button type="submit" asp-action="SpecCusOrderCancel" asp-route-OrderId="@item.OrderHeader.Id" class="btn btn-danger form-control mb-3">
-                                <i class="fas fa-times"></i>&nbsp; Cancel Order
-                            </button>
-                        </form>
-                    }
-                </td>
+                            @if (item.OrderHeader.Status == SD.StatusSubmitted || item.OrderHeader.Status == SD.StatusInProcess || item.OrderHeader.Status == SD.StatusCompleted || item.OrderHeader.Status == SD.StatusReady)
 
-            </tr>
+                            {
+                                <button type="button" class="btn btn-info btnOrderStatus" data-id="@item.OrderHeader.Id" data-toggle="modal">
+                                    <i class="far fa-clock"></i> Status
+                                </button>
+                            }
+
+
+
+                        </td>
+                        <td>
+                            @if ((item.OrderHeader.Status == SD.StatusSubmitted || item.OrderHeader.Status == SD.StatusInProcess) && (item.OrderHeader.PaymentStatus == SD.PaymentStatusApproved || item.OrderHeader.PaymentStatus == SD.PaymentStatusPending) && User.IsInRole(SD.CustomerEndUser))
+                            {
+                                <form method="post">
+                                    <button type="submit" asp-action="CusOrderCancel" asp-route-OrderId="@item.OrderHeader.Id" class="btn btn-danger">
+                                        <i class="fas fa-times"></i>&nbsp; Cancel Order
+                                    </button>
+                                </form>
+                            }
+                            else if ((item.OrderHeader.Status == SD.StatusSubmitted || item.OrderHeader.Status == SD.StatusInProcess) && (item.OrderHeader.PaymentStatus == SD.PaymentStatusApproved || item.OrderHeader.PaymentStatus == SD.PaymentStatusPending) && (User.IsInRole(SD.ManagerUser) || User.IsInRole(SD.FrontDeskUser) || User.IsInRole(SD.KitchenUser)))
+                            {
+                                <form method="post">
+                                    <button type="submit" asp-action="SpecCusOrderCancel" asp-route-OrderId="@item.OrderHeader.Id" class="btn btn-danger">
+                                        <i class="fas fa-times"></i>&nbsp; Cancel Order
+                                    </button>
+                                </form>
+                            }
+                        </td>
+
+                    </tr>
                 }
 
             </table>
