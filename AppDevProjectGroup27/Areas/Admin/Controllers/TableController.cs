@@ -9,6 +9,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -306,6 +308,11 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
 
                     tableHeader.RejectedBy = StaffName;
                     // Send Email saying their booking was rejected because table is unavailable
+                    var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == tableHeader.UserId).FirstOrDefault();
+                    var CustomerEmail = CustomerInfo.Email;
+                    var CustomerName = CustomerInfo.Name;
+
+                    SendEmail(CustomerName, CustomerEmail, "Table Booking - Rejected", "The following table booking has been rejected:", tableHeader);
                 }
             }
 
@@ -324,6 +331,11 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
 
                     tableHeader.RejectedBy = StaffName;
                     // Send Email saying their booking was cancelled because table is unavailable
+                    var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == tableHeader.UserId).FirstOrDefault();
+                    var CustomerEmail = CustomerInfo.Email;
+                    var CustomerName = CustomerInfo.Name;
+
+                    SendEmail(CustomerName, CustomerEmail, "Table Booking - Cancelled", "The following table booking has been cancelled, we apologise for the inconvenience:", tableHeader);
                 }
             }
 
@@ -352,6 +364,50 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             var numericString = new string(Temp.Where(x => char.IsDigit(x)).ToArray());
             int.TryParse(numericString, out integerValue);
             return integerValue;
+
+        }
+
+        public void SendEmail(string Name, string Email, string Sub, string Body, TableBookingHeader objDetails)
+        {
+            try
+            {
+                var BusEmail = new MailAddress("rendezvousrestaurantdut@gmail.com", "Rendezvous Restaurant");
+                var email = new MailAddress(Email, Name);
+                var pass = "DUTRendezvous123";
+                var subject = Sub;
+                var body = "Good day, <strong>" + Name
+                    + "</strong>.<br /><br />" + Body;
+
+                    body += "<br /><br /><table border =" + 1 + " cellpadding=" + 0 + " cellspacing=" + 0 + " width = " + 400 + "><tr><th>Table Name</th><th>Number of Tables Booked</th><th>Date</th><th>Time</th></tr>";
+                        body += "<tr><td>" + objDetails.TableName + "</td><td>" + objDetails.TableBooked + "</td><td>" + objDetails.SitInDate.ToString("MM/dd/yyyy") + "</td><td>";
+                        body += objDetails.SitInTime.ToString(@"hh\:mm") + "</td></tr></table>";
+
+                body += "<br /><br />Have A Lovely day.<br/>The Rendezvous-Restaurant Team.";
+
+                var smtp = new SmtpClient
+                {
+                    Host = "smtp.gmail.com",
+                    Port = 587,
+                    EnableSsl = true,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    UseDefaultCredentials = false,
+                    Credentials = new NetworkCredential(BusEmail.Address, pass)
+                };
+                using (var message = new MailMessage(BusEmail, email)
+                {
+                    Subject = subject,
+                    Body = body,
+                    IsBodyHtml = true
+                })
+                {
+                    smtp.Send(message);
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
 
         }
     }

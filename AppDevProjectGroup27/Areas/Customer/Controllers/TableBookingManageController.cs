@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -54,6 +56,12 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
             // Send Email To Customer that their Booking was approved
             //To Get Email:
+            var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == tableHeader.UserId).FirstOrDefault();
+            var CustomerEmail = CustomerInfo.Email;
+            var CustomerName = CustomerInfo.Name;
+
+            SendEmail(CustomerName, CustomerEmail, "Table Booking - Approved", "The following table booking has been approved:", tableHeader);
+
             // var Email = _db.ApplicationUser.Find(tableHeader.UserId).Email;
             // End of Get Email (Please check if this code works first
 
@@ -84,6 +92,13 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
             // Send Email To Customer that their Booking was rejected
             //To Get Email:
+
+            var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == tableHeader.UserId).FirstOrDefault();
+            var CustomerEmail = CustomerInfo.Email;
+            var CustomerName = CustomerInfo.Name;
+
+            SendEmail(CustomerName, CustomerEmail, "Table Booking - Rejected", "The following table booking has been rejected:", tableHeader);
+
             // var Email = _db.ApplicationUser.Find(tableHeader.UserId).Email;
             // End of Get Email (Please check if this code works first
 
@@ -143,6 +158,14 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             tableHeader.Status = SD.TableStatusStart;
             tableHeader.TimeSitIn = DateTime.Now;
             _db.SaveChanges();
+
+            var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == tableHeader.UserId).FirstOrDefault();
+            var CustomerEmail = CustomerInfo.Email;
+            var CustomerName = CustomerInfo.Name;
+
+            SendEmail(CustomerName, CustomerEmail, "Table Booking - Reservation Started", "We see that your booking has started at <b>" + tableHeader.TimeSitIn.Value.ToString("MM/dd/yyyy HH:mm")
+                + "</b>.<br />We hope that you enjoy your meal and that you are pleased with our service.", null);
+
             return RedirectToAction(nameof(ManageBooking));
         }
 
@@ -181,6 +204,12 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
 
             //Email Logic to thank user for eating with us
+            var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == tableHeader.UserId).FirstOrDefault();
+            var CustomerEmail = CustomerInfo.Email;
+            var CustomerName = CustomerInfo.Name;
+
+            SendEmail(CustomerName, CustomerEmail, "Table Booking - Reservation Complete", "We see that you have left at <b>" + tableHeader.TimeCheckOut.Value.ToString("MM/dd/yyyy HH:mm")
+                + "</b>.<br />We hope that you enjoyed your time with us.<br />Have a safe journey to your destination.<br />We hope you eat with us again.", null);
 
             return RedirectToAction(nameof(ManageBooking));
         }
@@ -204,6 +233,13 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             tableHeader.RejectedBy = StaffName;
 
             _db.SaveChanges();
+
+            var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == tableHeader.UserId).FirstOrDefault();
+            var CustomerEmail = CustomerInfo.Email;
+            var CustomerName = CustomerInfo.Name;
+
+            SendEmail(CustomerName, CustomerEmail, "Table Booking - Cancelled", "The following table booking has been cancelled, we apologise for the inconvenience:", tableHeader);
+
             return RedirectToAction(nameof(ManageBooking));
         }
 
@@ -227,6 +263,15 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             tableHeader.RejectedBy = StaffName;
 
             _db.SaveChanges();
+
+            var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == tableHeader.UserId).FirstOrDefault();
+            var CustomerEmail = CustomerInfo.Email;
+            var CustomerName = CustomerInfo.Name;
+
+            SendEmail(CustomerName, CustomerEmail, "Table Booking - Cancelled", "You have successfully cancelled your table booking, the booking details are as follows:", tableHeader);
+
+            SendEmail("Rendezvous Restaurant", "rendezvousrestaurantdut@gmail.com", "Table Booking - Staff Cancelled", "Staff Name: " + CustomerName + "<br />Staff Email: " + CustomerEmail + "<br /><br />Has decided to cancel their table booking, the table booking details are as follows:", tableHeader);
+
             return RedirectToAction("Index", "TableBookingHistory");
         }
 
@@ -245,6 +290,15 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             tableHeader.RejectedBy = "Customer";
 
             _db.SaveChanges();
+
+            var CustomerInfo = _db.ApplicationUser.Where(u => u.Id == tableHeader.UserId).FirstOrDefault();
+            var CustomerEmail = CustomerInfo.Email;
+            var CustomerName = CustomerInfo.Name;
+
+            SendEmail(CustomerName, CustomerEmail, "Table Booking - Cancelled", "You have successfully cancelled your table booking, the booking details are as follows:", tableHeader);
+
+            SendEmail("Rendezvous Restaurant", "rendezvousrestaurantdut@gmail.com", "Table Booking - Customer Cancelled", "Customer Name: " + CustomerName + "<br />Customer Email: " + CustomerEmail + "<br /><br />Has decided to cancel their table booking, the table booking details are as follows:", tableHeader);
+
             return RedirectToAction("Index","TableBookingHistory");
         }
         public bool UpdateQuantity(int TableHeaderId)
@@ -270,6 +324,52 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             {
                 return false;
             }
+        }
+
+        public void SendEmail(string Name, string Email, string Sub, string Body, TableBookingHeader objDetails)
+        {
+            try
+            {
+                var BusEmail = new MailAddress("rendezvousrestaurantdut@gmail.com", "Rendezvous Restaurant");
+                var email = new MailAddress(Email, Name);
+                var pass = "DUTRendezvous123";
+                var subject = Sub;
+                var body = "Good day, <strong>" + Name
+                    + "</strong>.<br /><br />" + Body;
+
+                if (objDetails != null)
+                {
+                    body += "<br /><br /><table border =" + 1 + " cellpadding=" + 0 + " cellspacing=" + 0 + " width = " + 400 + "><tr><th>Table Name</th><th>Number of Tables Booked</th><th>Date</th><th>Time</th></tr>";
+                    body += "<tr><td>" + objDetails.TableName + "</td><td>" + objDetails.TableBooked + "</td><td>" + objDetails.SitInDate.ToString("MM/dd/yyyy") + "</td><td>";
+                    body += objDetails.SitInTime.ToString(@"hh\:mm") + "</td></tr></table>";
+                }
+                body += "<br /><br />Have A Lovely day.<br/>The Rendezvous-Restaurant Team.";
+
+                var smtp = new SmtpClient
+                {
+                    Host = "smtp.gmail.com",
+                    Port = 587,
+                    EnableSsl = true,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    UseDefaultCredentials = false,
+                    Credentials = new NetworkCredential(BusEmail.Address, pass)
+                };
+                using (var message = new MailMessage(BusEmail, email)
+                {
+                    Subject = subject,
+                    Body = body,
+                    IsBodyHtml = true
+                })
+                {
+                    smtp.Send(message);
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+
         }
 
     }
