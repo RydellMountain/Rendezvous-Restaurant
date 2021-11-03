@@ -293,7 +293,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             */
 
             //Reject Pending Ones:
-            var CheckTableHeaderPending = await _db.TableBookingHeader.Where(t => t.TableName == table.SeatingName && t.Status != SD.TableStatusCancelled && t.BookStatus == SD.BookTableStatusPending && t.SitInDate.Date > DateTime.Now.Date).ToListAsync();
+            var CheckTableHeaderPending = await _db.TableBookingHeader.Where(t => t.TableName == table.SeatingName && t.Status != SD.TableStatusCancelled && t.BookStatus == SD.BookTableStatusPending && t.SitInDate.Date >= DateTime.Now.Date).ToListAsync();
             if (CheckTableHeaderPending.Any())
             {
                 foreach (var item in CheckTableHeaderPending)
@@ -312,7 +312,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                     var CustomerEmail = CustomerInfo.Email;
                     var CustomerName = CustomerInfo.Name;
 
-                    SendEmail(CustomerName, CustomerEmail, "Table Booking - Rejected", "The following table booking has been rejected:", tableHeader);
+                    SendEmail(CustomerName, CustomerEmail, "Table Booking : "+ item.Id +" - Rejected", "The following table booking has been rejected:", tableHeader);
                 }
             }
 
@@ -335,7 +335,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                     var CustomerEmail = CustomerInfo.Email;
                     var CustomerName = CustomerInfo.Name;
 
-                    SendEmail(CustomerName, CustomerEmail, "Table Booking - Cancelled", "The following table booking has been cancelled, we apologise for the inconvenience:", tableHeader);
+                    SendEmail(CustomerName, CustomerEmail, "Table Booking : " + item.Id + " - Cancelled", "The following table booking has been cancelled, we apologise for the inconvenience:", tableHeader);
                 }
             }
 

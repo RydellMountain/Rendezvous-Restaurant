@@ -39,8 +39,8 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
             TableBookingHistVM objTBHVM = new TableBookingHistVM();
 
-            objTBHVM.tableBookingHeaders = objTableHeader.OrderByDescending(t => t.SitInDate)
-                .ThenByDescending(t => t.SitInTime).Skip((productPage - 1) * PageSize)
+            objTBHVM.tableBookingHeaders = objTableHeader.OrderByDescending(t => t.Id)
+                .Skip((productPage - 1) * PageSize)
                 .Take(PageSize).ToList();
 
             objTBHVM.PagingInfo = new PagingInfo

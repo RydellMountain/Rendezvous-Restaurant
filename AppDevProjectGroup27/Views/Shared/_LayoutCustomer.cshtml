@@ -1,0 +1,212 @@
+﻿@using AppDevProjectGroup27.Utility
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+   
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>@ViewData["Title"] Rendezvous-Restaurant</title>
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrapMinty.css" />
+        @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />*@
+        <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="~/css/jquery-ui.css" />
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css" integrity="sha384-SZXxX4whJ79/gErwcOYf+zWLeJdY/qpuqC4cAa9rOGUstPomtqpuNWT9wdPEn2fk" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.13.18/jquery.timepicker.css" />
+        @*Tab icon*@
+       <link rel="icon" type="image/x-icon" href="~/favicon.ico"/>
+
+    </head>
+<body class="search-background">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+            <div class= "container row col-md-12" style="width: 100%; margin: 0px auto;" >
+                <a class="navbar-brand" asp-area="Customer" asp-controller="Home" asp-action="Index" title="Home">
+                    <img src="~/images/boiledNew.png" />
+                    <img src="~/images/hamburgerNew.png" />
+                    <img src="~/images/sushiNew.png">
+                    <label stye="cursor:pointer">Rendezvous-Restaurant</label>
+                </a>
+               
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+
+                        @if (User.IsInRole(SD.ManagerUser))
+                        {
+
+
+
+                            <li class="nav-item dropdown text-white-50">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropDownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Manage Content
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropDownMenuLink">
+                                    <a class="dropdown-item" asp-action="Index" asp-controller="Category" asp-area="Admin">Category</a>
+                                    <a class="dropdown-item" asp-action="Index" asp-controller="SubCategory" asp-area="Admin">Sub-Category</a>
+                                    <a class="dropdown-item" asp-action="Index" asp-controller="MenuItems" asp-area="Admin">Menu Item</a>
+                                    <a class="dropdown-item" asp-action="Index" asp-controller="Coupon" asp-area="Admin">Coupon</a>
+                                    <a class="dropdown-item" asp-action="Index" asp-controller="User" asp-area="Admin">Users</a>
+                                    <a class="dropdown-item" asp-action="Index" asp-controller="Special" asp-area="Admin">Newsletter</a>
+                                </div>
+                            </li>
+
+                            <li class="nav-item">
+                <a asp-area="Admin" asp-controller="Income" asp-action="Index" class="nav-link">
+                    Income Review
+                </a>
+            </li>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="navbarDropDownMenuLink" role="button" aria-haspopup="true" aria-expanded="false">Manage Table</a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropDownMenuLink">
+                                    <a class="dropdown-item" asp-action="Index" asp-controller="Table" asp-area="Admin">Table</a>
+                                    <a class="dropdown-item" asp-action="Index" asp-controller="TableTrack" asp-area="Admin">Table Track</a>
+                                </div>
+                            </li>
+
+                            @*<li class="nav-item">
+                <a asp-area="Customer" asp-controller="Order" asp-action="CusOrderHistory" class="nav-link">
+                    Customers' Order History
+                </a>
+            </li>
+            <li class="nav-item">
+                <a asp-area="Customer" asp-controller="TableBookingHistory" asp-action="CusTableBookingHis" class="nav-link">
+                    Customers' Table Booking History
+                </a>
+            </li>*@
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="navbarDropDownMenuLink" role="button" aria-haspopup="true" aria-expanded="false">Customer Histories</a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropDownMenuLink">
+                                    <a class="dropdown-item" asp-area="Customer" asp-controller="Order" asp-action="CusOrderHistory">
+                                        Customers' Order History
+                                    </a>
+                                    <a class="dropdown-item" asp-area="Customer" asp-controller="TableBookingHistory" asp-action="CusTableBookingHis">
+                                        Customers' Table Booking History
+                                    </a>
+                                </div>
+                            </li>
+
+
+
+                        }
+
+                        @if (User.IsInRole(SD.KitchenUser) || User.IsInRole(SD.FrontDeskUser) || User.IsInRole(SD.ManagerUser))
+                        {
+                            <li class="nav-item dropdown" aria-labelledby="navbarDropDownMenuLink">
+                                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="navbarDropDown" role="button" aria-haspopup="true" aria-expanded="false">Order</a>
+
+                                <div class="dropdown-menu">
+                                    @if (User.IsInRole(SD.KitchenUser) || User.IsInRole(SD.ManagerUser))
+                                    {
+                                        <a class="dropdown-item" asp-action="ManageOrder" asp-controller="Order" asp-area="Customer">Manage Order</a>
+                                    }
+
+                                    @if (User.IsInRole(SD.FrontDeskUser) || User.IsInRole(SD.ManagerUser))
+                                    {
+                                        <a class="dropdown-item" asp-action="OrderPickup" asp-controller="Order" asp-area="Customer">Order Pickup</a>
+                                    }
+
+
+
+                                </div>
+                            </li>
+
+                            @if (User.IsInRole(SD.FrontDeskUser) || User.IsInRole(SD.ManagerUser))
+                            {
+
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="navbarDropDownMenuLink" role="button" aria-haspopup="true" aria-expanded="false">Table Bookings</a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropDownMenuLink">
+                                        <a class="dropdown-item" asp-action="ARBooking" asp-controller="TableBookingManage" asp-area="Customer">Approve/Reject Table Bookings</a>
+                                        <a class="dropdown-item" asp-action="ManageBooking" asp-controller="TableBookingManage" asp-area="Customer">Manage Table Bookings</a>
+                                    </div>
+                                </li>
+                            }
+                        }
+
+
+                        @if (User.IsInRole(SD.ManagerUser) || User.IsInRole(SD.CustomerEndUser) || User.IsInRole(SD.FrontDeskUser) || User.IsInRole(SD.KitchenUser))
+                        {
+                            <li class="nav-item">
+                                <a asp-area="Customer" asp-controller="Order" asp-action="OrderHistory" class="nav-link">
+                                    My  Order History
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a asp-area="Customer" asp-controller="TableBookingHistory" asp-action="Index" class="nav-link">
+                                    My Table Booking History
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-area="Customer" asp-controller="CustomerTableBooking" asp-action="Index" class="nav-link">
+                                    Book A Table
+                                </a>
+                            </li>
+
+                        }
+
+                        @if (!(User.IsInRole(SD.ManagerUser) || User.IsInRole(SD.CustomerEndUser) || User.IsInRole(SD.FrontDeskUser) || User.IsInRole(SD.KitchenUser)))
+                        {
+                            <li style="color:white">
+                                <a href="#" class="nav-link">
+                                    <i class="fas fa-shopping-cart" title="Login To View Cart Items"></i>&nbsp; (0)
+                                </a>
+                            </li>
+                        }
+                        else if (HttpContextAccessor.HttpContext.Session.GetInt32(@SD.ssShoppingCartCount) != null)
+                        {
+                            <li style="color:white">
+                                <a asp-area="Customer" asp-controller="Cart" asp-action="Index" class="nav-link">
+                                    @{
+                                        var count = HttpContextAccessor.HttpContext.Session.GetInt32(@SD.ssShoppingCartCount);
+                                    }
+
+                                    <i class="fas fa-shopping-cart" title="Cart - @count item(s)"></i>&nbsp; (@count)
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li style="color:white">
+                                <a href="#" class="nav-link">
+                                    <i class="fas fa-shopping-cart" title="Cart - 0 item(s)"></i>&nbsp; (0)
+                                </a>
+                            </li>
+                        }
+
+                        @*<li class="nav-item">
+            <a class="nav-link " asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+        </li>*@
+
+                    </ul>
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div>
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer pl-3 text-muted text-white-50" style="background-color:#343a40">
+        <div class="container">
+            &copy; 2021 - Rendezvous-Restaurant by Group27
+        </div>
+    </footer>
+
+    <script src="https://cdn.tiny.cloud/1/6714fr5ya12mo5nfpb34plu1xm2whg3t95aqdyfbsgjihzdw/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/jquery-ui.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

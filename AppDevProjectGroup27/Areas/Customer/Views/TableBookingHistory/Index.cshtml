@@ -64,14 +64,17 @@
                         @if (item.Status == SD.TableStatusCancelled || item.Status == SD.TableStatusCompleted)
                         {
                             <p>@Html.DisplayFor(m => item.Status)</p>
-                        }
+                        }else if (item.Status == SD.TableStatusStart)
+                    {
+                        <p>Started</p>
+                    }
                         else
                         {
                             <p>@Html.DisplayFor(m => item.BookStatus)</p>
                         }
                     </td>
                     <td>
-                        @if (item.Status != SD.TableStatusCompleted && item.Status != SD.TableStatusCancelled && item.BookStatus != SD.BookTableStatusRejected && User.IsInRole(SD.CustomerEndUser))
+                        @if (item.Status != SD.TableStatusCompleted && item.Status != SD.TableStatusCancelled && item.Status != SD.TableStatusStart && item.BookStatus != SD.BookTableStatusRejected && User.IsInRole(SD.CustomerEndUser))
                         {
                             <form method="post">
                                 <button type="submit" asp-controller="TableBookingManage" asp-action="CusCancelBooking" asp-route-TableHeaderId="@item.Id" class="btn btn-danger form-control mb-3">
@@ -79,7 +82,7 @@
                                 </button>
                             </form>
                         }
-                        else if (item.Status != SD.TableStatusCompleted && item.Status != SD.TableStatusCancelled && item.BookStatus != SD.BookTableStatusRejected && (User.IsInRole(SD.FrontDeskUser) || User.IsInRole(SD.ManagerUser) || User.IsInRole(SD.KitchenUser)))
+                        else if (item.Status != SD.TableStatusCompleted && item.Status != SD.TableStatusCancelled && item.Status != SD.TableStatusStart && item.BookStatus != SD.BookTableStatusRejected && (User.IsInRole(SD.FrontDeskUser) || User.IsInRole(SD.ManagerUser) || User.IsInRole(SD.KitchenUser)))
                         {
                         <form method="post">
                             <button type="submit"  asp-controller="TableBookingManage" asp-action="THCusCancelBooking" asp-route-TableHeaderId="@item.Id" class="btn btn-danger form-control mb-3">

@@ -3,79 +3,82 @@
 
 @{
     ViewData["Title"] = "Customers' Order History |";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_LayoutCustomer.cshtml";
 }
 
 <br />
 <partial name="_StatusMessage" model="Model.StatusMessage" />
-<div >
-    <div class="row" >
-        <div class="col-12">
-            <h2 class="text-info">Customers' Order History</h2>
-            <br />
-            @if (Model.DisplayDate.HasValue)
-            {<h3>Order Date: <b>@Model.DisplayDate.Value.ToString("MM/dd/yyyy")</b></h3>}
-        else
+<div>
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="text-info">Customers' Order History</h2>
+                <br />
+                @if (Model.DisplayDate.HasValue)
+                {<h3>Order Date: <b>@Model.DisplayDate.Value.ToString("MM/dd/yyyy")</b></h3>}
+            else
+            {
+                <h3>Order Date: <b>-</b></h3>
+            }
+            </div>
+            <div class="col-12">
+                @if (!string.IsNullOrEmpty(Model.StatusChosen))
+                {
+                    <h4>Status: <b>@Model.StatusChosen</b></h4>
+                }
+                else
+                {
+                    <h4>Status: <b>-</b></h4>
+                }
+            </div>
+            <div class="col-12">
+                @if (!string.IsNullOrEmpty(Model.PaymentStatusChosen))
+                {
+                    <h4>Payment Status: <b>@Model.PaymentStatusChosen</b></h4>
+                }
+                else
+                {
+                    <h4>Payment Status: <b>-</b></h4>
+                }
+            </div>
+        </div>
+        <br />
+        @using (Html.BeginForm("CusOrderHistory", "Order", FormMethod.Post))
         {
-            <h3>Order Date: <b>-</b></h3>
-        }
-        </div>
-        <div class="col-12">
-            @if (!string.IsNullOrEmpty(Model.StatusChosen))
-            {
-                <h4>Status: <b>@Model.StatusChosen</b></h4>
-            }
-            else
-            {
-                <h4>Status: <b>-</b></h4>
-            }
-        </div>
-        <div class="col-12">
-            @if (!string.IsNullOrEmpty(Model.PaymentStatusChosen))
-            {
-                <h4>Payment Status: <b>@Model.PaymentStatusChosen</b></h4>
-            }
-            else
-            {
-                <h4>Payment Status: <b>-</b></h4>
-            }
-        </div>
-    </div>
-    <br />
-    @using (Html.BeginForm("CusOrderHistory", "Order", FormMethod.Post))
-    {
-        @Html.AntiForgeryToken()
-        <div class="container border border-secondary" style="height:60px; width:4000px;">
-            <div class="row container">
-                <div class="col-12">
-                    <div class="row" style="padding-top:10px">
-                        <div class="col-1">
-                            <h6>Orders of:</h6>
-                        </div>
-                        <div class="col-2">
-                            <input type="text" id="datepicker" name="datepicker" value="" class="form-control" />
-                        </div>
-                        <div class="col-1">
-                            <h6 style="vertical-align:middle">Status:</h6>
-                        </div>
-                        <div class="col-2">
-                            <select id="Status" name="Status" asp-items="Model.Status">
-                                <option value="">Select Status</option>
-                            </select>
-                        </div>
-                        <div class="col-2">
-                            <h6 style="vertical-align:middle">Payment Status:</h6>
-                        </div>
-                        <div class="col-2">
-                            <select id="PaymentStatus" name="PaymentStatus" asp-items="Model.PaymentStatus">
-                                <option value="">Select Payment Status</option>
-                            </select>
-                        </div>
-                        <div class="col-1"></div>
-                        <div class="col-1">
-                            <button type="submit" name="submit" value="Filter" class="btn btn-info form-control">
-                                <i class="fas fa-search"></i>
-                            </button>
+            @Html.AntiForgeryToken()
+            <div class="container border border-secondary" style="height:60px; width:4000px;">
+                <div class="row container">
+                    <div class="col-12">
+                        <div class="row" style="padding-top:10px">
+                            <div class="col-1">
+                                <h6>Orders of:</h6>
+                            </div>
+                            <div class="col-2">
+                                <input type="text" id="datepicker" name="datepicker" value="" class="form-control" />
+                            </div>
+                            <div class="col-1">
+                                <h6 style="vertical-align:middle">Status:</h6>
+                            </div>
+                            <div class="col-2">
+                                <select id="Status" name="Status" asp-items="Model.Status">
+                                    <option value="">Select Status</option>
+                                </select>
+                            </div>
+                            <div class="col-2">
+                                <h6 style="vertical-align:middle">Payment Status:</h6>
+                            </div>
+                            <div class="col-2">
+                                <select id="PaymentStatus" name="PaymentStatus" asp-items="Model.PaymentStatus">
+                                    <option value="">Select Payment Status</option>
+                                </select>
+                            </div>
+                            <div class="col-1"></div>
+                            <div class="col-1">
+                                <button type="submit" name="submit" value="Filter" class="btn btn-info form-control">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+
                         </div>
 
                     </div>
@@ -83,13 +86,12 @@
                 </div>
 
             </div>
-
-        </div>
-    }
+        }
+    </div>
     <br />
     @if (Model.Orders.Count > 0)
     {
-        <table class="table table-striped" border="0" align="left"  >
+        <table class="table table-striped" border="0" align="left">
             <tr class="table-secondary">
                 <th>
                     @Html.DisplayNameFor(m => m.Orders[0].OrderHeader.Id)
@@ -134,126 +136,128 @@
             </tr>
             @foreach (var item in Model.Orders)
             {
-        <tr>
-            <td>
-                @Html.DisplayFor(m => item.OrderHeader.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(m => item.OrderHeader.PickUpName)
-            </td>
-            <td>
-                @Html.DisplayFor(m => item.OrderHeader.ApplicationUser.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(m => item.OrderHeader.EstimatedTimeComplete)
-            </td>
-            <td>
-                @Html.DisplayFor(m => item.OrderHeader.PickUpTime)
-            </td>
-            @if (item.OrderHeader.StartDateTime == null)
-            {
-                <td>
-                    -
-                </td>
-            }
-            else
-            {
-                <td>@Html.DisplayFor(m => item.OrderHeader.StartDateTime)</td>
-            }
-            @if (item.OrderHeader.CompleteDateTime == null)
-            {
-                <td>
-                    -
-                </td>
-            }
-            else
-            {
-                <td>@Html.DisplayFor(m => item.OrderHeader.CompleteDateTime)</td>
-            }
-            @if (item.OrderHeader.PickedUpOrder == null)
-            {
-                <td>
-                    -
-                </td>
-            }
-            else
-            {
-                <td>@Html.DisplayFor(m => item.OrderHeader.PickedUpOrder)</td>
-            }
-            @if (string.IsNullOrEmpty(item.OrderHeader.Duration))
-            {
-                <td>
-                    -
-                </td>
-            }
-            else
-            {
-                <td>@Html.DisplayFor(m => item.OrderHeader.Duration)</td>
-            }
-            <td>
-                @Html.DisplayFor(m => item.OrderHeader.OrderTotal)
-            </td>
-            <td>
-                @Html.DisplayFor(m => item.OrderDetails.Count)
-            </td>
-            <td>
-                @Html.DisplayFor(m => item.OrderHeader.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(m => item.OrderHeader.PaymentStatus)
-            </td>
-            @if (string.IsNullOrEmpty(item.OrderHeader.OrderStartedBy))
-            {
-                <td>
-                    -
-                </td>
-            }
-            else
-            {
-                <td>@Html.DisplayFor(m => item.OrderHeader.OrderStartedBy)</td>
-            }
-            @if (string.IsNullOrEmpty(item.OrderHeader.OrderCompletedBy))
-            {
-                <td>
-                    -
-                </td>
-            }
-            else
-            {
-                <td>@Html.DisplayFor(m => item.OrderHeader.OrderCompletedBy)</td>
-            }
-            @if (string.IsNullOrEmpty(item.OrderHeader.OrderCancelledBy))
-            {
-                <td>
-                    -
-                </td>
-            }
-            else
-            {
-                <td>@Html.DisplayFor(m => item.OrderHeader.OrderCancelledBy)</td>
-            }
-            @if (string.IsNullOrEmpty(item.OrderHeader.OrderRefundedBy))
-            {
-                <td>
-                    -
-                </td>
-            }
-            else
-            {
-                <td>@Html.DisplayFor(m => item.OrderHeader.OrderRefundedBy)</td>
-            }
-            <td>
-                <button type="submit" class="btn btn-success anchorDetail" data-id="@item.OrderHeader.Id" data-toggle="modal">
-                    <i class="far fa-list-alt"></i>Details
-                </button>
-            </td>
-        </tr>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(m => item.OrderHeader.Id)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => item.OrderHeader.PickUpName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => item.OrderHeader.ApplicationUser.Email)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => item.OrderHeader.EstimatedTimeComplete)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => item.OrderHeader.PickUpTime)
+                    </td>
+                    @if (item.OrderHeader.StartDateTime == null)
+                    {
+                        <td>
+                            -
+                        </td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(m => item.OrderHeader.StartDateTime)</td>
+                    }
+                    @if (item.OrderHeader.CompleteDateTime == null)
+                    {
+                        <td>
+                            -
+                        </td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(m => item.OrderHeader.CompleteDateTime)</td>
+                    }
+                    @if (item.OrderHeader.PickedUpOrder == null)
+                    {
+                        <td>
+                            -
+                        </td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(m => item.OrderHeader.PickedUpOrder)</td>
+                    }
+                    @if (string.IsNullOrEmpty(item.OrderHeader.Duration))
+                    {
+                        <td>
+                            -
+                        </td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(m => item.OrderHeader.Duration)</td>
+                    }
+                    <td>
+                        @Html.DisplayFor(m => item.OrderHeader.OrderTotal)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => item.OrderDetails.Count)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => item.OrderHeader.Status)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(m => item.OrderHeader.PaymentStatus)
+                    </td>
+                    @if (string.IsNullOrEmpty(item.OrderHeader.OrderStartedBy))
+                    {
+                        <td>
+                            -
+                        </td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(m => item.OrderHeader.OrderStartedBy)</td>
+                    }
+                    @if (string.IsNullOrEmpty(item.OrderHeader.OrderCompletedBy))
+                    {
+                        <td>
+                            -
+                        </td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(m => item.OrderHeader.OrderCompletedBy)</td>
+                    }
+                    @if (string.IsNullOrEmpty(item.OrderHeader.OrderCancelledBy))
+                    {
+                        <td>
+                            -
+                        </td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(m => item.OrderHeader.OrderCancelledBy)</td>
+                    }
+                    @if (string.IsNullOrEmpty(item.OrderHeader.OrderRefundedBy))
+                    {
+                        <td>
+                            -
+                        </td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(m => item.OrderHeader.OrderRefundedBy)</td>
+                    }
+                    <td>
+                        <button type="submit" class="btn btn-success anchorDetail" data-id="@item.OrderHeader.Id" data-toggle="modal">
+                            <i class="far fa-list-alt"></i>Details
+                        </button>
+                    </td>
+                </tr>
             }
         </table>
     }
     else
     {
-        <p>No Customer Orders...</p>
+        <div class="container">
+            <p>No Customer Orders...</p>
+        </div>
     }
 </div>
 

@@ -2,78 +2,81 @@
 
 @{
     ViewData["Title"] = "Customers' Table Booking History |";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_LayoutCustomer.cshtml";
 }
 
 <br />
 <div>
-    <div class="row">
-        <div class="col-12">
-            <h2 class="text-info">Customers' Table Booking History</h2>
-            <br />
-            @if (Model.DisplayDate.HasValue)
-            {<h3>Booked Date: <b>@Model.DisplayDate.Value.ToString("MM/dd/yyyy")</b></h3>}
-        else
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="text-info">Customers' Table Booking History</h2>
+                <br />
+                @if (Model.DisplayDate.HasValue)
+                {<h3>Booked Date: <b>@Model.DisplayDate.Value.ToString("MM/dd/yyyy")</b></h3>}
+            else
+            {
+                <h3>Booked Date: <b>-</b></h3>
+            }
+            </div>
+            <div class="col-12">
+                @if (!string.IsNullOrEmpty(Model.StatusChosen))
+                {
+                    <h4>Status: <b>@Model.StatusChosen</b></h4>
+                }
+                else
+                {
+                    <h4>Status: <b>-</b></h4>
+                }
+            </div>
+            <div class="col-12">
+                @if (!string.IsNullOrEmpty(Model.BookStatusChosen))
+                {
+                    <h4>Book Status: <b>@Model.BookStatusChosen</b></h4>
+                }
+                else
+                {
+                    <h4>Book Status: <b>-</b></h4>
+                }
+            </div>
+        </div>
+        <br />
+        @using (Html.BeginForm("CusTableBookingHis", "TableBookingHistory", FormMethod.Post))
         {
-            <h3>Booked Date: <b>-</b></h3>
-        }
-        </div>
-        <div class="col-12">
-            @if (!string.IsNullOrEmpty(Model.StatusChosen))
-            {
-                <h4>Status: <b>@Model.StatusChosen</b></h4>
-            }
-            else
-            {
-                <h4>Status: <b>-</b></h4>
-            }
-        </div>
-        <div class="col-12">
-            @if (!string.IsNullOrEmpty(Model.BookStatusChosen))
-            {
-                <h4>Book Status: <b>@Model.BookStatusChosen</b></h4>
-            }
-            else
-            {
-                <h4>Book Status: <b>-</b></h4>
-            }
-        </div>
-    </div>
-    <br />
-    @using (Html.BeginForm("CusTableBookingHis", "TableBookingHistory", FormMethod.Post))
-    {
-        @Html.AntiForgeryToken()
-        <div class="container border border-secondary" style="height:60px; width:4000px;">
-            <div class="row container">
-                <div class="col-12">
-                    <div class="row" style="padding-top:10px">
-                        <div class="col-1">
-                            <h6>Bookings of:</h6>
-                        </div>
-                        <div class="col-2">
-                            <input type="text" id="datepicker" name="datepicker" value="" class="form-control" />
-                        </div>
-                        <div class="col-1">
-                            <h6 style="vertical-align:middle">Status:</h6>
-                        </div>
-                        <div class="col-2">
-                            <select id="Status" name="Status" asp-items="Model.Status">
-                                <option value="">Select Status</option>
-                            </select>
-                        </div>
-                        <div class="col-2">
-                            <h6 style="vertical-align:middle">Booking Status:</h6>
-                        </div>
-                        <div class="col-2">
-                            <select id="BookStatus" name="BookStatus" asp-items="Model.BookStatus">
-                                <option value="">Select Booking Status</option>
-                            </select>
-                        </div>
-                        <div class="col-1"></div>
-                        <div class="col-1">
-                            <button type="submit" name="submit" value="Filter" class="btn btn-info form-control">
-                                <i class="fas fa-search"></i>
-                            </button>
+            @Html.AntiForgeryToken()
+            <div class="container border border-secondary" style="height:60px; width:4000px;">
+                <div class="row container">
+                    <div class="col-12">
+                        <div class="row" style="padding-top:10px">
+                            <div class="col-1">
+                                <h6>Bookings of:</h6>
+                            </div>
+                            <div class="col-2">
+                                <input type="text" id="datepicker" name="datepicker" value="" class="form-control" />
+                            </div>
+                            <div class="col-1">
+                                <h6 style="vertical-align:middle">Status:</h6>
+                            </div>
+                            <div class="col-2">
+                                <select id="Status" name="Status" asp-items="Model.Status">
+                                    <option value="">Select Status</option>
+                                </select>
+                            </div>
+                            <div class="col-2">
+                                <h6 style="vertical-align:middle">Booking Status:</h6>
+                            </div>
+                            <div class="col-2">
+                                <select id="BookStatus" name="BookStatus" asp-items="Model.BookStatus">
+                                    <option value="">Select Booking Status</option>
+                                </select>
+                            </div>
+                            <div class="col-1"></div>
+                            <div class="col-1">
+                                <button type="submit" name="submit" value="Filter" class="btn btn-info form-control">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+
                         </div>
 
                     </div>
@@ -81,9 +84,8 @@
                 </div>
 
             </div>
-
-        </div>
-    }
+        }
+    </div>
     <br />
     @if (Model.TableBookings.Count > 0)
     {
@@ -244,7 +246,9 @@
     }
     else
     {
-        <p>No Bookings...</p>
+        <div class="container">
+            <p>No Bookings...</p>
+        </div>
     }
 </div>
 
