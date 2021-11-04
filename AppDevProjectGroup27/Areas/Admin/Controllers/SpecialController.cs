@@ -112,7 +112,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                 // locating the Templete's path
                 var PathToFile = _hostEnvironment.WebRootPath + Path.DirectorySeparatorChar.ToString()
                     + "Templates" + Path.DirectorySeparatorChar.ToString() + "EmailTemplates"
-                    + Path.DirectorySeparatorChar.ToString() + "Newsletter.html";
+                    + Path.DirectorySeparatorChar.ToString() + "TestNews.htm";
 
                 var BusEmail = new MailAddress("rendezvousrestaurantdut@gmail.com", "Rendezvous Restuarant");
                 var email = new MailAddress(Email, Name);
@@ -127,20 +127,20 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                     HtmlBody = streamReader.ReadToEnd();
                 }
 
-                
-                string UrlMain = "https://2021grp27.azurewebsites.net/Customer/Home/Details/";
-                foreach (var item in objMenuItems)
-                {
-                    var Hypelink = "<a href=" + UrlMain + item.Id + ">Go to the Store</a>";
+                HtmlBody = HtmlBody.Replace("#temp#", "Rydell");
+                //string UrlMain = "https://2021grp27.azurewebsites.net/Customer/Home/Details/";
+                //foreach (var item in objMenuItems)
+                //{
+                //    var Hypelink = "<a href=" + UrlMain + item.Id + ">Go to the Store</a>";
 
-                    HtmlBody += "<tr>\r\n<td>" +
-                        item.Name + "</td>\r\n<td>" +
-                        item.Price.ToString("C") +
-                        "</td>\r\n<td>" +
-                        Hypelink + "</td>\r\n</tr>\r\n";
-                }
+                //    HtmlBody += "<tr>\r\n<td>" +
+                //        item.Name + "</td>\r\n<td>" +
+                //        item.Price.ToString("C") +
+                //        "</td>\r\n<td>" +
+                //        Hypelink + "</td>\r\n</tr>\r\n";
+                //}
 
-                HtmlBody += "</table>\r\n<p style=\"text-align=center;font-size:10px\">Ts and Cs Apply</p></body>\r\n</html>";
+                //HtmlBody += "</table>\r\n<p style=\"text-align=center;font-size:10px\">Ts and Cs Apply</p></body>\r\n</html>";
 
                 var body = HtmlBody;
                 var smtp = new SmtpClient
@@ -156,7 +156,8 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                 {
                     Subject = subject,
                     Body = body,
-                    IsBodyHtml = true
+                    IsBodyHtml = true,
+                    BodyEncoding = System.Text.Encoding.UTF8
                 })
                 {
                     smtp.Send(message);
