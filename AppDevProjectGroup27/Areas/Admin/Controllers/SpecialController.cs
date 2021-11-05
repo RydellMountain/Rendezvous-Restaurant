@@ -111,15 +111,14 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
             {
                 // locating the Templete's path
                 var PathToFile = _hostEnvironment.WebRootPath + Path.DirectorySeparatorChar.ToString()
-                    + "Templates" + Path.DirectorySeparatorChar.ToString() + "EmailTemplates"
-                    + Path.DirectorySeparatorChar.ToString() + "TestNews.htm";
+                   + "Templates" + Path.DirectorySeparatorChar.ToString() + "EmailTemplates"
+                    + Path.DirectorySeparatorChar.ToString() + "NewletterTemplate.htm";
 
                 var BusEmail = new MailAddress("rendezvousrestaurantdut@gmail.com", "Rendezvous Restuarant");
                 var email = new MailAddress(Email, Name);
                 var pass = "DUTRendezvous123";
                 var subject = Sub;
                 //var body = BodMessage;
-
                 //Assigning the template to the body of the email
                 string HtmlBody = "";
                 using (StreamReader streamReader = System.IO.File.OpenText(PathToFile))
@@ -127,20 +126,28 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                     HtmlBody = streamReader.ReadToEnd();
                 }
 
-                HtmlBody = HtmlBody.Replace("#temp#", "Rydell");
-                //string UrlMain = "https://2021grp27.azurewebsites.net/Customer/Home/Details/";
-                //foreach (var item in objMenuItems)
-                //{
-                //    var Hypelink = "<a href=" + UrlMain + item.Id + ">Go to the Store</a>";
+                // HtmlBody = HtmlBody.Replace("#temp#", "Rydell");
+                string UrlMain = "https://2021grp27.azurewebsites.net/Customer/Home/Details/";
+                string UrlImageBase = "https://2021grp27.azurewebsites.net/images/";
+                string NewsletterItems = "<table border ="+1+"cellpadding="+0+" width="+600+">";
+                foreach (var item in objMenuItems)
+                {
+                    var NameHyperLink = "<a href=" + UrlMain + item.Id + ">"+item.Name+"</a>";
+                    string Img = item.Image;
+                    Img = Img.Replace(@"\images\",string.Empty);
 
-                //    HtmlBody += "<tr>\r\n<td>" +
-                //        item.Name + "</td>\r\n<td>" +
-                //        item.Price.ToString("C") +
-                //        "</td>\r\n<td>" +
-                //        Hypelink + "</td>\r\n</tr>\r\n";
-                //}
+                    var LinkToImage = "<img src=" + UrlImageBase + Img + ">";
 
-                //HtmlBody += "</table>\r\n<p style=\"text-align=center;font-size:10px\">Ts and Cs Apply</p></body>\r\n</html>";
+                    NewsletterItems += "<tr><td>" +
+                        LinkToImage + "</td><td>" +
+                          NameHyperLink +
+                         "</td><td>" +
+                        item.Price.ToString("C") +
+                        "</td></tr>";
+                }
+                NewsletterItems += "</table>";
+
+                HtmlBody = HtmlBody.Replace("#MenuItem#", NewsletterItems);
 
                 var body = HtmlBody;
                 var smtp = new SmtpClient
