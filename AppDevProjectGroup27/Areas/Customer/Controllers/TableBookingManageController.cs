@@ -3,10 +3,12 @@ using AppDevProjectGroup27.Models;
 using AppDevProjectGroup27.Models.ViewModels;
 using AppDevProjectGroup27.Utility;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -21,9 +23,13 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
     {
 
         private ApplicationDbContext _db;
-        public TableBookingManageController(ApplicationDbContext db)
+
+        private readonly IWebHostEnvironment _hostEnviroment;
+
+        public TableBookingManageController(ApplicationDbContext db, IWebHostEnvironment hostEnvironment)
         {
             _db = db;
+            _hostEnviroment = hostEnvironment;
         }
 
 
@@ -60,7 +66,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             var CustomerEmail = CustomerInfo.Email;
             var CustomerName = CustomerInfo.Name;
 
-            SendEmail(CustomerName, CustomerEmail, "Table Booking : " + TableHeaderId + " - Approved", "The following table booking has been approved:", tableHeader);
+            SendEmail(CustomerName, CustomerEmail, "Table Booking : " + TableHeaderId + " - Approved", "Your Table Booking has been approved", "Your table booking details are as follows:", tableHeader);
 
             // var Email = _db.ApplicationUser.Find(tableHeader.UserId).Email;
             // End of Get Email (Please check if this code works first
@@ -97,7 +103,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             var CustomerEmail = CustomerInfo.Email;
             var CustomerName = CustomerInfo.Name;
 
-            SendEmail(CustomerName, CustomerEmail, "Table Booking : " + TableHeaderId + " - Rejected", "The following table booking has been rejected:", tableHeader);
+            SendEmail(CustomerName, CustomerEmail, "Table Booking : " + TableHeaderId + " - Rejected", "You Table Booking has been rejected", "Your table booking details are as follows:", tableHeader);
 
             // var Email = _db.ApplicationUser.Find(tableHeader.UserId).Email;
             // End of Get Email (Please check if this code works first
@@ -163,8 +169,8 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             var CustomerEmail = CustomerInfo.Email;
             var CustomerName = CustomerInfo.Name;
 
-            SendEmail(CustomerName, CustomerEmail, "Table Booking : " + TableHeaderId + " - Reservation Started", "We see that your booking has started at <b>" + tableHeader.TimeSitIn.Value.ToString("MM/dd/yyyy HH:mm")
-                + "</b>.<br />We hope that you enjoy your meal and that you are pleased with our service.", null);
+            SendEmail(CustomerName, CustomerEmail, "Table Booking : " + TableHeaderId + " - Reservation Started", "Your Table Booking reservation has started", "We see that your booking has started at <p style= \"color:#FFFFFF\">" + tableHeader.TimeSitIn.Value.ToString("MM/dd/yyyy HH:mm")
+                + "</p>We hope that you enjoy your meal and that you are pleased with our service.", tableHeader);
 
             return RedirectToAction(nameof(ManageBooking));
         }
@@ -208,8 +214,8 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             var CustomerEmail = CustomerInfo.Email;
             var CustomerName = CustomerInfo.Name;
 
-            SendEmail(CustomerName, CustomerEmail, "Table Booking : " + TableHeaderId + " - Reservation Complete", "We see that you have left at <b>" + tableHeader.TimeCheckOut.Value.ToString("MM/dd/yyyy HH:mm")
-                + "</b>.<br />We hope that you enjoyed your time with us.<br />Have a safe journey to your destination.<br />We hope you eat with us again.", null);
+            SendEmail(CustomerName, CustomerEmail, "Table Booking : " + TableHeaderId + " - Reservation Complete", "Your Table Booking reservation is completed", "We see that you have left at <p style= \"color:#FFFFFF\">" + tableHeader.TimeCheckOut.Value.ToString("MM/dd/yyyy HH:mm")
+                + "</p>We hope that you enjoyed your time with us.<br />Have a safe journey to your destination.<br />We hope you eat with us again.", tableHeader);
 
             return RedirectToAction(nameof(ManageBooking));
         }
@@ -238,7 +244,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             var CustomerEmail = CustomerInfo.Email;
             var CustomerName = CustomerInfo.Name;
 
-            SendEmail(CustomerName, CustomerEmail, "Table Booking : " + TableHeaderId + " - Cancelled", "The following table booking has been cancelled, we apologise for the inconvenience:", tableHeader);
+            SendEmail(CustomerName, CustomerEmail, "Table Booking : " + TableHeaderId + " - Cancelled", "Your Table Booking has been cancelled","We apologise for the inconvenience.", tableHeader);
 
             return RedirectToAction(nameof(ManageBooking));
         }
@@ -268,11 +274,11 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             var CustomerEmail = CustomerInfo.Email;
             var CustomerName = CustomerInfo.Name;
 
-            SendEmail(CustomerName, CustomerEmail, "Table Booking : " + TableHeaderId + " - Cancelled", "You have successfully cancelled your table booking, the booking details are as follows:", tableHeader);
+            SendEmail(CustomerName, CustomerEmail, "Table Booking : " + TableHeaderId + " - Cancelled", "Your Table Booking has been cancelled", "Your table booking details are as follows:", tableHeader);
 
             if (tableHeader.BookStatus != SD.BookTableStatusPending)
             {
-                SendEmail("Rendezvous Restaurant", "rendezvousrestaurantdut@gmail.com", "Table Booking : " + TableHeaderId + " - Staff Cancelled", "Staff Name: " + CustomerName + "<br />Staff Email: " + CustomerEmail + "<br /><br />Has decided to cancel their table booking, the table booking details are as follows:", tableHeader);
+                SendEmail("Rendezvous Restaurant", "rendezvousrestaurantdut@gmail.com", "Table Booking : " + TableHeaderId + " - Staff Cancelled", string.Empty, "System message:<br />Staff Name: " + CustomerName + "<br />Staff Email: " + CustomerEmail + "<br />The above staff decided to cancel their table booking.<br /><br />", tableHeader);
             }
 
             return RedirectToAction("Index", "TableBookingHistory");
@@ -298,11 +304,11 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             var CustomerEmail = CustomerInfo.Email;
             var CustomerName = CustomerInfo.Name;
 
-            SendEmail(CustomerName, CustomerEmail, "Table Booking : " + TableHeaderId + " - Cancelled", "You have successfully cancelled your table booking, the booking details are as follows:", tableHeader);
+            SendEmail(CustomerName, CustomerEmail, "Table Booking : " + TableHeaderId + " - Cancelled", "Your Table Booking has been cancelled", "Your table booking details are as follows:", tableHeader);
 
             if (tableHeader.BookStatus != SD.BookTableStatusPending)
             {
-                SendEmail("Rendezvous Restaurant", "rendezvousrestaurantdut@gmail.com", "Table Booking : " + TableHeaderId + " - Customer Cancelled", "Customer Name: " + CustomerName + "<br />Customer Email: " + CustomerEmail + "<br /><br />Has decided to cancel their table booking, the table booking details are as follows:", tableHeader);
+                SendEmail("Rendezvous Restaurant", "rendezvousrestaurantdut@gmail.com", "Table Booking : " + TableHeaderId + " - Customer Cancelled", string.Empty,"System message:<br />Customer Name: " + CustomerName + "<br />Customer Email: " + CustomerEmail + "<br />The above customer decided to cancel their table booking.<br /><br />", tableHeader);
             }
 
             return RedirectToAction("Index","TableBookingHistory");
@@ -332,7 +338,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             }
         }
 
-        public void SendEmail(string Name, string Email, string Sub, string Body, TableBookingHeader objDetails)
+        public void SendEmail(string Name, string Email, string Sub, string Heading, string Body, TableBookingHeader objDetails)
         {
             try
             {
@@ -340,16 +346,36 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
                 var email = new MailAddress(Email, Name);
                 var pass = "DUTRendezvous123";
                 var subject = Sub;
-                var body = "Good day, <strong>" + Name
-                    + "</strong>.<br /><br />" + Body;
+                //  var body = "Good day, <strong>" + Name
+                //   + "</strong>.<br /><br />" + Body;
 
+                var PathToFile = _hostEnviroment.WebRootPath + Path.DirectorySeparatorChar.ToString()
+                  + "Templates" + Path.DirectorySeparatorChar.ToString() + "EmailTemplates"
+                  + Path.DirectorySeparatorChar.ToString() + "TableTemplate.htm";
+
+                string HtmlBody = "";
+                using (StreamReader streamReader = System.IO.File.OpenText(PathToFile))
+                {
+                    HtmlBody = streamReader.ReadToEnd();
+                }
+
+                string Details = "";
                 if (objDetails != null)
                 {
-                    body += "<br /><br /><table border =" + 1 + " cellpadding=" + 0 + " cellspacing=" + 0 + " width = " + 400 + "><tr><th>Table Name</th><th>Number of Tables Booked</th><th>Date</th><th>Time</th></tr>";
-                    body += "<tr><td>" + objDetails.TableName + "</td><td>" + objDetails.TableBooked + "</td><td>" + objDetails.SitInDate.ToString("MM/dd/yyyy") + "</td><td>";
-                    body += objDetails.SitInTime.ToString(@"hh\:mm") + "</td></tr></table>";
+                    Details += "<br /><br /><table border =" + 1 + " cellpadding=" + 0 + " cellspacing=" + 0 + " width = " + 400 + "><tr><th>Table Name</th><th>Number of Tables Booked</th><th>Date</th><th>Time</th></tr>";
+                    Details += "<tr><td>" + objDetails.TableName + "</td><td>" + objDetails.TableBooked + "</td><td>" + objDetails.SitInDate.ToString("MM/dd/yyyy") + "</td><td>";
+                    Details += objDetails.SitInTime.ToString(@"hh\:mm") + "</td></tr></table>";
                 }
-                body += "<br /><br />Have A Lovely day.<br/>The Rendezvous-Restaurant Team.";
+
+                HtmlBody = HtmlBody.Replace("#heading#", Heading);
+                HtmlBody = HtmlBody.Replace("#details#", Body);
+                HtmlBody = HtmlBody.Replace("#torder#", Details);
+
+                if (Email.ToUpper() != "RENDEZVOUSRESTAURANTDUT@GMAIL.COM")
+                    HtmlBody = HtmlBody.Replace("#final#", "<br /><br />Have A Lovely day.<br/>The Rendezvous-Restaurant Team.");
+                else
+                    HtmlBody = HtmlBody.Replace("#final#", "<br /><br />System Message.");
+                // body += "<br /><br />Have A Lovely day.<br/>The Rendezvous-Restaurant Team.";
 
                 var smtp = new SmtpClient
                 {
@@ -363,7 +389,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
                 using (var message = new MailMessage(BusEmail, email)
                 {
                     Subject = subject,
-                    Body = body,
+                    Body = HtmlBody,
                     IsBodyHtml = true
                 })
                 {

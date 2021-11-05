@@ -3,11 +3,13 @@ using AppDevProjectGroup27.Models;
 using AppDevProjectGroup27.Models.ViewModels;
 using AppDevProjectGroup27.Utility;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -22,9 +24,12 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
     {
         private ApplicationDbContext _db;
 
-        public CustomerTableBookingController(ApplicationDbContext db)
+        private readonly IWebHostEnvironment _hostEnviroment;
+
+        public CustomerTableBookingController(ApplicationDbContext db, IWebHostEnvironment hostEnvironment)
         {
             _db = db;
+            _hostEnviroment = hostEnvironment;
         }
 
 
@@ -147,13 +152,13 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             var CustomerName = CustomerInfo.Name;
 
 
-            SendEmail(CustomerName, CustomerEmail, "Table Booking : " + objTBH.Id + " - Received", "Thank you for your table booking, it is awaiting approval from the Admin.<br />Your table booking details are as follows:", objTBH);
+            SendEmail(CustomerName, CustomerEmail, "Table Booking : " + objTBH.Id + " - Received", "Your Table Booking has been received","Thank you for your table booking, it is awaiting approval from the Admin.", objTBH);
             //End Send Email
 
             return View("Confirm", objTBH);
         }
 
-        public void SendEmail(string Name, string Email, string Sub, string Body, TableBookingHeader objDetails)
+        public void SendEmail(string Name, string Email, string Sub, string Heading, string Body, TableBookingHeader objDetails)
         {
             try
             {
@@ -161,16 +166,32 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
                 var email = new MailAddress(Email, Name);
                 var pass = "DUTRendezvous123";
                 var subject = Sub;
-                var body = "Good day, <strong>" + Name
-                    + "</strong>.<br /><br />" + Body;
+                //  var body = "Good day, <strong>" + Name
+                //   + "</strong>.<br /><br />" + Body;
 
+                var PathToFile = _hostEnviroment.WebRootPath + Path.DirectorySeparatorChar.ToString()
+                  + "Templates" + Path.DirectorySeparatorChar.ToString() + "EmailTemplates"
+                  + Path.DirectorySeparatorChar.ToString() + "TableTemplate.htm";
+
+                string HtmlBody = "";
+                using (StreamReader streamReader = System.IO.File.OpenText(PathToFile))
+                {
+                    HtmlBody = streamReader.ReadToEnd();
+                }
+
+                string Details = "";
                 if (objDetails != null)
                 {
-                    body += "<br /><br /><table border =" + 1 + " cellpadding=" + 0 + " cellspacing=" + 0 + " width = " + 400 + "><tr><th>Table Name</th><th>Number of Tables Booked</th><th>Date</th><th>Time</th></tr>";
-                    body += "<tr><td>" + objDetails.TableName + "</td><td>" + objDetails.TableBooked + "</td><td>" + objDetails.SitInDate.ToString("MM/dd/yyyy") + "</td><td>";
-                    body += objDetails.SitInTime.ToString(@"hh\:mm") + "</td></tr></table>";
+                    Details += "<br /><br /><table border =" + 1 + " cellpadding=" + 0 + " cellspacing=" + 0 + " width = " + 400 + "><tr><th>Table Name</th><th>Number of Tables Booked</th><th>Date</th><th>Time</th></tr>";
+                    Details += "<tr><td>" + objDetails.TableName + "</td><td>" + objDetails.TableBooked + "</td><td>" + objDetails.SitInDate.ToString("MM/dd/yyyy") + "</td><td>";
+                    Details += objDetails.SitInTime.ToString(@"hh\:mm") + "</td></tr></table>";
                 }
-                body += "<br /><br />Have A Lovely day.<br/>The Rendezvous-Restaurant Team.";
+
+                HtmlBody = HtmlBody.Replace("#heading#", Heading);
+                HtmlBody = HtmlBody.Replace("#details#", Body);
+                HtmlBody = HtmlBody.Replace("#torder#", Details);
+                HtmlBody = HtmlBody.Replace("#final#", "<br /><br />Have A Lovely day.<br/>The Rendezvous-Restaurant Team.");
+                // body += "<br /><br />Have A Lovely day.<br/>The Rendezvous-Restaurant Team.";
 
                 var smtp = new SmtpClient
                 {
@@ -184,7 +205,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
                 using (var message = new MailMessage(BusEmail, email)
                 {
                     Subject = subject,
-                    Body = body,
+                    Body = HtmlBody,
                     IsBodyHtml = true
                 })
                 {

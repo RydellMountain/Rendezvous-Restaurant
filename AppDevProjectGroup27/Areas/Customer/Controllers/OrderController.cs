@@ -255,7 +255,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
             var CustomerName = CustomerInfo.Name;
 
 
-            SendEmail(CustomerName, CustomerEmail, "Order : " + id+" - Cancelled", "Your Order has been cancelled",string.Empty, orderDetailsViewModel.OrderDetails,orderDetailsViewModel.OrderHeader.CouponCode,orderDetailsViewModel.OrderHeader.CouponCodeDiscount);
+            SendEmail(CustomerName, CustomerEmail, "Order : " + id+" - Cancelled", "Your Order has been cancelled","Your order details are as follows:", orderDetailsViewModel.OrderDetails,orderDetailsViewModel.OrderHeader.CouponCode,orderDetailsViewModel.OrderHeader.CouponCodeDiscount);
             //Changes
             orderDetailsViewModel.OrderHeader.PaymentStatus = SD.PaymentStatusRejected;
             orderDetailsViewModel.OrderHeader.Status = SD.StatusCancelled;
@@ -419,7 +419,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
             List<OrderDetails> objDetails = await _db.OrderDetails.Where(o => o.OrderId == OrderId).ToListAsync();
             // Send To customer
-            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId + " - Cancelled", "Your Order has been cancelled" ,string.Empty, objDetails,orderHeader.CouponCode,orderHeader.CouponCodeDiscount);
+            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId + " - Cancelled", "Your Order has been cancelled" , "Your order details are as follows:", objDetails,orderHeader.CouponCode,orderHeader.CouponCodeDiscount);
             // Send to Admin
             SendEmail("Rendezvous Restaurant", "rendezvousrestaurantdut@gmail.com", "Order : " + OrderId + " - Customer Cancelled", string.Empty,"System message:<br />Customer Name: "+CustomerName+"<br />Customer Email: "+CustomerEmail+ "<br />The above customer has cancelled their order.<br /><br />", objDetails, orderHeader.CouponCode, orderHeader.CouponCodeDiscount);
             
@@ -445,7 +445,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
             List<OrderDetails> objDetails = await _db.OrderDetails.Where(o => o.OrderId == OrderId).ToListAsync();
             // Send To customer
-            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId + " - Cancelled", "Your Order has been cancelled", string.Empty, objDetails, orderHeader.CouponCode, orderHeader.CouponCodeDiscount);
+            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId + " - Cancelled", "Your Order has been cancelled", "Your order details are as follows:", objDetails, orderHeader.CouponCode, orderHeader.CouponCodeDiscount);
             // Send to Admin
             SendEmail("Rendezvous Restaurant", "rendezvousrestaurantdut@gmail.com", "Order : " + OrderId + " - Staff Cancelled",string.Empty,"System message:<br />Staff Name: " + CustomerName + "<br />Staff Email: " + CustomerEmail + "<br />The above staff member has cancelled their order.", objDetails, orderHeader.CouponCode, orderHeader.CouponCodeDiscount);
 
@@ -475,7 +475,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
             List<OrderDetails> objDetails = await _db.OrderDetails.Where(o => o.OrderId == OrderId).ToListAsync();
 
-            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId+" - Cancelled", "Your Order has been cancelled",string.Empty, objDetails,orderHeader.CouponCode,orderHeader.CouponCodeDiscount);
+            SendEmail(CustomerName, CustomerEmail, "Order : " + OrderId+" - Cancelled", "Your Order has been cancelled", "Your order details are as follows:", objDetails,orderHeader.CouponCode,orderHeader.CouponCodeDiscount);
             await _db.SaveChangesAsync();
 
             //will need email logic here
