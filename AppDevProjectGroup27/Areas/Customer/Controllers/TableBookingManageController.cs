@@ -278,7 +278,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
 
             if (tableHeader.BookStatus != SD.BookTableStatusPending)
             {
-                SendEmail("Rendezvous Restaurant", "rendezvousrestaurantdut@gmail.com", "Table Booking : " + TableHeaderId + " - Staff Cancelled", string.Empty, "System message:<br />Staff Name: " + CustomerName + "<br />Staff Email: " + CustomerEmail + "<br />The above staff decided to cancel their table booking.<br /><br />", tableHeader);
+                SendEmail("Rendezvous Restaurant", "rendezvousrestaurantdut@gmail.com", "Table Booking : " + TableHeaderId + " - Staff Cancelled", string.Empty, "System message:<br />Staff Name: " + CustomerName + "<br />Staff Email: " + CustomerEmail + "<br />The above staff member decided to cancel their table booking.<br /><br />", tableHeader);
             }
 
             return RedirectToAction("Index", "TableBookingHistory");
