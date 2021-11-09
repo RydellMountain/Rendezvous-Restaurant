@@ -362,7 +362,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
                 string Details = "";
                 if (objDetails != null)
                 {
-                    Details += "<br /><br /><table border =" + 1 + " cellpadding=" + 0 + " width = " + 100 + "%><tr><th>Table Name</th><th>Number of Tables Booked</th><th>Date</th><th>Time</th></tr>";
+                    Details += "<br /><br /><table border =" + 1 + " cellpadding=" + 0+ " cellspacing=" + 0 + " width = " + 100 + "%><tr><th>Table Name</th><th>Number of Tables Booked</th><th>Date</th><th>Time</th></tr>";
                     Details += "<tr><td>" + objDetails.TableName + "</td><td>" + objDetails.TableBooked + "</td><td>" + objDetails.SitInDate.ToString("MM/dd/yyyy") + "</td><td>";
                     Details += objDetails.SitInTime.ToString(@"hh\:mm") + "</td></tr></table>";
                 }

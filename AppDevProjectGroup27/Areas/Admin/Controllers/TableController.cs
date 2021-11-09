@@ -378,7 +378,7 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                 var body = "Good day, <strong>" + Name
                     + "</strong>.<br /><br />" + Body;
 
-                    body += "<br /><br /><table border =" + 1 + " cellpadding=" + 0 +  " width = " + 100 + "%><tr><th>Table Name</th><th>Number of Tables Booked</th><th>Date</th><th>Time</th></tr>";
+                    body += "<br /><br /><table border =" + 1 + " cellpadding=" + 0 + " cellspacing=" + 0 + " width = " + 100 + "%><tr><th>Table Name</th><th>Number of Tables Booked</th><th>Date</th><th>Time</th></tr>";
                         body += "<tr><td>" + objDetails.TableName + "</td><td>" + objDetails.TableBooked + "</td><td>" + objDetails.SitInDate.ToString("MM/dd/yyyy") + "</td><td>";
                         body += objDetails.SitInTime.ToString(@"hh\:mm") + "</td></tr></table>";
 
