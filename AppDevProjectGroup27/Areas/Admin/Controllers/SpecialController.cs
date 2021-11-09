@@ -139,11 +139,11 @@ namespace AppDevProjectGroup27.Areas.Admin.Controllers
                     var LinkToImage = "<img src=" + UrlImageBase + Img + ">";
 
                     NewsletterItems += "<tr><td>" +
-                        LinkToImage + "</td><td>" +
+                        LinkToImage + "</td><td><h3>" +
                           NameHyperLink +
-                         "</td><td>" +
+                         "</h3></td><td><h3>" +
                         item.Price.ToString("C") +
-                        "</td></tr>";
+                        "</h3></td></tr>";
                 }
                 NewsletterItems += "</table>";
 
