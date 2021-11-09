@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "mssql3": {
+    "mssql1": {
       "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/appdevprojectgroup27dbserver/databases/AppDevProjectGroup27",
       "type": "mssql.azure",
-      "connectionId": "ConnectionStrings:ApplicationDbContext",
+      "connectionId": "DefaultConnection",
       "secretStore": "AzureAppSettings"
     }
   }
