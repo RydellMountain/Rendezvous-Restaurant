@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  appdevprojectgroup27:
+    image: ${DOCKER_REGISTRY-}appdevprojectgroup27
+    build:
+      context: .
+      dockerfile: AppDevProjectGroup27\Dockerfile
