@@ -687,7 +687,7 @@ namespace AppDevProjectGroup27.Areas.Customer.Controllers
                 string Details = "";
                 if (objDetails != null)
                 {
-                    Details += "<br /><br /><table border =" + 1 + " cellpadding=" + 0 + " cellspacing=" + 0 + " width = " + 400 + "><tr><th>Item</th><th>Quantity</th><th>Price</th><th>Total Price</th></tr>";
+                    Details += "<br /><br /><table border =" + 1 + " cellpadding=" + 0 + " cellspacing=" + 0 + " width = " + 100 + "%><tr><th>Item</th><th>Quantity</th><th>Price</th><th>Total Price</th></tr>";
                     foreach (var item in objDetails)
                     {
                         Details += "<tr><td>"+ item.Name+"</td><td>"+item.Count+"</td><td>"+item.Price.ToString("C")+"</td><td>";
